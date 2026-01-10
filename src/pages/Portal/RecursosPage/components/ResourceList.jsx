@@ -48,14 +48,17 @@ const mockResources = [
     }
 ];
 
-const ResourceList = ({ searchQuery }) => {
+const ResourceList = ({ searchQuery, uploadedResources = [] }) => {
+    // Combine uploaded resources with mock data
+    const allResources = [...uploadedResources, ...mockResources];
+
     // Filter resources by search query
     const filteredResources = searchQuery
-        ? mockResources.filter(resource =>
+        ? allResources.filter(resource =>
             resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            resource.author.toLowerCase().includes(searchQuery.toLowerCase())
+            (resource.author && resource.author.toLowerCase().includes(searchQuery.toLowerCase()))
         )
-        : mockResources;
+        : allResources;
 
     return (
         <Box>
@@ -67,8 +70,8 @@ const ResourceList = ({ searchQuery }) => {
                 </Box>
             ) : (
                 <Grid container spacing={3}>
-                    {filteredResources.map((resource) => (
-                        <Grid item xs={12} md={6} key={resource.id}>
+                    {filteredResources.map((resource, index) => (
+                        <Grid item xs={12} md={6} key={resource.id || `uploaded-${index}`}>
                             <ResourceCard resource={resource} />
                         </Grid>
                     ))}

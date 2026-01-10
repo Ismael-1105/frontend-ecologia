@@ -6,17 +6,67 @@ import {
     Button,
     Stack,
     TextField,
-    InputAdornment
+    InputAdornment,
+    Snackbar,
+    Alert
 } from '@mui/material';
 import { Search as SearchIcon, CloudUpload as CloudUploadIcon } from '@mui/icons-material';
-import { ResourceList } from './components';
+import ResourceList from './components/ResourceList';
+import UploadResourceModal from './components/UploadResourceModal';
 
 const RecursosPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
+    const [modalOpen, setModalOpen] = useState(false);
+    const [uploadedResources, setUploadedResources] = useState([]);
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
     const handleUploadResource = () => {
-        // TODO: Navigate to upload resource page or open modal
-        console.log('Upload resource');
+        setModalOpen(true);
+    };
+
+    const handleResourceUploaded = (resourceData) => {
+        // Add the new resource to the uploaded resources list
+        const newResource = {
+            id: `uploaded-${Date.now()}`,
+            title: resourceData.title,
+            type: getFileType(resourceData.filename),
+            downloads: 0,
+            author: 'Tú', // Current user
+            description: resourceData.description,
+            category: resourceData.category,
+            fileUrl: resourceData.fileUrl,
+            filename: resourceData.filename,
+            fileSize: resourceData.fileSize,
+            uploadedAt: resourceData.uploadedAt
+        };
+
+        setUploadedResources(prev => [newResource, ...prev]);
+
+        setSnackbar({
+            open: true,
+            message: 'Recurso subido exitosamente',
+            severity: 'success'
+        });
+    };
+
+    const getFileType = (filename) => {
+        const extension = filename.split('.').pop().toLowerCase();
+        const typeMap = {
+            'pdf': 'PDF',
+            'doc': 'DOC',
+            'docx': 'DOCX',
+            'txt': 'TXT',
+            'jpg': 'Imagen',
+            'jpeg': 'Imagen',
+            'png': 'Imagen',
+            'mp4': 'Video',
+            'avi': 'Video'
+        };
+        return typeMap[extension] || 'Documento';
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbar({ ...snackbar, open: false });
     };
 
     return (
@@ -67,7 +117,29 @@ const RecursosPage = () => {
             </Box>
 
             {/* Resource List */}
-            <ResourceList searchQuery={searchQuery} />
+            <ResourceList
+                searchQuery={searchQuery}
+                uploadedResources={uploadedResources}
+            />
+
+            {/* Upload Modal */}
+            <UploadResourceModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onResourceUploaded={handleResourceUploaded}
+            />
+
+            {/* Success Snackbar */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 };

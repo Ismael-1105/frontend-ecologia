@@ -1,86 +1,120 @@
-import React from 'react';
-import { Stack, Typography, Box } from '@mui/material';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { Stack, Typography, Box, CircularProgress, Alert, Pagination } from '@mui/material';
 import PostCard from './PostCard';
+import { getPosts } from '../../../../core/api/postService';
 
-// Mock data for forum posts
-const mockPosts = [
-    {
-        id: 1,
-        title: 'Descubrimiento de nueva especie de orquídea en Podocarpus',
-        author: 'Dr. Carlos Mendoza',
-        category: 'Flora Nativa',
-        replies: 34,
-        views: 892,
-        hasVideo: true,
-        isHot: true
-    },
-    {
-        id: 2,
-        title: 'Guía completa: Compostaje doméstico en clima andino',
-        author: 'María García',
-        category: 'Reciclaje',
-        replies: 28,
-        views: 654,
-        hasVideo: true,
-        isHot: false
-    },
-    {
-        id: 3,
-        title: 'Avistamiento de oso de anteojos cerca de Vilcabamba',
-        author: 'Luis Armijos',
-        category: 'Fauna Local',
-        replies: 45,
-        views: 1203,
-        hasVideo: false,
-        isHot: true
-    },
-    {
-        id: 4,
-        title: 'Proyecto escolar: Huertos urbanos en instituciones educativas',
-        author: 'Ana Córdova',
-        category: 'Conservación',
-        replies: 19,
-        views: 445,
-        hasVideo: true,
-        isHot: false
-    },
-    {
-        id: 5,
-        title: 'Técnicas de purificación de agua en zonas rurales',
-        author: 'Pedro Sánchez',
-        category: 'Agua',
-        replies: 23,
-        views: 567,
-        hasVideo: false,
-        isHot: false
+const PostList = forwardRef(({ selectedCategory }, ref) => {
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 20,
+        total: 0,
+        pages: 1
+    });
+
+    useEffect(() => {
+        fetchPosts();
+    }, [selectedCategory, pagination.page]);
+
+    const fetchPosts = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const params = {
+                page: pagination.page,
+                limit: pagination.limit,
+                sort: '-createdAt'
+            };
+
+            if (selectedCategory) {
+                params.category = selectedCategory;
+            }
+
+            const response = await getPosts(params);
+
+            if (response.success) {
+                setPosts(response.data);
+                setPagination(prev => ({
+                    ...prev,
+                    ...response.pagination
+                }));
+            }
+        } catch (err) {
+            console.error('Error fetching posts:', err);
+            setError(err.response?.data?.error || 'Error al cargar las publicaciones');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Expose refresh method to parent
+    useImperativeHandle(ref, () => ({
+        refreshPosts: () => {
+            setPagination(prev => ({ ...prev, page: 1 }));
+            fetchPosts();
+        }
+    }));
+
+    const handlePageChange = (event, value) => {
+        setPagination(prev => ({ ...prev, page: value }));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+                <CircularProgress />
+            </Box>
+        );
     }
-];
 
-const PostList = ({ selectedCategory }) => {
-    // Filter posts by category
-    const filteredPosts = selectedCategory
-        ? mockPosts.filter(post =>
-            post.category.toLowerCase().replace(' ', '-') === selectedCategory
-        )
-        : mockPosts;
+    if (error) {
+        return (
+            <Box sx={{ py: 4 }}>
+                <Alert severity="error" onClose={() => setError(null)}>
+                    {error}
+                </Alert>
+            </Box>
+        );
+    }
 
     return (
         <Box>
-            {filteredPosts.length === 0 ? (
+            {posts.length === 0 ? (
                 <Box sx={{ textAlign: 'center', py: 8 }}>
                     <Typography variant="h6" color="text.secondary">
                         No hay publicaciones en esta categoría
                     </Typography>
                 </Box>
             ) : (
-                <Stack spacing={2}>
-                    {filteredPosts.map((post) => (
-                        <PostCard key={post.id} post={post} />
-                    ))}
-                </Stack>
+                <>
+                    <Stack spacing={2}>
+                        {posts.map((post) => (
+                            <PostCard key={post._id} post={post} />
+                        ))}
+                    </Stack>
+
+                    {/* Pagination */}
+                    {pagination.pages > 1 && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                            <Pagination
+                                count={pagination.pages}
+                                page={pagination.page}
+                                onChange={handlePageChange}
+                                color="primary"
+                                size="large"
+                            />
+                        </Box>
+                    )}
+                </>
             )}
         </Box>
     );
-};
+});
+
+PostList.displayName = 'PostList';
 
 export default PostList;

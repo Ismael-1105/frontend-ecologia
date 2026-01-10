@@ -13,12 +13,14 @@ import {
     Comment as CommentIcon,
     Visibility as VisibilityIcon,
     Videocam as VideocamIcon,
-    MoreVert as MoreVertIcon
+    MoreVert as MoreVertIcon,
+    ThumbUp as ThumbUpIcon
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const PostCard = ({ post }) => {
     const getInitials = (name) => {
+        if (!name) return '??';
         return name
             .split(' ')
             .map(n => n[0])
@@ -26,6 +28,14 @@ const PostCard = ({ post }) => {
             .toUpperCase()
             .slice(0, 2);
     };
+
+    // Extract author name from author object or use fallback
+    const authorName = post.author?.name || 'Anónimo';
+    const authorAvatar = post.author?.profilePicture;
+
+    // Calculate stats
+    const likeCount = post.likes?.length || 0;
+    const commentCount = post.commentCount || 0;
 
     return (
         <Card
@@ -42,6 +52,7 @@ const PostCard = ({ post }) => {
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     {/* Avatar */}
                     <Avatar
+                        src={authorAvatar}
                         sx={{
                             width: 48,
                             height: 48,
@@ -49,7 +60,7 @@ const PostCard = ({ post }) => {
                             display: { xs: 'none', sm: 'flex' }
                         }}
                     >
-                        {getInitials(post.author)}
+                        {getInitials(authorName)}
                     </Avatar>
 
                     {/* Content */}
@@ -57,7 +68,7 @@ const PostCard = ({ post }) => {
                         {/* Title and Badges */}
                         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 1 }}>
                             <Link
-                                to={`/portal/foro/${post.id}`}
+                                to={`/portal/foro/${post._id}`}
                                 style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}
                             >
                                 <Typography
@@ -91,7 +102,7 @@ const PostCard = ({ post }) => {
                                     sx={{ height: 24 }}
                                 />
                             )}
-                            {post.isHot && (
+                            {likeCount > 10 && (
                                 <Chip
                                     label="🔥 Popular"
                                     size="small"
@@ -110,19 +121,19 @@ const PostCard = ({ post }) => {
                         {/* Author and Stats */}
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
                             <Typography variant="body2" color="text.secondary">
-                                Por <strong>{post.author}</strong>
+                                Por <strong>{authorName}</strong>
                             </Typography>
                             <Box sx={{ display: 'flex', gap: 2 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                    <CommentIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                    <ThumbUpIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
                                     <Typography variant="caption" color="text.secondary">
-                                        {post.replies} respuestas
+                                        {likeCount} me gusta
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                    <VisibilityIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                    <CommentIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
                                     <Typography variant="caption" color="text.secondary">
-                                        {post.views} vistas
+                                        {commentCount} respuestas
                                     </Typography>
                                 </Box>
                             </Box>
