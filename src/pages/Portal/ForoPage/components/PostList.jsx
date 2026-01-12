@@ -1,8 +1,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Stack, Typography, Box, Alert, Pagination } from '@mui/material';
+import { Stack, Typography, Box, CircularProgress, Alert, Pagination } from '@mui/material';
 import PostCard from './PostCard';
 import { getPosts } from '../../../../core/api/postService';
-import { PostCardSkeleton } from '../../../../components/shared/Skeletons';
 
 const PostList = forwardRef(({ selectedCategory }, ref) => {
     const [posts, setPosts] = useState([]);
@@ -66,11 +65,9 @@ const PostList = forwardRef(({ selectedCategory }, ref) => {
 
     if (loading) {
         return (
-            <Stack spacing={2}>
-                {Array.from(new Array(5)).map((_, index) => (
-                    <PostCardSkeleton key={index} />
-                ))}
-            </Stack>
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+                <CircularProgress />
+            </Box>
         );
     }
 

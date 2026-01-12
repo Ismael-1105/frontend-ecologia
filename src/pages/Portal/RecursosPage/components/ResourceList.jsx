@@ -50,17 +50,6 @@ const mockResources = [
 ];
 
 const ResourceList = ({ searchQuery, uploadedResources = [] }) => {
-    const [loading, setLoading] = useState(true);
-
-    // Simulate loading
-    useEffect(() => {
-        setLoading(true);
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 800);
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
-
     // Combine uploaded resources with mock data
     const allResources = [...uploadedResources, ...mockResources];
 
@@ -71,18 +60,6 @@ const ResourceList = ({ searchQuery, uploadedResources = [] }) => {
             (resource.author && resource.author.toLowerCase().includes(searchQuery.toLowerCase()))
         )
         : allResources;
-
-    if (loading) {
-        return (
-            <Grid container spacing={3}>
-                {Array.from(new Array(6)).map((_, index) => (
-                    <Grid item xs={12} md={6} key={index}>
-                        <ResourceCardSkeleton />
-                    </Grid>
-                ))}
-            </Grid>
-        );
-    }
 
     return (
         <Box>
