@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { DashboardStats, TrendingVideos, ActiveMembers, VideoPlayerModal, UploadVideoModal } from './components';
+import { DashboardStats, TrendingVideos, ActiveMembers, VideoPlayerModal, UploadVideoModal } from './components/index.jsx';
 import { videoService } from '../../../core/services';
 
 const DashboardPage = () => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Grid, Typography, Fade } from '@mui/material';
 import { useAuth } from '../../../core/context/AuthContext';
 import { userService, authService } from '../../../core/services';
-import { useSnackbar } from '../../../core/context/SnackbarContext';
+import { useSnackbar } from '../../../core/context/SnackbarContext.jsx';
 import LoadingSpinner from '../../../components/shared/LoadingSpinner';
 import {
     ProfileHeader,

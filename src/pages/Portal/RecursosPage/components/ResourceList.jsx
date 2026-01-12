@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography, Box } from '@mui/material';
 import ResourceCard from './ResourceCard';
+import { ResourceCardSkeleton } from '../../../../components/shared/Skeletons';
 
 // Mock data for resources
 const mockResources = [
@@ -48,14 +49,40 @@ const mockResources = [
     }
 ];
 
-const ResourceList = ({ searchQuery }) => {
+const ResourceList = ({ searchQuery, uploadedResources = [] }) => {
+    const [loading, setLoading] = useState(true);
+
+    // Simulate loading
+    useEffect(() => {
+        setLoading(true);
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 800);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Combine uploaded resources with mock data
+    const allResources = [...uploadedResources, ...mockResources];
+
     // Filter resources by search query
     const filteredResources = searchQuery
-        ? mockResources.filter(resource =>
+        ? allResources.filter(resource =>
             resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            resource.author.toLowerCase().includes(searchQuery.toLowerCase())
+            (resource.author && resource.author.toLowerCase().includes(searchQuery.toLowerCase()))
         )
-        : mockResources;
+        : allResources;
+
+    if (loading) {
+        return (
+            <Grid container spacing={3}>
+                {Array.from(new Array(6)).map((_, index) => (
+                    <Grid item xs={12} md={6} key={index}>
+                        <ResourceCardSkeleton />
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    }
 
     return (
         <Box>
@@ -67,8 +94,8 @@ const ResourceList = ({ searchQuery }) => {
                 </Box>
             ) : (
                 <Grid container spacing={3}>
-                    {filteredResources.map((resource) => (
-                        <Grid item xs={12} md={6} key={resource.id}>
+                    {filteredResources.map((resource, index) => (
+                        <Grid item xs={12} md={6} key={resource.id || `uploaded-${index}`}>
                             <ResourceCard resource={resource} />
                         </Grid>
                     ))}

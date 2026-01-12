@@ -9,7 +9,6 @@ import {
     Chip,
     CardMedia,
     IconButton,
-    Skeleton
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -17,6 +16,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { statsService } from '../../../../core/services';
 import { EmptyState, ErrorState } from '../../../../components/common';
+import { VideoCardSkeleton, SkeletonGrid } from '../../../../components/shared/Skeletons';
 
 const TrendingVideos = () => {
     const [videos, setVideos] = useState([]);
@@ -85,15 +85,11 @@ const TrendingVideos = () => {
                         onRetry={fetchVideos}
                     />
                 ) : loading ? (
-                    <Grid container spacing={3}>
-                        {[...Array(4)].map((_, index) => (
-                            <Grid item xs={12} sm={6} md={3} key={index}>
-                                <Skeleton variant="rectangular" height={140} sx={{ borderRadius: 2 }} />
-                                <Skeleton variant="text" sx={{ mt: 1 }} />
-                                <Skeleton variant="text" width="60%" />
-                            </Grid>
-                        ))}
-                    </Grid>
+                    <SkeletonGrid
+                        SkeletonComponent={VideoCardSkeleton}
+                        count={4}
+                        gridProps={{ xs: 12, sm: 6, md: 3 }}
+                    />
                 ) : videos.length === 0 ? (
                     <EmptyState
                         type="videos"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     Container,
     Box,
@@ -9,14 +9,25 @@ import {
     Chip
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import { PostList, CategoryFilter } from './components';
+import PostList from './components/PostList';
+import CategoryFilter from './components/CategoryFilter';
+import CreatePostModal from './components/CreatePostModal';
+
 
 const ForoPage = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
+    const postListRef = useRef();
 
     const handleCreatePost = () => {
-        // TODO: Navigate to create post page or open modal
-        console.log('Create post');
+        setModalOpen(true);
+    };
+
+    const handlePostCreated = (newPost) => {
+        // Refresh the post list
+        if (postListRef.current && postListRef.current.refreshPosts) {
+            postListRef.current.refreshPosts();
+        }
     };
 
     return (
@@ -57,7 +68,17 @@ const ForoPage = () => {
             </Box>
 
             {/* Post List */}
-            <PostList selectedCategory={selectedCategory} />
+            <PostList
+                ref={postListRef}
+                selectedCategory={selectedCategory}
+            />
+
+            {/* Create Post Modal */}
+            <CreatePostModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onPostCreated={handlePostCreated}
+            />
         </Container>
     );
 };

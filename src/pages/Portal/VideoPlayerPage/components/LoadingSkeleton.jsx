@@ -1,21 +1,16 @@
 import React from 'react';
-import { Grid, Card, CardContent, Skeleton } from '@mui/material';
+import { Grid } from '@mui/material';
+import { VideoCardSkeleton } from '../../../../components/shared/Skeletons';
 
 const LoadingSkeleton = ({ count = 6 }) => {
     return (
-        <>
+        <Grid container spacing={3}>
             {Array.from(new Array(count)).map((_, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                    <Card sx={{ borderRadius: 3 }}>
-                        <Skeleton variant="rectangular" height={200} />
-                        <CardContent>
-                            <Skeleton variant="text" height={32} sx={{ mb: 1 }} />
-                            <Skeleton variant="text" width="60%" />
-                        </CardContent>
-                    </Card>
+                    <VideoCardSkeleton />
                 </Grid>
             ))}
-        </>
+        </Grid>
     );
 };
 

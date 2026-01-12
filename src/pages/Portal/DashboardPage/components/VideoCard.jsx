@@ -1,166 +1,161 @@
 import React from 'react';
 import {
-    Card,
-    CardMedia,
-    CardContent,
-    Typography,
-    Chip,
-    Stack,
-    Box,
-    IconButton,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Box,
+  Grid,
+  Chip,
+  IconButton,
 } from '@mui/material';
-import {
-    PlayArrow as PlayArrowIcon,
-    Visibility as VisibilityIcon,
-    ThumbUp as ThumbUpIcon,
-    CheckCircle as CheckCircleIcon,
-    Pending as PendingIcon,
-} from '@mui/icons-material';
-import { CategoryChip } from '../../../../components/Categories';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import { alpha } from '@mui/material/styles';
+
+const renderStars = (rating) => {
+  return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+};
 
 const VideoCard = ({ video, onClick }) => {
-    const thumbnailUrl = video?.image || video?.thumbnailUrl || video?.thumbnail || '/logo192.png';
-    const title = video?.title || video?.titulo || 'Sin título';
-    const description = video?.description || video?.descripcion || '';
-    const author = video?.author?.name || video?.autor_id?.name || 'Autor desconocido';
-    const views = video?.views || 0;
-    const likes = video?.likeCount || video?.likes?.length || 0;
-    const isApproved = video?.approved || video?.aprobado || false;
-    const categories = video?.categories || [];
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick(video);
+    } else if (video.videoUrl) {
+      window.open(video.videoUrl, '_blank');
+    }
+  };
 
-    return (
-        <Card
+  return (
+    <Grid item xs={12} sm={6} md={4}>
+      <Card
+        onClick={handleCardClick}
+        sx={(theme) => ({
+          backgroundColor: theme.palette.mode === 'dark'
+            ? alpha(theme.palette.background.paper, 0.7)
+            : theme.palette.background.paper,
+          backdropFilter: 'blur(10px)',
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: 3,
+          transition: 'all 0.3s ease',
+          cursor: video.videoUrl ? 'pointer' : 'default',
+          position: 'relative',
+          overflow: 'hidden',
+          '&:hover': {
+            transform: 'translateY(-8px)',
+            boxShadow: theme.palette.mode === 'dark'
+              ? `0 12px 32px ${alpha(theme.palette.primary.main, 0.2)}`
+              : `0 12px 32px ${alpha(theme.palette.primary.main, 0.15)}`,
+            borderColor: theme.palette.primary.main,
+            '& .play-icon': {
+              opacity: 1,
+              transform: 'translate(-50%, -50%) scale(1.1)',
+            },
+          },
+        })}
+      >
+        <Box sx={{ position: 'relative' }}>
+          <CardMedia
+            component="img"
+            height="200"
+            image={video.image}
+            alt={video.title}
             sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                cursor: 'pointer',
-                borderRadius: 3,
-                '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: 6,
-                },
+              objectFit: 'cover',
             }}
-            onClick={onClick}
-        >
-            {/* Thumbnail with Play Button */}
-            <Box sx={{ position: 'relative' }}>
-                <CardMedia
-                    component="img"
-                    height="200"
-                    image={thumbnailUrl}
-                    alt={title}
-                    sx={{ objectFit: 'cover' }}
-                />
+          />
+          {video.videoUrl && (
+            <IconButton
+              className="play-icon"
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                opacity: 0.8,
+                transition: 'all 0.3s ease',
+                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                },
+              }}
+            >
+              <PlayCircleOutlineIcon
+                sx={{
+                  fontSize: 60,
+                  color: 'primary.main',
+                }}
+              />
+            </IconButton>
+          )}
+        </Box>
 
-                {/* Play Button Overlay */}
-                <IconButton
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        bgcolor: 'rgba(0, 0, 0, 0.6)',
-                        color: 'white',
-                        '&:hover': {
-                            bgcolor: 'rgba(0, 0, 0, 0.8)',
-                        },
-                    }}
-                >
-                    <PlayArrowIcon fontSize="large" />
-                </IconButton>
+        <CardContent sx={{ pb: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              color: 'primary.main',
+              fontWeight: 'bold',
+              mb: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+            }}
+          >
+            {video.title}
+          </Typography>
 
-                {/* Status Badge */}
-                <Chip
-                    icon={isApproved ? <CheckCircleIcon /> : <PendingIcon />}
-                    label={isApproved ? 'Aprobado' : 'Pendiente'}
-                    color={isApproved ? 'success' : 'warning'}
-                    size="small"
-                    sx={{
-                        position: 'absolute',
-                        top: 8,
-                        left: 8,
-                        zIndex: 1,
-                    }}
-                />
-            </Box>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mb: 1.5 }}
+          >
+            Por: {video.author}
+          </Typography>
 
-            {/* Content */}
-            <CardContent sx={{ flexGrow: 1, pb: 1 }}>
-                <Typography
-                    variant="h6"
-                    component="h2"
-                    gutterBottom
-                    sx={{
-                        fontWeight: 'bold',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        minHeight: '3.6em',
-                    }}
-                >
-                    {title}
-                </Typography>
+          {video.description && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 2,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                minHeight: '40px',
+              }}
+            >
+              {video.description}
+            </Typography>
+          )}
 
-                {description && (
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                            mb: 2,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                        }}
-                    >
-                        {description}
-                    </Typography>
-                )}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
+            <Chip
+              label={video.tag}
+              size="small"
+              sx={(theme) => ({
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: 'primary.main',
+                fontWeight: 600,
+                borderRadius: 2,
+              })}
+            />
 
-                {/* Categories */}
-                {categories.length > 0 && (
-                    <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mb: 1 }}>
-                        {categories.slice(0, 2).map((category, index) => (
-                            <CategoryChip
-                                key={category._id || category || index}
-                                category={typeof category === 'string' ? { _id: category, name: category } : category}
-                                size="small"
-                            />
-                        ))}
-                        {categories.length > 2 && (
-                            <Chip label={`+${categories.length - 2}`} size="small" variant="outlined" />
-                        )}
-                    </Stack>
-                )}
-
-                {/* Stats */}
-                <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <VisibilityIcon fontSize="small" color="action" />
-                        <Typography variant="caption" color="text.secondary" fontWeight="medium">
-                            {views} vistas
-                        </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <ThumbUpIcon fontSize="small" color="action" />
-                        <Typography variant="caption" color="text.secondary" fontWeight="medium">
-                            {likes} likes
-                        </Typography>
-                    </Box>
-                </Stack>
-
-                {/* Author */}
-                <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1, fontWeight: 500 }}>
-                    Por: <strong>{author}</strong>
-                </Typography>
-            </CardContent>
-        </Card>
-    );
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'flex', alignItems: 'center' }}
+            >
+              {renderStars(video.rating)}
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    </Grid>
+  );
 };
 
 export default VideoCard;

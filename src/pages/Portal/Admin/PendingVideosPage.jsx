@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import { videoService } from '../../../core/services';
-import { useSnackbar } from '../../../core/context/SnackbarContext';
+import { useSnackbar } from '../../../core/context/SnackbarContext.jsx';
 import LoadingSpinner from '../../../components/shared/LoadingSpinner';
 import PaginationComponent from '../../../components/shared/PaginationComponent';
 
@@ -203,7 +203,7 @@ const PendingVideosPage = () => {
                                 width: '100%',
                                 height: '100%',
                             }}
-                            src={`${process.env.REACT_APP_API_URL?.replace('/api', '')}/${selectedVideo?.url}`}
+                            src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/${selectedVideo?.url}`}
                         >
                             Your browser does not support the video tag.
                         </video>

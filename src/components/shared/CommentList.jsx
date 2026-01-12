@@ -15,7 +15,7 @@ import { MoreVert, Edit, Delete } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
 import { commentService } from '../../core/services';
 import { useAuth } from '../../core/context/AuthContext';
-import { useSnackbar } from '../../core/context/SnackbarContext';
+import { useSnackbar } from '../../core/context/SnackbarContext.jsx';
 import LoadingSpinner from './LoadingSpinner';
 import PaginationComponent from './PaginationComponent';
 import ConfirmDialog from './ConfirmDialog';

@@ -12,7 +12,7 @@ const VideoGrid = ({ videos, loading, onVideoPlay, onMenuOpen, formatDate }) => 
         return (
             <Grid item xs={12}>
                 <Alert severity="info">
-                    No has subido ningún video aún. ¡Sube tu primer video desde el dashboard!
+                    No has subido ningún video. Únete a esta comunidad y sube tu primer video.
                 </Alert>
             </Grid>
         );

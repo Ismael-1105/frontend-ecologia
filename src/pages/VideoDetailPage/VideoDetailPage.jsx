@@ -15,7 +15,7 @@ import { ArrowBack, Person, CalendarToday, Visibility } from '@mui/icons-materia
 import { formatDistanceToNow } from 'date-fns';
 import { videoService, ratingService } from '../../core/services';
 import { useAuth } from '../../core/context/AuthContext';
-import { useSnackbar } from '../../core/context/SnackbarContext';
+import { useSnackbar } from '../../core/context/SnackbarContext.jsx';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 import RatingStars from '../../components/shared/RatingStars';
 import CommentList from '../../components/shared/CommentList';
@@ -131,7 +131,7 @@ const VideoDetailPage = () => {
                                     width: '100%',
                                     height: '100%',
                                 }}
-                                src={`${process.env.REACT_APP_API_URL?.replace('/api', '')}/${video.url}`}
+                                src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/${video.url}`}
                             >
                                 Your browser does not support the video tag.
                             </video>

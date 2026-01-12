@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography, Box } from '@mui/material';
 import MemberCard from './MemberCard';
+import { MemberCardSkeleton } from '../../../../components/shared/Skeletons';
 
 // Mock data for community members
 const mockMembers = [
@@ -55,6 +56,17 @@ const mockMembers = [
 ];
 
 const MemberList = ({ searchQuery }) => {
+    const [loading, setLoading] = useState(true);
+
+    // Simulate loading
+    useEffect(() => {
+        setLoading(true);
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 800);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     // Filter members by search query
     const filteredMembers = searchQuery
         ? mockMembers.filter(member =>
@@ -62,6 +74,18 @@ const MemberList = ({ searchQuery }) => {
             member.institution?.toLowerCase().includes(searchQuery.toLowerCase())
         )
         : mockMembers;
+
+    if (loading) {
+        return (
+            <Grid container spacing={3}>
+                {Array.from(new Array(6)).map((_, index) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                        <MemberCardSkeleton />
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    }
 
     return (
         <Box>

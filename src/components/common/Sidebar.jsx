@@ -34,8 +34,6 @@ const navigationItems = [
     { name: 'Videos', path: '/portal/video-player', icon: VideoLibraryIcon },
     { name: 'Foro', path: '/portal/foro', icon: ForumIcon, badge: 12 },
     { name: 'Recursos', path: '/portal/recursos', icon: MenuBookIcon },
-    { name: 'Comunidad', path: '/portal/comunidad', icon: PeopleIcon },
-    { name: 'Subir Video', path: '/portal/upload-video', icon: CloudUploadIcon }
 ];
 
 const Sidebar = ({ mobileOpen, onMobileClose }) => {

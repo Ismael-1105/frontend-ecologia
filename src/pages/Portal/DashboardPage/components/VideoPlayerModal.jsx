@@ -21,7 +21,7 @@ import {
     Visibility,
 } from '@mui/icons-material';
 import { videoService } from '../../../../core/services';
-import { useAuth } from '../../../../core/context/AuthContext.js';
+import { useAuth } from '../../../../core/context/AuthContext.jsx';
 import { CommentSection } from '../../../../components/Comments';
 
 const VideoPlayerModal = ({ open, onClose, videoId }) => {

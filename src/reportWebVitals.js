@@ -1,5 +1,6 @@
-const reportWebVitals = onPerfEntry => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
+const reportWebVitals = (onPerfEntry) => {
+  // Only run in production to reduce development overhead
+  if (import.meta.env.PROD && onPerfEntry && onPerfEntry instanceof Function) {
     import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
       getCLS(onPerfEntry);
       getFID(onPerfEntry);

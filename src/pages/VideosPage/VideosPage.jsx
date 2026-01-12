@@ -14,7 +14,7 @@ import {
 import { Search } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { videoService } from '../../core/services';
-import { useSnackbar } from '../../core/context/SnackbarContext';
+import { useSnackbar } from '../../core/context/SnackbarContext.jsx';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 import PaginationComponent from '../../components/shared/PaginationComponent';
 import RatingStars from '../../components/shared/RatingStars';

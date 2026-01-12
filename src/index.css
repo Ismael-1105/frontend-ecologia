@@ -12,6 +12,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Improve font loading performance */
+  font-display: swap;
   background: linear-gradient(-45deg, var(--dark-bg-1), var(--dark-bg-2), var(--dark-bg-1), var(--dark-bg-2));
   background-size: 400% 400%;
   animation: gradientAnimation 15s ease infinite;
