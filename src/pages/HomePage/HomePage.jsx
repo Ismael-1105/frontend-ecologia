@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Container } from '@mui/material';
-import Hero from './components/Hero';
+import Hero from './components/Hero.jsx';
 
 const HomePage = () => {
   return (
