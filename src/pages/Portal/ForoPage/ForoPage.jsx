@@ -10,12 +10,14 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import PostList from './components/PostList';
-import CategoryFilter from './components/CategoryFilter';
 import CreatePostModal from './components/CreatePostModal';
+import SearchBar from './components/SearchBar';
+import TrendingPosts from './components/TrendingPosts';
 
 
 const ForoPage = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
     const postListRef = useRef();
 
@@ -59,19 +61,32 @@ const ForoPage = () => {
                 </Stack>
             </Box>
 
-            {/* Category Filter */}
-            <Box sx={{ mb: 3 }}>
-                <CategoryFilter
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                />
-            </Box>
+            {/* Main Content Grid */}
+            <Grid container spacing={3}>
+                {/* Left Column - Posts */}
+                <Grid item xs={12} lg={8}>
+                    {/* Search Bar */}
+                    <SearchBar
+                        onSearch={setSearchQuery}
+                        onCategoryChange={setSelectedCategory}
+                        selectedCategory={selectedCategory}
+                    />
 
-            {/* Post List */}
-            <PostList
-                ref={postListRef}
-                selectedCategory={selectedCategory}
-            />
+                    {/* Post List */}
+                    <PostList
+                        ref={postListRef}
+                        selectedCategory={selectedCategory}
+                        searchQuery={searchQuery}
+                    />
+                </Grid>
+
+                {/* Right Column - Sidebar */}
+                <Grid item xs={12} lg={4}>
+                    <Box sx={{ position: 'sticky', top: 80 }}>
+                        <TrendingPosts limit={5} timeframe={7} />
+                    </Box>
+                </Grid>
+            </Grid>
 
             {/* Create Post Modal */}
             <CreatePostModal

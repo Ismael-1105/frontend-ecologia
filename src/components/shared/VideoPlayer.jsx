@@ -23,6 +23,9 @@ import {
     Settings,
 } from '@mui/icons-material';
 import Hls from 'hls.js';
+import logger from '../../utils/logger';
+
+const playerLogger = logger.create('VideoPlayer');
 
 /**
  * Advanced Video Player Component
@@ -88,7 +91,7 @@ const VideoPlayer = ({
                 hls.attachMedia(video);
 
                 hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-                    console.log('HLS manifest loaded, found ' + data.levels.length + ' quality levels');
+                    playerLogger.info('HLS manifest loaded, found ' + data.levels.length + ' quality levels');
 
                     // Set available qualities from HLS levels
                     const qualities = data.levels.map((level, index) => ({
@@ -101,19 +104,19 @@ const VideoPlayer = ({
                 });
 
                 hls.on(Hls.Events.ERROR, (event, data) => {
-                    console.error('HLS error:', data);
+                    playerLogger.error('HLS error:', data);
                     if (data.fatal) {
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                console.log('Network error, trying to recover...');
+                                playerLogger.warn('Network error, trying to recover...');
                                 hls.startLoad();
                                 break;
                             case Hls.ErrorTypes.MEDIA_ERROR:
-                                console.log('Media error, trying to recover...');
+                                playerLogger.warn('Media error, trying to recover...');
                                 hls.recoverMediaError();
                                 break;
                             default:
-                                console.log('Fatal error, cannot recover');
+                                playerLogger.error('Fatal error, cannot recover');
                                 setError('Error al cargar el video HLS');
                                 hls.destroy();
                                 break;
@@ -159,7 +162,7 @@ const VideoPlayer = ({
                 });
             }
         } catch (err) {
-            console.error('Error initializing video player:', err);
+            playerLogger.error('Error initializing video player:', err);
             setError(`Error al inicializar el reproductor: ${err.message}`);
         }
 
@@ -168,7 +171,7 @@ const VideoPlayer = ({
                 try {
                     hlsRef.current.destroy();
                 } catch (err) {
-                    console.error('Error destroying HLS instance:', err);
+                    playerLogger.error('Error destroying HLS instance:', err);
                 }
             }
         };
@@ -184,7 +187,7 @@ const VideoPlayer = ({
             if (startTimeRef.current) {
                 const startup = performance.now() - startTimeRef.current;
                 setStartupTime(startup);
-                console.log(`Video startup time: ${startup.toFixed(2)}ms`);
+                playerLogger.debug(`Video startup time: ${startup.toFixed(2)}ms`);
             }
         };
 

@@ -3,7 +3,7 @@ import { Container, Grid, Alert } from '@mui/material';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import { videoService } from '../../../core/services';
 import { useAuth } from '../../../core/context/AuthContext';
-import VideoPlayerModal from '../DashboardPage/components/VideoPlayerModal';
+import VideoPlayerModal from '../DashboardPage/components/VideoPlayerModal.jsx';
 import {
     PageHeader,
     VideoGrid,

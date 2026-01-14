@@ -21,6 +21,7 @@ import {
     Comment as CommentIcon
 } from '@mui/icons-material';
 import { getPostById, toggleLikePost } from '../../../core/api/postService';
+import CommentSection from './components/CommentSection';
 
 const PostDetailPage = () => {
     const { postId } = useParams();
@@ -193,14 +194,7 @@ const PostDetailPage = () => {
 
             {/* Comments Section */}
             <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                    Comentarios
-                </Typography>
-                <Box sx={{ textAlign: 'center', py: 4 }}>
-                    <Typography variant="body2" color="text.secondary">
-                        La sección de comentarios estará disponible próximamente
-                    </Typography>
-                </Box>
+                <CommentSection postId={postId} />
             </Paper>
         </Container>
     );

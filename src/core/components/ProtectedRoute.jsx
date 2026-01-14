@@ -2,6 +2,9 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { CircularProgress, Box } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
+import logger from '../../utils/logger';
+
+const routeLogger = logger.create('ProtectedRoute');
 
 /**
  * Protected Route Component
@@ -11,10 +14,10 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  console.log('[ProtectedRoute] Check:', { isLoading, isAuthenticated, path: location.pathname });
+  routeLogger.debug('Check:', { isLoading, isAuthenticated, path: location.pathname });
 
   if (isLoading) {
-    console.log('[ProtectedRoute] Still loading, showing spinner');
+    routeLogger.debug('Still loading, showing spinner');
     return (
       <Box
         sx={{
@@ -30,12 +33,12 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    console.log('[ProtectedRoute] Not authenticated, redirecting to login');
+    routeLogger.debug('Not authenticated, redirecting to login');
     // Redirect to login but save the attempted location
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  console.log('[ProtectedRoute] Authenticated, rendering children');
+  routeLogger.debug('Authenticated, rendering children');
   return children;
 };
 

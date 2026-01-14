@@ -1,12 +1,13 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { Stack, Typography, Box, CircularProgress, Alert, Pagination } from '@mui/material';
 import PostCard from './PostCard';
-import { getPosts } from '../../../../core/api/postService';
+import { getPosts, searchPosts } from '../../../../core/api/postService';
 
-const PostList = forwardRef(({ selectedCategory }, ref) => {
+const PostList = forwardRef(({ selectedCategory, searchQuery }, ref) => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isSearching, setIsSearching] = useState(false);
     const [pagination, setPagination] = useState({
         page: 1,
         limit: 20,
@@ -16,7 +17,7 @@ const PostList = forwardRef(({ selectedCategory }, ref) => {
 
     useEffect(() => {
         fetchPosts();
-    }, [selectedCategory, pagination.page]);
+    }, [selectedCategory, pagination.page, searchQuery]);
 
     const fetchPosts = async () => {
         try {
@@ -26,14 +27,26 @@ const PostList = forwardRef(({ selectedCategory }, ref) => {
             const params = {
                 page: pagination.page,
                 limit: pagination.limit,
-                sort: '-createdAt'
             };
 
-            if (selectedCategory) {
-                params.category = selectedCategory;
-            }
+            let response;
 
-            const response = await getPosts(params);
+            if (searchQuery && searchQuery.trim()) {
+                // Use search endpoint
+                response = await searchPosts(searchQuery, {
+                    ...params,
+                    category: selectedCategory
+                });
+                setIsSearching(true);
+            } else {
+                // Use regular getPosts
+                params.sort = '-createdAt';
+                if (selectedCategory) {
+                    params.category = selectedCategory;
+                }
+                response = await getPosts(params);
+                setIsSearching(false);
+            }
 
             if (response.success) {
                 setPosts(response.data);
@@ -83,10 +96,21 @@ const PostList = forwardRef(({ selectedCategory }, ref) => {
 
     return (
         <Box>
+            {isSearching && (
+                <Box sx={{ mb: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
+                        Resultados de búsqueda para: <strong>{searchQuery}</strong>
+                    </Typography>
+                </Box>
+            )}
+
             {posts.length === 0 ? (
                 <Box sx={{ textAlign: 'center', py: 8 }}>
                     <Typography variant="h6" color="text.secondary">
-                        No hay publicaciones en esta categoría
+                        {isSearching
+                            ? 'No se encontraron publicaciones'
+                            : 'No hay publicaciones en esta categoría'
+                        }
                     </Typography>
                 </Box>
             ) : (

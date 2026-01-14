@@ -22,7 +22,7 @@ import {
 } from '@mui/icons-material';
 import { videoService } from '../../../../core/services';
 import { useAuth } from '../../../../core/context/AuthContext.jsx';
-import { CommentSection } from '../../../../components/Comments';
+import VideoCommentSection from '../../VideoPlayerPage/components/VideoCommentSection.jsx';
 
 const VideoPlayerModal = ({ open, onClose, videoId }) => {
     const { user } = useAuth();
@@ -250,7 +250,7 @@ const VideoPlayerModal = ({ open, onClose, videoId }) => {
 
                             {/* Comments Section */}
                             <Divider sx={{ my: 3 }} />
-                            <CommentSection videoId={videoId} />
+                            <VideoCommentSection videoId={videoId} />
                         </Box>
                     </Box>
                 ) : null}

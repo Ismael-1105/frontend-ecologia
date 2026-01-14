@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
-import { ErrorOutline } from '@mui/icons-material';
+import { ErrorOutline, Home, Refresh } from '@mui/icons-material';
+import logger from '../../utils/logger';
 
 class ErrorBoundary extends Component {
     constructor(props) {
@@ -17,7 +18,12 @@ class ErrorBoundary extends Component {
     }
 
     componentDidCatch(error, errorInfo) {
-        console.error('Error caught by boundary:', error, errorInfo);
+        // Log error using logger (will only show in development)
+        logger.error('Error caught by boundary:', error, errorInfo);
+
+        // In production, you could send to error tracking service
+        // Example: Sentry.captureException(error);
+
         this.setState({
             error,
             errorInfo,
@@ -30,6 +36,17 @@ class ErrorBoundary extends Component {
             error: null,
             errorInfo: null,
         });
+        // Reload the page to reset state
+        window.location.reload();
+    };
+
+    handleGoHome = () => {
+        this.setState({
+            hasError: false,
+            error: null,
+            errorInfo: null,
+        });
+        window.location.href = '/';
     };
 
     render() {
@@ -45,53 +62,87 @@ class ErrorBoundary extends Component {
                             minHeight: '100vh',
                             textAlign: 'center',
                             gap: 3,
+                            py: 4,
                         }}
                     >
-                        <ErrorOutline sx={{ fontSize: 80, color: 'error.main' }} />
+                        {/* Error Icon */}
+                        <Box
+                            sx={{
+                                width: 120,
+                                height: 120,
+                                borderRadius: '50%',
+                                bgcolor: 'error.light',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <ErrorOutline sx={{ fontSize: 80, color: 'error.main' }} />
+                        </Box>
 
-                        <Typography variant="h4" component="h1" gutterBottom>
-                            Oops! Something went wrong
+                        {/* Error Title */}
+                        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+                            😕 Algo salió mal
                         </Typography>
 
-                        <Typography variant="body1" color="text.secondary" paragraph>
-                            We're sorry for the inconvenience. An unexpected error has occurred.
+                        {/* Error Description */}
+                        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mb: 2 }}>
+                            Lo sentimos, ha ocurrido un error inesperado. Por favor, intenta recargar la página o volver al inicio.
                         </Typography>
 
-                        {process.env.NODE_ENV === 'development' && this.state.error && (
+                        {/* Development Error Details */}
+                        {import.meta.env.MODE === 'development' && this.state.error && (
                             <Box
                                 sx={{
                                     mt: 2,
-                                    p: 2,
-                                    bgcolor: 'grey.100',
-                                    borderRadius: 1,
+                                    p: 3,
+                                    bgcolor: 'error.light',
+                                    borderRadius: 2,
                                     maxWidth: '100%',
                                     overflow: 'auto',
+                                    border: '1px solid',
+                                    borderColor: 'error.main',
                                 }}
                             >
-                                <Typography variant="body2" component="pre" sx={{ textAlign: 'left' }}>
+                                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                                    Error Details (Development Only):
+                                </Typography>
+                                <Typography variant="body2" component="pre" sx={{ textAlign: 'left', mb: 2 }}>
                                     {this.state.error.toString()}
                                 </Typography>
                                 {this.state.errorInfo && (
-                                    <Typography variant="caption" component="pre" sx={{ textAlign: 'left', mt: 1 }}>
-                                        {this.state.errorInfo.componentStack}
-                                    </Typography>
+                                    <>
+                                        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                                            Component Stack:
+                                        </Typography>
+                                        <Typography variant="caption" component="pre" sx={{ textAlign: 'left' }}>
+                                            {this.state.errorInfo.componentStack}
+                                        </Typography>
+                                    </>
                                 )}
                             </Box>
                         )}
 
-                        <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+                        {/* Action Buttons */}
+                        <Box sx={{ display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                             <Button
                                 variant="contained"
+                                size="large"
+                                startIcon={<Refresh />}
                                 onClick={this.handleReset}
+                                sx={{ minWidth: 160 }}
                             >
-                                Try Again
+                                Recargar Página
                             </Button>
 
                             <Button
                                 variant="outlined"
-                                onClick={() => window.location.href = '/'}
+                                size="large"
+                                startIcon={<Home />}
+                                onClick={this.handleGoHome}
+                                sx={{ minWidth: 160 }}
                             >
-                                Go Home
+                                Volver al Inicio
                             </Button>
                         </Box>
                     </Box>

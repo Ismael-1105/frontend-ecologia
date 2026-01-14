@@ -167,6 +167,77 @@ export const toggleLikeComment = async (commentId) => {
     return response.data;
 };
 
+/**
+ * Search posts by text
+ * @param {string} query - Search query
+ * @param {Object} params - Query parameters
+ * @param {number} params.page - Page number
+ * @param {number} params.limit - Items per page
+ * @param {string} params.category - Filter by category
+ * @returns {Promise} API response
+ */
+export const searchPosts = async (query, params = {}) => {
+    const { page = 1, limit = 20, category } = params;
+
+    const queryParams = new URLSearchParams({
+        q: query,
+        page: page.toString(),
+        limit: limit.toString(),
+    });
+
+    if (category) {
+        queryParams.append('category', category);
+    }
+
+    const response = await apiClient.get(`/posts/search?${queryParams.toString()}`);
+    return response.data;
+};
+
+/**
+ * Get trending posts
+ * @param {Object} params - Query parameters
+ * @param {number} params.limit - Number of posts to return
+ * @param {string} params.category - Filter by category
+ * @param {number} params.timeframe - Timeframe in days (default 7)
+ * @returns {Promise} API response
+ */
+export const getTrendingPosts = async (params = {}) => {
+    const { limit = 10, category, timeframe = 7 } = params;
+
+    const queryParams = new URLSearchParams({
+        limit: limit.toString(),
+        timeframe: timeframe.toString(),
+    });
+
+    if (category) {
+        queryParams.append('category', category);
+    }
+
+    const response = await apiClient.get(`/posts/trending?${queryParams.toString()}`);
+    return response.data;
+};
+
+/**
+ * Dislike/un-dislike a post
+ * @param {string} postId - Post ID
+ * @returns {Promise} API response
+ */
+export const toggleDislikePost = async (postId) => {
+    const response = await apiClient.post(`/posts/${postId}/dislike`);
+    return response.data;
+};
+
+/**
+ * Pin/unpin a post (admin only)
+ * @param {string} postId - Post ID
+ * @param {boolean} pin - Whether to pin or unpin
+ * @returns {Promise} API response
+ */
+export const togglePinPost = async (postId, pin = true) => {
+    const response = await apiClient.post(`/posts/${postId}/pin`, { pin });
+    return response.data;
+};
+
 export default {
     getPosts,
     getPostById,
@@ -174,10 +245,14 @@ export default {
     updatePost,
     deletePost,
     toggleLikePost,
+    toggleDislikePost,
     getPostsByAuthor,
     getCommentsByPost,
     createComment,
     updateComment,
     deleteComment,
     toggleLikeComment,
+    searchPosts,
+    getTrendingPosts,
+    togglePinPost,
 };

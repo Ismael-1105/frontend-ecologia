@@ -1,6 +1,9 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { authService } from '../services';
 import { setAuthToken } from '../api/client';
+import logger from '../../utils/logger';
+
+const authLogger = logger.create('AuthContext');
 
 const AuthContext = createContext(null);
 
@@ -17,18 +20,18 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('accessToken');
       const refresh = localStorage.getItem('refreshToken');
 
-      console.log('[AuthContext] Loading user...', { hasToken: !!token, hasRefresh: !!refresh });
+      authLogger.log('Loading user...', { hasToken: !!token, hasRefresh: !!refresh });
 
       if (token && refresh) {
         try {
           // Set token in axios headers
           setAuthToken(token);
           const userData = await authService.getCurrentUser();
-          console.log('[AuthContext] User loaded successfully:', userData);
+          authLogger.log('User loaded successfully:', userData);
           setUser(userData);
           setIsAuthenticated(true);
         } catch (error) {
-          console.error('[AuthContext] Failed to load user:', error);
+          authLogger.error('Failed to load user:', error);
           // Clear invalid tokens
           setAuthToken(null);
           localStorage.removeItem('refreshToken');
@@ -36,11 +39,11 @@ export const AuthProvider = ({ children }) => {
           setRefreshToken(null);
         }
       } else {
-        console.log('[AuthContext] No tokens found, user not authenticated');
+        authLogger.log('No tokens found, user not authenticated');
       }
 
       setIsLoading(false);
-      console.log('[AuthContext] Loading complete');
+      authLogger.log('Loading complete');
     };
 
     loadUser();
@@ -49,11 +52,11 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = useCallback(async (email, password) => {
     try {
-      console.log('[AuthContext] Attempting login for:', email);
+      authLogger.log('Attempting login for:', email);
       const response = await authService.login(email, password);
       const { user: userData, accessToken: newAccessToken, refreshToken: newRefreshToken } = response;
 
-      console.log('[AuthContext] Login successful, saving tokens');
+      authLogger.log('Login successful, saving tokens');
       // Save tokens and set in axios headers
       setAuthToken(newAccessToken);
       localStorage.setItem('refreshToken', newRefreshToken);
@@ -63,10 +66,10 @@ export const AuthProvider = ({ children }) => {
       setRefreshToken(newRefreshToken);
       setIsAuthenticated(true);
 
-      console.log('[AuthContext] Auth state updated, isAuthenticated:', true);
+      authLogger.log('Auth state updated, isAuthenticated:', true);
       return { success: true, user: userData };
     } catch (error) {
-      console.error('[AuthContext] Login failed:', error);
+      authLogger.error('Login failed:', error);
       return {
         success: false,
         error: error.response?.data?.error || error.message || 'Login failed',
@@ -91,7 +94,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true, user: newUser };
     } catch (error) {
-      console.error('Registration failed:', error);
+      authLogger.error('Registration failed:', error);
       return {
         success: false,
         error: error.response?.data?.error || error.message || 'Registration failed',
@@ -107,7 +110,7 @@ export const AuthProvider = ({ children }) => {
         await authService.logout(currentRefreshToken);
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      authLogger.error('Logout error:', error);
     } finally {
       // Clear state, storage, and axios headers
       setAuthToken(null);
@@ -124,7 +127,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await authService.logoutAll();
     } catch (error) {
-      console.error('Logout all error:', error);
+      authLogger.error('Logout all error:', error);
     } finally {
       // Clear state, storage, and axios headers
       setAuthToken(null);

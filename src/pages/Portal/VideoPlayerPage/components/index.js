@@ -7,3 +7,4 @@ export { default as EditVideoDialog } from './EditVideoDialog';
 export { default as DeleteVideoDialog } from './DeleteVideoDialog';
 export { default as VideoGrid } from './VideoGrid';
 export { default as LoadingSkeleton } from './LoadingSkeleton';
+export { default as VideoCommentSection } from './VideoCommentSection';
