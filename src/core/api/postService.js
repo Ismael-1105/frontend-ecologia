@@ -47,10 +47,36 @@ export const getPostById = async (postId) => {
  * @param {string} postData.title - Post title
  * @param {string} postData.content - Post content
  * @param {string} postData.category - Post category
+ * @param {Array} postData.attachments - Optional file attachments
  * @returns {Promise} API response
  */
 export const createPost = async (postData) => {
-    const response = await apiClient.post('/posts', postData);
+    // If there are file attachments, use FormData
+    if (postData.attachments && postData.attachments.length > 0) {
+        const formData = new FormData();
+        formData.append('title', postData.title);
+        formData.append('content', postData.content);
+        formData.append('category', postData.category);
+
+        // Append each file
+        postData.attachments.forEach(file => {
+            formData.append('file', file);
+        });
+
+        const response = await apiClient.post('/posts', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    }
+
+    // No attachments, send as JSON
+    const response = await apiClient.post('/posts', {
+        title: postData.title,
+        content: postData.content,
+        category: postData.category
+    });
     return response.data;
 };
 

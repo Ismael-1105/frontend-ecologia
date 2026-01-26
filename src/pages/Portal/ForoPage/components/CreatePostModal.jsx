@@ -11,8 +11,16 @@ import {
     Select,
     MenuItem,
     Box,
-    Alert
+    Alert,
+    IconButton,
+    Typography,
+    Chip,
+    Stack
 } from '@mui/material';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ImageIcon from '@mui/icons-material/Image';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { createPost } from '../../../../core/api/postService';
 
 const CATEGORIES = [
@@ -25,12 +33,16 @@ const CATEGORIES = [
     'Educación Ambiental'
 ];
 
+const MAX_FILES = 5;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
 const CreatePostModal = ({ open, onClose, onPostCreated }) => {
     const [formData, setFormData] = useState({
         title: '',
         content: '',
         category: ''
     });
+    const [attachments, setAttachments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -40,6 +52,58 @@ const CreatePostModal = ({ open, onClose, onPostCreated }) => {
             ...prev,
             [name]: value
         }));
+    };
+
+    const handleFileSelect = (e) => {
+        const files = Array.from(e.target.files);
+
+        // Validate number of files
+        if (attachments.length + files.length > MAX_FILES) {
+            setError(`Máximo ${MAX_FILES} archivos permitidos`);
+            return;
+        }
+
+        // Validate file sizes and types
+        const validFiles = [];
+        for (const file of files) {
+            if (file.size > MAX_FILE_SIZE) {
+                setError(`El archivo "${file.name}" excede el tamaño máximo de 10MB`);
+                continue;
+            }
+
+            // Check file type
+            const isImage = file.type.startsWith('image/');
+            const isDocument = file.type === 'application/pdf' ||
+                file.type.includes('document') ||
+                file.type === 'text/plain';
+
+            if (!isImage && !isDocument) {
+                setError(`El archivo "${file.name}" no es un tipo permitido (imágenes o documentos)`);
+                continue;
+            }
+
+            validFiles.push(file);
+        }
+
+        setAttachments(prev => [...prev, ...validFiles]);
+        e.target.value = ''; // Reset input
+    };
+
+    const handleRemoveFile = (index) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const formatFileSize = (bytes) => {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    };
+
+    const getFileIcon = (file) => {
+        if (file.type.startsWith('image/')) {
+            return <ImageIcon fontSize="small" />;
+        }
+        return <DescriptionIcon fontSize="small" />;
     };
 
     const handleSubmit = async (e) => {
@@ -54,7 +118,10 @@ const CreatePostModal = ({ open, onClose, onPostCreated }) => {
             setLoading(true);
             setError(null);
 
-            const response = await createPost(formData);
+            const response = await createPost({
+                ...formData,
+                attachments
+            });
 
             if (response.success) {
                 // Reset form
@@ -63,6 +130,7 @@ const CreatePostModal = ({ open, onClose, onPostCreated }) => {
                     content: '',
                     category: ''
                 });
+                setAttachments([]);
 
                 // Notify parent component
                 if (onPostCreated) {
@@ -87,6 +155,7 @@ const CreatePostModal = ({ open, onClose, onPostCreated }) => {
                 content: '',
                 category: ''
             });
+            setAttachments([]);
             setError(null);
             onClose();
         }
@@ -143,6 +212,50 @@ const CreatePostModal = ({ open, onClose, onPostCreated }) => {
                             disabled={loading}
                             placeholder="Comparte tus ideas, preguntas o experiencias..."
                         />
+
+                        {/* File Attachments Section */}
+                        <Box>
+                            <input
+                                accept="image/*,.pdf,.doc,.docx,.txt"
+                                style={{ display: 'none' }}
+                                id="file-upload"
+                                type="file"
+                                multiple
+                                onChange={handleFileSelect}
+                                disabled={loading || attachments.length >= MAX_FILES}
+                            />
+                            <label htmlFor="file-upload">
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    startIcon={<AttachFileIcon />}
+                                    disabled={loading || attachments.length >= MAX_FILES}
+                                    fullWidth
+                                >
+                                    Adjuntar archivos ({attachments.length}/{MAX_FILES})
+                                </Button>
+                            </label>
+
+                            {attachments.length > 0 && (
+                                <Stack spacing={1} sx={{ mt: 2 }}>
+                                    {attachments.map((file, index) => (
+                                        <Chip
+                                            key={index}
+                                            icon={getFileIcon(file)}
+                                            label={`${file.name} (${formatFileSize(file.size)})`}
+                                            onDelete={() => handleRemoveFile(index)}
+                                            deleteIcon={<DeleteIcon />}
+                                            variant="outlined"
+                                            sx={{ justifyContent: 'space-between' }}
+                                        />
+                                    ))}
+                                </Stack>
+                            )}
+
+                            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                                Formatos permitidos: Imágenes (JPG, PNG, GIF, WebP) y Documentos (PDF, DOC, TXT). Máximo 10MB por archivo.
+                            </Typography>
+                        </Box>
                     </Box>
                 </DialogContent>
                 <DialogActions>

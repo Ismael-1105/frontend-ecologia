@@ -24,23 +24,9 @@ const RecursosPage = () => {
         setModalOpen(true);
     };
 
-    const handleResourceUploaded = (resourceData) => {
-        // Add the new resource to the uploaded resources list
-        const newResource = {
-            id: `uploaded-${Date.now()}`,
-            title: resourceData.title,
-            type: getFileType(resourceData.filename),
-            downloads: 0,
-            author: 'Tú', // Current user
-            description: resourceData.description,
-            category: resourceData.category,
-            fileUrl: resourceData.fileUrl,
-            filename: resourceData.filename,
-            fileSize: resourceData.fileSize,
-            uploadedAt: resourceData.uploadedAt
-        };
-
-        setUploadedResources(prev => [newResource, ...prev]);
+    const handleResourceUploaded = (uploadedResource) => {
+        // Add the new resource to the local state
+        setUploadedResources(prev => [uploadedResource, ...prev]);
 
         setSnackbar({
             open: true,

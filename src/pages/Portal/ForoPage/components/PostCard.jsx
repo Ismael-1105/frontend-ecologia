@@ -21,6 +21,7 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { toggleLikePost, toggleDislikePost } from '../../../../core/api/postService';
+import PostAttachments from './PostAttachments';
 
 const PostCard = ({ post }) => {
     // State for engagement metrics
@@ -235,6 +236,9 @@ const PostCard = ({ post }) => {
                                 </Box>
                             </Box>
                         </Box>
+
+                        {/* File Attachments */}
+                        <PostAttachments attachments={post.attachments} />
                     </Box>
                 </Box>
             </CardContent>

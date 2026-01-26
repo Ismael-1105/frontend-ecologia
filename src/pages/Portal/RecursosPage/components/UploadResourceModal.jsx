@@ -84,32 +84,20 @@ const UploadResourceModal = ({ open, onClose, onResourceUploaded }) => {
             setError(null);
             setUploadProgress(0);
 
-            // Simulate progress (since we don't have real progress from API)
-            const progressInterval = setInterval(() => {
-                setUploadProgress(prev => {
-                    if (prev >= 90) {
-                        clearInterval(progressInterval);
-                        return 90;
-                    }
-                    return prev + 10;
-                });
-            }, 200);
+            // Upload with metadata
+            const response = await uploadDocument(
+                selectedFile,
+                (progress) => setUploadProgress(progress),
+                {
+                    title: formData.title,
+                    description: formData.description,
+                    category: formData.category || 'Otro'
+                }
+            );
 
-            const response = await uploadDocument(selectedFile);
-
-            clearInterval(progressInterval);
             setUploadProgress(100);
 
             if (response.success) {
-                // Create resource object with file info
-                const resourceData = {
-                    ...formData,
-                    fileUrl: response.data.url,
-                    filename: response.data.filename,
-                    fileSize: response.data.size,
-                    uploadedAt: new Date()
-                };
-
                 // Reset form
                 setFormData({
                     title: '',
@@ -119,9 +107,9 @@ const UploadResourceModal = ({ open, onClose, onResourceUploaded }) => {
                 setSelectedFile(null);
                 setUploadProgress(0);
 
-                // Notify parent
+                // Notify parent - pass the uploaded resource data
                 if (onResourceUploaded) {
-                    onResourceUploaded(resourceData);
+                    onResourceUploaded(response.data);
                 }
 
                 // Close modal
@@ -131,7 +119,7 @@ const UploadResourceModal = ({ open, onClose, onResourceUploaded }) => {
             }
         } catch (err) {
             console.error('Error uploading resource:', err);
-            setError(err.response?.data?.error || 'Error al subir el archivo');
+            setError(err.message || 'Error al subir el archivo');
             setUploadProgress(0);
         } finally {
             setLoading(false);
