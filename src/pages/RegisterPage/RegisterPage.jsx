@@ -48,8 +48,15 @@ const RegisterPage = () => {
       return false;
     }
 
-    if (formData.password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres.');
+    if (formData.password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres.');
+      return false;
+    }
+
+    // Validar complejidad de la contraseña
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+    if (!passwordRegex.test(formData.password)) {
+      setError('La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&).');
       return false;
     }
 
@@ -231,7 +238,6 @@ const RegisterPage = () => {
             >
               <MenuItem value="Estudiante">Estudiante</MenuItem>
               <MenuItem value="Docente">Docente</MenuItem>
-              <MenuItem value="Administrador">Administrador</MenuItem>
             </Select>
           </FormControl>
 
@@ -248,7 +254,7 @@ const RegisterPage = () => {
             value={formData.password}
             onChange={handleChange}
             disabled={loading}
-            helperText="Mínimo 6 caracteres"
+            helperText="Mínimo 8 caracteres, debe incluir mayúscula, minúscula, número y carácter especial"
             sx={{ input: { color: 'white' }, label: { color: '#b0b0b0' }, '& .MuiFormHelperText-root': { color: '#b0b0b0' } }}
           />
 

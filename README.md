@@ -123,18 +123,25 @@ npm install
 
 3. **Configurar variables de entorno**
 
-Copiar `.env.example` a `.env`:
+Crear archivo `.env` en la raíz del proyecto:
 
 ```env
-REACT_APP_API_URL=http://localhost:3001/api
+VITE_API_BASE_URL=http://localhost:8080/api
 ```
+
+**Nota:** Ver `.env.example` para más opciones de configuración.
+
+**Configuraciones según entorno:**
+- **Local development:** `http://localhost:8080/api`
+- **Backend en VPS:** `http://YOUR_VPS_IP:8080/api`
+- **Producción:** `https://api.yourdomain.com/api`
 
 4. **Iniciar el servidor de desarrollo**
 ```bash
-npm start
+npm run dev
 ```
 
-La aplicación estará disponible en `http://localhost:3000`
+La aplicación estará disponible en `http://localhost:5173`
 
 ---
 
@@ -439,13 +446,39 @@ const {
 
 ## 🌐 Variables de Entorno
 
-```env
-# API Backend
-REACT_APP_API_URL=http://localhost:3001/api
+### Configuración
 
-# Opcional: Configuración adicional
-REACT_APP_ENV=development
+Crear un archivo `.env` en la raíz del proyecto:
+
+```env
+# API Backend URL
+VITE_API_BASE_URL=http://localhost:8080/api
 ```
+
+### Variables Disponibles
+
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `VITE_API_BASE_URL` | URL base del backend API | `http://localhost:8080/api` |
+
+### Configuraciones por Entorno
+
+**Desarrollo Local (Backend en tu PC):**
+```env
+VITE_API_BASE_URL=http://localhost:8080/api
+```
+
+**Backend en VPS:**
+```env
+VITE_API_BASE_URL=http://192.168.1.100:8080/api
+```
+
+**Producción:**
+```env
+VITE_API_BASE_URL=https://api.yourdomain.com/api
+```
+
+**Nota:** Las variables deben empezar con `VITE_` para ser accesibles en el cliente. Reiniciar el servidor después de cambiar variables de entorno.
 
 ---
 
