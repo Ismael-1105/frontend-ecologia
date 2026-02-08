@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+// Get API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL;
+
+// Validate that API_URL is configured
+if (!API_URL) {
+  console.error('❌ VITE_API_URL is not defined. Please check your .env file.');
+  console.error('Expected: VITE_API_URL=https://ecolearning.online (production) or http://localhost:8080 (development)');
+}
 
 // Create axios instance
 const apiClient = axios.create({

@@ -21,6 +21,18 @@ import {
 } from '@mui/icons-material';
 import { incrementDownloads } from '../../../../core/api/uploadService';
 
+/**
+ * Helper function to construct file URLs using environment variable
+ * @param {string} path - File path from backend (e.g., /uploads/file.pdf)
+ * @returns {string} Full URL to the file
+ */
+const getFileUrl = (path) => {
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+    // Remove /api suffix if present, as static files are served from root
+    const cleanBaseUrl = baseUrl.replace(/\/api$/, '');
+    return `${cleanBaseUrl}${path}`;
+};
+
 const ResourceCard = ({ resource, onUpdate }) => {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
@@ -64,7 +76,7 @@ const ResourceCard = ({ resource, onUpdate }) => {
 
             // Trigger file download
             const link = document.createElement('a');
-            link.href = `http://localhost:8080${resource.url}`;
+            link.href = getFileUrl(resource.url);
             link.download = resource.originalName || resource.filename;
             document.body.appendChild(link);
             link.click();
@@ -87,7 +99,7 @@ const ResourceCard = ({ resource, onUpdate }) => {
 
     const handleView = () => {
         // Open file in new tab
-        window.open(`http://localhost:8080${resource.url}`, '_blank');
+        window.open(getFileUrl(resource.url), '_blank');
     };
 
     const handleCloseSnackbar = () => {

@@ -30,6 +30,17 @@ const VideoDetailPage = () => {
     const { isAuthenticated } = useAuth();
     const { showSuccess, showError } = useSnackbar();
 
+    /**
+     * Helper function to construct file URLs using environment variable
+     * @param {string} path - File path from backend
+     * @returns {string} Full URL to the file
+     */
+    const getFileUrl = (path) => {
+        const baseUrl = import.meta.env.VITE_API_URL || '';
+        const cleanBaseUrl = baseUrl.replace(/\/api$/, '');
+        return `${cleanBaseUrl}${path}`;
+    };
+
     const [video, setVideo] = useState(null);
     const [ratingStats, setRatingStats] = useState(null);
     const [userRating, setUserRating] = useState(null);
@@ -131,7 +142,7 @@ const VideoDetailPage = () => {
                                     width: '100%',
                                     height: '100%',
                                 }}
-                                src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/${video.url}`}
+                                src={getFileUrl(`/${video.url}`)}
                             >
                                 Your browser does not support the video tag.
                             </video>

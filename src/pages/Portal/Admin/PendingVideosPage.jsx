@@ -27,6 +27,17 @@ import PaginationComponent from '../../../components/shared/PaginationComponent'
 const PendingVideosPage = () => {
     const { showSuccess, showError } = useSnackbar();
 
+    /**
+     * Helper function to construct file URLs using environment variable
+     * @param {string} path - File path from backend
+     * @returns {string} Full URL to the file
+     */
+    const getFileUrl = (path) => {
+        const baseUrl = import.meta.env.VITE_API_URL || '';
+        const cleanBaseUrl = baseUrl.replace(/\/api$/, '');
+        return `${cleanBaseUrl}${path}`;
+    };
+
     const [videos, setVideos] = useState([]);
     const [pagination, setPagination] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -203,7 +214,7 @@ const PendingVideosPage = () => {
                                 width: '100%',
                                 height: '100%',
                             }}
-                            src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/${selectedVideo?.url}`}
+                            src={getFileUrl(`/${selectedVideo?.url}`)}
                         >
                             Your browser does not support the video tag.
                         </video>
