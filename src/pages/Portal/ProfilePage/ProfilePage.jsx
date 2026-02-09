@@ -8,7 +8,8 @@ import {
     ProfileHeader,
     ProfileInfo,
     ChangePassword,
-    DangerZone
+    DangerZone,
+    ProfilePictureUploadModal
 } from './components';
 
 /**
@@ -21,6 +22,7 @@ const ProfilePage = () => {
 
     const [loading, setLoading] = useState(false);
     const [editing, setEditing] = useState(false);
+    const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -68,10 +70,7 @@ const ProfilePage = () => {
         setEditing(false);
     };
 
-    const handleProfilePictureChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
+    const handleProfilePictureUpload = async (file) => {
         console.log('📸 Profile Picture Upload Started');
         console.log('File info:', {
             name: file.name,
@@ -80,7 +79,6 @@ const ProfilePage = () => {
         });
 
         try {
-            setLoading(true);
             console.log('⏳ Uploading to backend...');
             console.log('Current user profilePicture:', user.profilePicture);
 
@@ -99,9 +97,7 @@ const ProfilePage = () => {
         } catch (error) {
             console.error('❌ Profile picture upload failed:', error);
             showError(error.message || 'Failed to update profile picture');
-        } finally {
-            setLoading(false);
-            console.log('✨ Upload process completed');
+            throw error; // Re-throw to let modal handle it
         }
     };
 
@@ -161,7 +157,7 @@ const ProfilePage = () => {
                     <Grid item xs={12} md={4}>
                         <ProfileHeader
                             user={user}
-                            onProfilePictureChange={handleProfilePictureChange}
+                            onOpenUploadModal={() => setUploadModalOpen(true)}
                         />
                     </Grid>
 
@@ -187,6 +183,14 @@ const ProfilePage = () => {
                         />
                     </Grid>
                 </Grid>
+
+                {/* Profile Picture Upload Modal */}
+                <ProfilePictureUploadModal
+                    open={uploadModalOpen}
+                    onClose={() => setUploadModalOpen(false)}
+                    onUpload={handleProfilePictureUpload}
+                    currentImage={user.profilePicture}
+                />
             </Container>
         </Fade>
     );

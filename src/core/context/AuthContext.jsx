@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
           setAuthToken(token);
           const userData = await authService.getCurrentUser();
           authLogger.log('User loaded successfully:', userData);
+          authLogger.log('\ud83d\udcf8 ProfilePicture from getCurrentUser:', userData?.profilePicture);
           setUser(userData);
           setIsAuthenticated(true);
         } catch (error) {
@@ -57,6 +58,9 @@ export const AuthProvider = ({ children }) => {
       const { user: userData, accessToken: newAccessToken, refreshToken: newRefreshToken } = response;
 
       authLogger.log('Login successful, saving tokens');
+      authLogger.log('\ud83d\udcf8 User data from login:', userData);
+      authLogger.log('\ud83d\udcf8 ProfilePicture from login:', userData.profilePicture);
+
       // Save tokens and set in axios headers
       setAuthToken(newAccessToken);
       localStorage.setItem('refreshToken', newRefreshToken);

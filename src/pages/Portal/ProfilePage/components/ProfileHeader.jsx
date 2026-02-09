@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Box, Avatar, IconButton, Typography, Chip } from '@mui/material';
+import { Card, CardContent, Box, Avatar, Button, Typography, Chip } from '@mui/material';
 import { PhotoCamera, VerifiedUser, School } from '@mui/icons-material';
 
-const ProfileHeader = ({ user, onProfilePictureChange }) => {
+const ProfileHeader = ({ user, onOpenUploadModal }) => {
     const [imageTimestamp, setImageTimestamp] = useState(Date.now());
 
     // Update timestamp when profilePicture changes to bust cache
     useEffect(() => {
         if (user.profilePicture) {
-            const newTimestamp = Date.now();
-            setImageTimestamp(newTimestamp);
-            console.log('🖼️ ProfileHeader: Profile picture updated');
-            console.log('URL:', user.profilePicture);
-            console.log('Cache-bust timestamp:', newTimestamp);
+            setImageTimestamp(Date.now());
         }
     }, [user.profilePicture]);
 
@@ -43,32 +39,6 @@ const ProfileHeader = ({ user, onProfilePictureChange }) => {
                     >
                         {user.name?.[0]?.toUpperCase()}
                     </Avatar>
-                    <input
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        id="profile-picture-upload"
-                        type="file"
-                        onChange={onProfilePictureChange}
-                    />
-                    <label htmlFor="profile-picture-upload">
-                        <IconButton
-                            component="span"
-                            sx={{
-                                position: 'absolute',
-                                bottom: 5,
-                                right: 5,
-                                bgcolor: 'white',
-                                color: 'primary.main',
-                                boxShadow: 2,
-                                '&:hover': { bgcolor: 'grey.100' },
-                                width: 36,
-                                height: 36
-                            }}
-                            size="small"
-                        >
-                            <PhotoCamera fontSize="small" />
-                        </IconButton>
-                    </label>
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
@@ -93,6 +63,16 @@ const ProfileHeader = ({ user, onProfilePictureChange }) => {
                             />
                         )}
                     </Box>
+
+                    <Button
+                        variant="outlined"
+                        startIcon={<PhotoCamera />}
+                        onClick={onOpenUploadModal}
+                        size="small"
+                        sx={{ mt: 1 }}
+                    >
+                        Cambiar Foto
+                    </Button>
                 </Box>
             </CardContent>
         </Card>
