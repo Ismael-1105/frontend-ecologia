@@ -71,8 +71,9 @@ const VideoPlayerModal = ({ open, onClose, videoId }) => {
         }
 
         try {
-            await videoService.likeVideo(videoId);
-            fetchVideoDetails();
+            const updatedVideo = await videoService.likeVideo(videoId);
+            // Update local state instead of refetching to avoid video reload
+            setVideo(updatedVideo);
         } catch (err) {
             console.error('Error liking video:', err);
         }
@@ -85,8 +86,9 @@ const VideoPlayerModal = ({ open, onClose, videoId }) => {
         }
 
         try {
-            await videoService.dislikeVideo(videoId);
-            fetchVideoDetails();
+            const updatedVideo = await videoService.dislikeVideo(videoId);
+            // Update local state instead of refetching to avoid video reload
+            setVideo(updatedVideo);
         } catch (err) {
             console.error('Error disliking video:', err);
         }

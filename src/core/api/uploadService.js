@@ -220,6 +220,36 @@ export const updateUploadMetadata = async (id, data) => {
 };
 
 /**
+ * Download a file using the API
+ * @param {string} id - Upload ID
+ * @param {string} originalName - Original filename for the download
+ * @returns {Promise} Download operation
+ */
+export const downloadFile = async (id, originalName) => {
+    try {
+        const response = await apiClient.get(`/uploads/download/${id}`, {
+            responseType: 'blob'
+        });
+
+        // Create a blob URL and trigger download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', originalName);
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
+        return true;
+    } catch (error) {
+        throw handleUploadError(error);
+    }
+};
+
+/**
  * Increment download counter
  * @param {string} id - Upload ID
  * @returns {Promise} API response

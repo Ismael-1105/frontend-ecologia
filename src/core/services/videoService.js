@@ -160,6 +160,34 @@ export const searchVideos = async (query, params = {}) => {
   }
 };
 
+/**
+ * Like a video
+ * @param {string} videoId - Video ID
+ * @returns {Promise<Object>} Updated video data
+ */
+export const likeVideo = async (videoId) => {
+  try {
+    const response = await apiClient.post(`/videos/${videoId}/like`);
+    return response.data.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+/**
+ * Dislike a video
+ * @param {string} videoId - Video ID
+ * @returns {Promise<Object>} Updated video data
+ */
+export const dislikeVideo = async (videoId) => {
+  try {
+    const response = await apiClient.post(`/videos/${videoId}/dislike`);
+    return response.data.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
 const videoService = {
   getAllVideos,
   getVideoById,
@@ -170,6 +198,8 @@ const videoService = {
   approveVideo,
   deleteVideo,
   searchVideos,
+  likeVideo,
+  dislikeVideo,
 };
 
 export default videoService;

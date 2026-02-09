@@ -88,11 +88,6 @@ const VideoCard = ({ video, onMenuOpen }) => {
 
                 {/* Status and Views */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Chip
-                        label={video.aprobado ? 'Approved' : 'Pending'}
-                        color={video.aprobado ? 'success' : 'warning'}
-                        size="small"
-                    />
                     <Typography variant="caption" color="text.secondary">
                         {video.views || 0} views
                     </Typography>

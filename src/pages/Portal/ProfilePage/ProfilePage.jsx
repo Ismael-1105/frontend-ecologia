@@ -72,15 +72,32 @@ const ProfilePage = () => {
         const file = e.target.files[0];
         if (!file) return;
 
+        console.log('📸 Profile Picture Upload Started');
+        console.log('File info:', {
+            name: file.name,
+            size: file.size,
+            type: file.type
+        });
+
         try {
             setLoading(true);
+            console.log('⏳ Uploading to backend...');
+
             const updatedUser = await userService.updateProfilePicture(file);
+
+            console.log('✅ Backend response:', updatedUser);
+            console.log('New profilePicture URL:', updatedUser.profilePicture);
+
             updateUser(updatedUser);
+            console.log('🔄 User context updated');
+
             showSuccess('Profile picture updated successfully');
         } catch (error) {
+            console.error('❌ Profile picture upload failed:', error);
             showError(error.message || 'Failed to update profile picture');
         } finally {
             setLoading(false);
+            console.log('✨ Upload process completed');
         }
     };
 

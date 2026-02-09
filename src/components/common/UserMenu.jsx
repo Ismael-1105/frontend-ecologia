@@ -75,6 +75,7 @@ const UserMenu = () => {
                     onClick={handleClick}
                 >
                     <Avatar
+                        src={user?.profilePicture}
                         sx={{
                             width: 32,
                             height: 32,
@@ -108,13 +109,25 @@ const UserMenu = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <Box sx={{ px: 2, py: 1.5 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                        {user?.name || 'Usuario'}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                        {user?.email}
-                    </Typography>
+                <Box sx={{ px: 2, py: 1.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Avatar
+                        src={user?.profilePicture}
+                        sx={{
+                            width: 48,
+                            height: 48,
+                            bgcolor: 'primary.main'
+                        }}
+                    >
+                        {getInitials(user?.name)}
+                    </Avatar>
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                            {user?.name || 'Usuario'}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            {user?.email}
+                        </Typography>
+                    </Box>
                 </Box>
                 <Divider />
 
@@ -125,12 +138,6 @@ const UserMenu = () => {
                     Mi Perfil
                 </MenuItem>
 
-                <MenuItem onClick={handleSettings}>
-                    <ListItemIcon>
-                        <SettingsIcon fontSize="small" />
-                    </ListItemIcon>
-                    Configuración
-                </MenuItem>
 
                 <Divider />
 

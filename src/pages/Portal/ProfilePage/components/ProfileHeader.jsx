@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Box, Avatar, IconButton, Typography, Chip } from '@mui/material';
 import { PhotoCamera, VerifiedUser, School } from '@mui/icons-material';
 
 const ProfileHeader = ({ user, onProfilePictureChange }) => {
+    const [imageTimestamp, setImageTimestamp] = useState(Date.now());
+
+    // Update timestamp when profilePicture changes to bust cache
+    useEffect(() => {
+        if (user.profilePicture) {
+            const newTimestamp = Date.now();
+            setImageTimestamp(newTimestamp);
+            console.log('🖼️ ProfileHeader: Profile picture updated');
+            console.log('URL:', user.profilePicture);
+            console.log('Cache-bust timestamp:', newTimestamp);
+        }
+    }, [user.profilePicture]);
+
     return (
         <Card sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: 3 }}>
             {/* Cover Image / Gradient */}
@@ -26,7 +39,7 @@ const ProfileHeader = ({ user, onProfilePictureChange }) => {
                             bgcolor: 'primary.main',
                             fontSize: '3rem'
                         }}
-                        src={user.profilePicture}
+                        src={user.profilePicture ? `${user.profilePicture}?t=${imageTimestamp}` : undefined}
                     >
                         {user.name?.[0]?.toUpperCase()}
                     </Avatar>

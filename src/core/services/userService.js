@@ -39,6 +39,9 @@ export const updateMyProfile = async (data) => {
  */
 export const updateProfilePicture = async (file) => {
   try {
+    console.log('🌐 API Call: PUT /users/me/profile-picture');
+    console.log('File being uploaded:', file.name);
+
     const formData = new FormData();
     formData.append('profilePicture', file);
 
@@ -47,8 +50,11 @@ export const updateProfilePicture = async (file) => {
         'Content-Type': 'multipart/form-data',
       },
     });
+
+    console.log('📦 API Response:', response.data);
     return response.data.data;
   } catch (error) {
+    console.error('🚨 API Error:', error);
     throw handleApiError(error);
   }
 };

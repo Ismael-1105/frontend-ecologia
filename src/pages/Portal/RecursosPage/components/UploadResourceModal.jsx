@@ -74,8 +74,8 @@ const UploadResourceModal = ({ open, onClose, onResourceUploaded }) => {
             return;
         }
 
-        if (!formData.title || !formData.description) {
-            setError('Título y descripción son obligatorios');
+        if (!formData.title || !formData.description || !formData.category) {
+            setError('Título, descripción y categoría son obligatorios');
             return;
         }
 
@@ -91,7 +91,7 @@ const UploadResourceModal = ({ open, onClose, onResourceUploaded }) => {
                 {
                     title: formData.title,
                     description: formData.description,
-                    category: formData.category || 'Otro'
+                    category: formData.category
                 }
             );
 
@@ -252,9 +252,18 @@ const UploadResourceModal = ({ open, onClose, onResourceUploaded }) => {
                             value={formData.category}
                             onChange={handleChange}
                             fullWidth
+                            required
+                            select
                             disabled={loading}
-                            placeholder="Ej: Reciclaje, Conservación, etc."
-                        />
+                            helperText="Selecciona la categoría del recurso"
+                            SelectProps={{ native: true }}
+                        >
+                            <option value="">Selecciona una categoría</option>
+                            <option value="Biodiversidad">Biodiversidad</option>
+                            <option value="Conservación">Conservación</option>
+                            <option value="Educación Ambiental">Educación Ambiental</option>
+                            <option value="Recursos Naturales">Recursos Naturales</option>
+                        </TextField>
 
                         {/* Description */}
                         <TextField

@@ -18,16 +18,23 @@ import { statsService } from '../../../../core/services';
 import { EmptyState, ErrorState } from '../../../../components/common';
 import { VideoCardSkeleton, SkeletonGrid } from '../../../../components/shared/Skeletons';
 
-const TrendingVideos = () => {
+const TrendingVideos = ({ onVideoSelect }) => {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const handleVideoClick = (e, videoId) => {
+        if (onVideoSelect) {
+            e.preventDefault();
+            onVideoSelect(videoId);
+        }
+    };
 
     const fetchVideos = async () => {
         try {
             setLoading(true);
             setError(null);
-            const trending = await statsService.getTrendingVideos(4);
+            const trending = await statsService.getTrendingVideos(8);
             setVideos(trending);
         } catch (err) {
             console.error('Error fetching trending videos:', err);
@@ -87,8 +94,8 @@ const TrendingVideos = () => {
                 ) : loading ? (
                     <SkeletonGrid
                         SkeletonComponent={VideoCardSkeleton}
-                        count={4}
-                        gridProps={{ xs: 12, sm: 6, md: 3 }}
+                        count={8}
+                        gridProps={{ xs: 3 }}
                     />
                 ) : videos.length === 0 ? (
                     <EmptyState
@@ -99,12 +106,13 @@ const TrendingVideos = () => {
                         onAction={() => window.location.href = '/portal/upload-video'}
                     />
                 ) : (
-                    <Grid container spacing={3}>
+                    <Grid container spacing={2}>
                         {videos.map((video) => (
-                            <Grid item xs={12} sm={6} md={3} key={video._id}>
+                            <Grid item xs={3} key={video._id}>
                                 <Link
                                     to={`/portal/dashboard?videoId=${video._id}`}
                                     style={{ textDecoration: 'none', color: 'inherit' }}
+                                    onClick={(e) => handleVideoClick(e, video._id)}
                                 >
                                     <Box
                                         sx={{
@@ -118,7 +126,7 @@ const TrendingVideos = () => {
                                     >
                                         <CardMedia
                                             component="img"
-                                            height="140"
+                                            height="160"
                                             image={video.thumbnailUrl || '/placeholder-video.jpg'}
                                             alt={video.title}
                                             sx={{ transition: 'transform 0.3s ease', bgcolor: 'grey.200' }}

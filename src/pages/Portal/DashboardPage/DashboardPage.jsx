@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { DashboardStats, TrendingVideos, ActiveMembers, VideoPlayerModal, UploadVideoModal } from './components/index.jsx';
+import { DashboardStats, TrendingVideos, RecentActivity, VideoPlayerModal, UploadVideoModal } from './components/index.jsx';
 import { videoService } from '../../../core/services';
 
 const DashboardPage = () => {
@@ -83,14 +83,17 @@ const DashboardPage = () => {
         <Grid container spacing={3}>
           {/* Main Content - Trending Videos */}
           <Grid item xs={12} lg={8}>
-            <TrendingVideos />
+            <TrendingVideos onVideoSelect={(id) => {
+              setSelectedVideoId(id);
+              setIsPlayerModalOpen(true);
+            }} />
           </Grid>
 
           {/* Sidebar */}
           <Grid item xs={12} lg={4}>
             <Stack spacing={3}>
-              {/* Active Members */}
-              <ActiveMembers />
+              {/* Recent Activity */}
+              <RecentActivity />
 
               {/* Quick Actions Card - Optional */}
               {/* You can add more sidebar widgets here */}

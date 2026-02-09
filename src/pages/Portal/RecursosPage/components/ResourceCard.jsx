@@ -19,7 +19,8 @@ import {
     Visibility as VisibilityIcon,
     AudioFile as AudioIcon
 } from '@mui/icons-material';
-import { incrementDownloads } from '../../../../core/api/uploadService';
+import * as uploadService from '../../../../core/api/uploadService';
+import PdfViewerModal from '../../../../components/shared/PdfViewerModal';
 
 /**
  * Helper function to construct file URLs using environment variable
@@ -35,6 +36,7 @@ const getFileUrl = (path) => {
 
 const ResourceCard = ({ resource, onUpdate }) => {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+    const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
 
     const getIcon = (fileType) => {
         switch (fileType?.toLowerCase()) {
@@ -64,23 +66,20 @@ const ResourceCard = ({ resource, onUpdate }) => {
 
     const handleDownload = async () => {
         try {
-            // Increment download counter
-            if (resource._id) {
-                await incrementDownloads(resource._id);
+            setSnackbar({
+                open: true,
+                message: 'Preparando descarga...',
+                severity: 'info'
+            });
 
-                // Refresh the list to show updated count
-                if (onUpdate) {
-                    onUpdate();
-                }
+            // Use the new downloadFile API method
+            // This handles incrementing downloads on the backend and triggers the download
+            await uploadService.downloadFile(resource._id || resource.id, resource.originalName || resource.filename);
+
+            // Refresh the list to show updated count (downloads count is incremented on the backend)
+            if (onUpdate) {
+                onUpdate();
             }
-
-            // Trigger file download
-            const link = document.createElement('a');
-            link.href = getFileUrl(resource.url);
-            link.download = resource.originalName || resource.filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
 
             setSnackbar({
                 open: true,
@@ -98,8 +97,13 @@ const ResourceCard = ({ resource, onUpdate }) => {
     };
 
     const handleView = () => {
-        // Open file in new tab
-        window.open(getFileUrl(resource.url), '_blank');
+        // For PDF documents, open in modal viewer
+        if (resource.fileType === 'document') {
+            setPdfViewerOpen(true);
+        } else {
+            // For other file types (images, videos, audio), open in new tab
+            window.open(getFileUrl(resource.url), '_blank');
+        }
     };
 
     const handleCloseSnackbar = () => {
@@ -218,6 +222,13 @@ const ResourceCard = ({ resource, onUpdate }) => {
                     {snackbar.message}
                 </Alert>
             </Snackbar>
+
+            {/* PDF Viewer Modal */}
+            <PdfViewerModal
+                open={pdfViewerOpen}
+                onClose={() => setPdfViewerOpen(false)}
+                resource={resource}
+            />
         </>
     );
 };
