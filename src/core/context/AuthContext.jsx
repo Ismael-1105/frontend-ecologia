@@ -141,10 +141,16 @@ export const AuthProvider = ({ children }) => {
 
   // Update user data
   const updateUser = useCallback((userData) => {
-    setUser((prevUser) => ({
-      ...prevUser,
-      ...userData,
-    }));
+    authLogger.log('🔄 updateUser called with:', userData);
+    setUser((prevUser) => {
+      const newUser = {
+        ...prevUser,
+        ...userData,
+      };
+      authLogger.log('Previous user:', prevUser);
+      authLogger.log('New merged user:', newUser);
+      return newUser;
+    });
   }, []);
 
   // Check if user has required role
