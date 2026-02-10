@@ -9,11 +9,13 @@ const MainHeader = () => {
       className="fade-in"
       sx={(theme) => ({
         textAlign: 'center',
-        py: { xs: 8, md: 12 },
+        // Increased padding for more breathing room
+        py: { xs: 10, md: 16 },
         px: 2,
-        position: 'relative',
+        position: 'relative', 
         overflow: 'hidden',
-        background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 50%, ${theme.palette.secondary.main} 100%)`,
+        // Deeper, more sophisticated gradient
+        background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 40%, ${theme.palette.secondary.dark} 100%)`,
         color: '#fff',
         '&::before': {
           content: '""',
@@ -22,42 +24,62 @@ const MainHeader = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: `radial-gradient(circle at 30% 50%, ${alpha('#fff', 0.1)} 0%, transparent 50%), radial-gradient(circle at 70% 80%, ${alpha('#fff', 0.08)} 0%, transparent 50%)`,
+          // Subtle texture pattern overlay
+          backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px)',
+          backgroundSize: '30px 30px',
+          opacity: 0.3,
+          pointerEvents: 'none',
+        },
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          top: '-50%',
+          left: '-50%',
+          width: '200%',
+          height: '200%',
+          background: `radial-gradient(circle, ${alpha(theme.palette.secondary.main, 0.2)} 0%, transparent 60%)`,
+          animation: 'pulse 15s infinite ease-in-out',
           pointerEvents: 'none',
         },
       })}
     >
       <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
         <Typography
-          variant="h2"
+          variant="h1" // Upgraded from h2 for better semantics and size control
           component="h1"
-          fontWeight="bold"
+          fontWeight="800"
           gutterBottom
           sx={{
-            fontSize: { xs: '2rem', sm: '2.5rem', md: '3.5rem' },
-            mb: 3,
-            textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-            background: 'linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.9) 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
+            lineHeight: 1.1,
+            mb: 4,
+            // Enhanced text shadow for readability against gradient
+            textShadow: '0 4px 30px rgba(0, 0, 0, 0.4)',
+            letterSpacing: '-0.02em',
           }}
         >
-          Sobre EcoLearn Loja
+          EcoLearn{' '}
+          <Box component="span" sx={{ color: '#86A789' }}>Loja</Box>
         </Typography>
+
         <Typography
-          variant="h6"
+          variant="h5"
           component="p"
           sx={{
             maxWidth: 800,
             mx: 'auto',
-            fontSize: { xs: '1rem', md: '1.25rem' },
-            lineHeight: 1.8,
-            opacity: 0.95,
-            fontWeight: 400,
+            fontSize: { xs: '1.1rem', md: '1.4rem' },
+            lineHeight: 1.6,
+            opacity: 0.9,
+            fontWeight: 300,
+            textShadow: '0 2px 10px rgba(0,0,0,0.2)',
+            mb: 5,
           }}
         >
-          Una plataforma colaborativa universitaria dedicada a promover la sostenibilidad y la conciencia ambiental en Loja.
+          Transformando la conciencia ambiental universitaria.
+          <Box component="span" sx={{ display: 'block', mt: 1, fontWeight: 500 }}>
+            Únete a la red colaborativa que impulsa el futuro sostenible de nuestra región.
+          </Box>
         </Typography>
       </Container>
     </Box>

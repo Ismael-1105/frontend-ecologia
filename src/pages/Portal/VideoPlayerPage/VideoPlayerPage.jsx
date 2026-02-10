@@ -10,7 +10,6 @@ import {
     VideoGrid,
     VideoCardMenu,
     EditVideoDialog,
-    EditVideoDialog,
 } from './components';
 
 const MyVideosPage = () => {

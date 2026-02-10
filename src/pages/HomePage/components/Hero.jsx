@@ -22,10 +22,11 @@ const Hero = () => {
           gutterBottom
           className="fade-in"
           sx={{
-            color: 'primary.main',
+            color: '#fff', // White text for better contrast
             fontWeight: 'bold',
-            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+            fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
             mb: 2,
+            textShadow: '0 2px 4px rgba(0,0,0,0.3)', // Add shadow for better readability
           }}
         >
           EcoLearn Loja
@@ -36,9 +37,12 @@ const Hero = () => {
           className="slide-up-delay-1"
           sx={{
             mb: 4,
-            color: 'text.secondary',
-            fontSize: { xs: '1rem', md: '1.25rem' },
+            color: 'rgba(255, 255, 255, 0.9)', // Light text
+            fontSize: { xs: '1.1rem', md: '1.4rem' },
             px: { xs: 2, md: 0 },
+            maxWidth: '800px',
+            mx: 'auto',
+            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
           }}
         >
           Plataforma colaborativa universitaria sobre sostenibilidad

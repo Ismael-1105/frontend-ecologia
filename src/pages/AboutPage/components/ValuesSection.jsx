@@ -69,324 +69,146 @@ const ValuesSection = () => {
   return (
     <Box
       component="section"
-      sx={{
+      sx={(theme) => ({
         position: 'relative',
         py: { xs: 10, md: 15 },
         px: 2,
         overflow: 'hidden',
-        background: `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 50%, ${theme.palette.background.default} 100%)`,
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `radial-gradient(circle at 20% 50%, ${alpha(theme.palette.primary.dark, 0.1)} 0%, transparent 50%), radial-gradient(circle at 80% 80%, ${alpha(theme.palette.primary.light, 0.08)} 0%, transparent 50%)`,
-          pointerEvents: 'none',
-        },
-      }}
+        // Standardized background
+        background: theme.palette.mode === 'dark'
+          ? `linear-gradient(180deg, ${theme.palette.background.paper} 0%, ${theme.palette.background.default} 100%)`
+          : `linear-gradient(180deg, #F9FAFB 0%, #F3F4F6 100%)`,
+      })}
     >
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
         {/* Header */}
-        <Box className="fade-in" sx={{ mb: { xs: 8, md: 12 }, textAlign: 'center' }}>
+        <Box className="fade-in" sx={{ mb: { xs: 8, md: 10 }, textAlign: 'center' }}>
           <SectionHeader
-            title="Nuestros Valores"
-            subtitle="Los principios fundamentales que guían cada acción y decisión en EcoLearn Loja"
+            title="Nuestros Valores Fundamentales"
+            subtitle="Los pilares éticos que construyen nuestra comunidad"
             dividerColor="primary.main"
           />
         </Box>
 
-        {/* Valores en Grid Asimétrico con Efecto Staggered */}
+        {/* Values Grid - Interactive Cards */}
         <Box
           sx={{
             display: 'grid',
             gridTemplateColumns: {
               xs: '1fr',
               sm: 'repeat(2, 1fr)',
-              md: 'repeat(2, 1fr)'
+              md: 'repeat(4, 1fr)'
             },
-            gap: { xs: 4, sm: 4, md: 6 },
-            position: 'relative',
+            gap: 4,
+            perspective: '1000px',
           }}
         >
-          {/* Línea conectora decorativa para desktop */}
-          <Box
-            sx={{
-              display: { xs: 'none', md: 'block' },
-              position: 'absolute',
-              top: '50%',
-              left: '10%',
-              right: '10%',
-              height: 2,
-              background: `linear-gradient(90deg, 
-                transparent 0%, 
-                ${alpha(theme.palette.primary.main, 0.3)} 25%, 
-                ${alpha(theme.palette.info.main, 0.3)} 50%, 
-                ${alpha(theme.palette.warning.main, 0.3)} 75%, 
-                transparent 100%)`,
-              transform: 'translateY(-50%)',
-              zIndex: 0,
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                width: 12,
-                height: 12,
-                borderRadius: '50%',
-                background: `radial-gradient(circle, ${alpha(theme.palette.primary.main, 0.6)} 0%, transparent 70%)`,
-                transform: 'translate(-50%, -50%)',
-                animation: 'pulse 2s ease-in-out infinite',
-              },
-            }}
-          />
-
           {values.map((value, index) => {
             const IconComponent = value.Icon;
-            const delay = getAnimationDelay(index);
-            const initialTransform = getInitialTransform(value.position);
-
             return (
               <Paper
                 key={index}
                 elevation={0}
+                className={`slide-up-delay-${index + 1}`}
                 sx={{
                   position: 'relative',
-                  p: { xs: 4, md: 5 },
-                  borderRadius: 4,
-                  overflow: 'visible',
+                  p: 4,
+                  borderRadius: 6,
+                  overflow: 'hidden',
                   background: theme.palette.mode === 'dark'
-                    ? `linear-gradient(135deg, 
-                        ${alpha(value.darkColor, 0.15)} 0%, 
-                        ${alpha(value.color, 0.08)} 50%, 
-                        ${alpha(value.darkColor, 0.15)} 100%)`
-                    : `linear-gradient(135deg, 
-                        ${alpha(value.lightColor, 0.1)} 0%, 
-                        ${alpha('#fff', 0.9)} 50%, 
-                        ${alpha(value.lightColor, 0.1)} 100%)`,
-                  border: `2px solid ${alpha(value.color, 0.2)}`,
-                  backdropFilter: 'blur(20px)',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  opacity: 0,
-                  transform: initialTransform,
-                  animation: `slideUp 0.8s ease-out ${delay} forwards`,
-                  zIndex: 1,
+                    ? alpha(theme.palette.background.paper, 0.4)
+                    : '#fff',
+                  border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                  transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  height: '100%',
 
-                  // Efecto de hover con transformación 3D
                   '&:hover': {
-                    transform: 'translateY(-12px) scale(1.02)',
+                    transform: 'translateY(-12px)',
+                    boxShadow: `0 20px 40px ${alpha(value.color, 0.2)}`,
                     borderColor: alpha(value.color, 0.5),
-                    boxShadow: `0 20px 60px ${alpha(value.color, 0.3)}, 
-                                0 0 40px ${alpha(value.color, 0.15)}`,
 
-                    // Animación del icono en hover
-                    '& .value-icon': {
-                      transform: 'scale(1.15) rotate(5deg)',
-                      filter: `drop-shadow(0 0 20px ${alpha(value.color, 0.8)})`,
+                    '& .icon-wrapper': {
+                      transform: 'scale(1.1) rotate(10deg)',
+                      background: value.color,
+                      color: '#fff',
+                      boxShadow: `0 10px 20px ${alpha(value.color, 0.4)}`,
                     },
-
-                    // Animación del glow background
-                    '& .value-glow': {
-                      opacity: 0.4,
-                      transform: 'scale(1.2)',
-                    },
-
-                    // Animación de la línea decorativa
-                    '& .value-divider': {
-                      width: '100%',
-                      boxShadow: `0 0 20px ${alpha(value.color, 0.6)}`,
-                    },
-                  },
-
-                  // Efecto de glow background animado
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: '200%',
-                    height: '200%',
-                    background: `radial-gradient(circle, ${alpha(value.color, 0.15)} 0%, transparent 70%)`,
-                    transform: 'translate(-50%, -50%)',
-                    transition: 'all 0.6s ease',
-                    zIndex: -1,
-                    pointerEvents: 'none',
+                    '& .value-title': {
+                      color: value.color,
+                    }
                   },
                 }}
-                className="value-glow"
               >
-                {/* Icono grande con efecto especial */}
+                {/* Decorative Background Blob */}
                 <Box
                   sx={{
+                    position: 'absolute',
+                    top: -50,
+                    right: -50,
+                    width: 150,
+                    height: 150,
+                    borderRadius: '50%',
+                    background: `radial-gradient(circle, ${alpha(value.color, 0.1)} 0%, transparent 70%)`,
+                    pointerEvents: 'none',
+                    zIndex: 0,
+                  }}
+                />
+
+                {/* Icon Wrapper */}
+                <Box
+                  className="icon-wrapper"
+                  sx={{
+                    width: 70,
+                    height: 70,
+                    borderRadius: '24px',
                     display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
                     mb: 3,
+                    color: value.color,
+                    background: alpha(value.color, 0.1),
+                    transition: 'all 0.4s ease',
                     position: 'relative',
+                    zIndex: 1,
                   }}
                 >
-                  <Box
-                    className="value-icon"
-                    sx={{
-                      width: { xs: 80, md: 100 },
-                      height: { xs: 80, md: 100 },
-                      borderRadius: '50%',
-                      background: `linear-gradient(135deg, ${value.color} 0%, ${value.lightColor} 100%)`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: `0 8px 32px ${alpha(value.color, 0.4)}, 
-                                  inset 0 2px 10px ${alpha('#fff', 0.2)}`,
-                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                      position: 'relative',
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        inset: -4,
-                        borderRadius: '50%',
-                        background: `linear-gradient(135deg, ${value.lightColor}, ${value.color})`,
-                        opacity: 0,
-                        transition: 'opacity 0.4s ease',
-                        zIndex: -1,
-                        filter: 'blur(8px)',
-                      },
-                    }}
-                  >
-                    <IconComponent
-                      sx={{
-                        fontSize: { xs: 40, md: 50 },
-                        color: '#fff',
-                        filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))',
-                      }}
-                    />
-                  </Box>
-
-                  {/* Partículas decorativas alrededor del icono */}
-                  {[0, 1, 2, 3].map((particle) => (
-                    <Box
-                      key={particle}
-                      sx={{
-                        position: 'absolute',
-                        width: 8,
-                        height: 8,
-                        borderRadius: '50%',
-                        background: value.lightColor,
-                        top: '50%',
-                        left: '50%',
-                        transform: `translate(-50%, -50%) rotate(${particle * 90}deg) translateY(-60px)`,
-                        opacity: 0.6,
-                        animation: 'float 3s ease-in-out infinite',
-                        animationDelay: `${particle * 0.2}s`,
-                        boxShadow: `0 0 12px ${alpha(value.color, 0.6)}`,
-                      }}
-                    />
-                  ))}
+                  <IconComponent sx={{ fontSize: 32 }} />
                 </Box>
 
-                {/* Título */}
                 <Typography
                   variant="h5"
                   component="h3"
-                  fontWeight="bold"
+                  className="value-title"
                   sx={{
-                    textAlign: 'center',
+                    fontWeight: 800,
                     mb: 2,
-                    color: 'text.primary',
-                    fontSize: { xs: '1.5rem', md: '1.75rem' },
-                    background: `linear-gradient(135deg, ${value.color} 0%, ${value.lightColor} 100%)`,
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
+                    fontSize: '1.25rem',
+                    transition: 'color 0.3s ease',
                     position: 'relative',
+                    zIndex: 1,
                   }}
                 >
                   {value.title}
                 </Typography>
 
-                {/* Divider animado */}
-                <Box
-                  className="value-divider"
-                  sx={{
-                    width: '60%',
-                    height: 3,
-                    mx: 'auto',
-                    mb: 3,
-                    background: `linear-gradient(90deg, transparent, ${value.color}, transparent)`,
-                    borderRadius: 2,
-                    transition: 'all 0.4s ease',
-                    boxShadow: `0 0 10px ${alpha(value.color, 0.3)}`,
-                  }}
-                />
-
-                {/* Descripción */}
                 <Typography
-                  variant="body1"
+                  variant="body2"
                   sx={{
-                    textAlign: 'center',
                     color: 'text.secondary',
-                    lineHeight: 1.8,
-                    fontSize: { xs: '0.95rem', md: '1.05rem' },
-                    px: { xs: 1, md: 2 },
+                    lineHeight: 1.6,
+                    position: 'relative',
+                    zIndex: 1,
                   }}
                 >
                   {value.description}
                 </Typography>
-
-                {/* Badge decorativo en la esquina */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 16,
-                    width: 40,
-                    height: 40,
-                    borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${alpha(value.color, 0.2)} 0%, ${alpha(value.lightColor, 0.1)} 100%)`,
-                    border: `1px solid ${alpha(value.color, 0.3)}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'rotate(180deg) scale(1.1)',
-                      background: `linear-gradient(135deg, ${alpha(value.color, 0.3)} 0%, ${alpha(value.lightColor, 0.2)} 100%)`,
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      background: value.color,
-                      boxShadow: `0 0 12px ${alpha(value.color, 0.8)}`,
-                    }}
-                  />
-                </Box>
               </Paper>
             );
           })}
-        </Box>
-
-        {/* Texto decorativo adicional */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            mt: { xs: 6, md: 8 },
-            opacity: 0.7,
-          }}
-          className="fade-in"
-        >
-          <Typography
-            variant="body2"
-            sx={{
-              fontStyle: 'italic',
-              color: 'text.secondary',
-              fontSize: { xs: '0.875rem', md: '1rem' },
-            }}
-          >
-            "Estos valores no son solo palabras, son el compromiso que guía cada proyecto y cada colaboración en nuestra comunidad universitaria."
-          </Typography>
         </Box>
       </Container>
     </Box>
