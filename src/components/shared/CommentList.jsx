@@ -18,7 +18,7 @@ import { useAuth } from '../../core/context/AuthContext';
 import { useSnackbar } from '../../core/context/SnackbarContext.jsx';
 import LoadingSpinner from './LoadingSpinner';
 import PaginationComponent from './PaginationComponent';
-import ConfirmDialog from './ConfirmDialog';
+import SweetAlert from '../common/SweetAlert';
 
 /**
  * Comment List Component
@@ -39,7 +39,7 @@ const CommentList = ({ videoId }) => {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedComment, setSelectedComment] = useState(null);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
 
     // Load comments
     useEffect(() => {
@@ -87,15 +87,23 @@ const CommentList = ({ videoId }) => {
         }
     };
 
-    const handleDeleteComment = async () => {
-        try {
-            await commentService.deleteComment(videoId, selectedComment._id);
-            setDeleteDialogOpen(false);
-            setSelectedComment(null);
-            showSuccess('Comment deleted successfully');
-            loadComments();
-        } catch (error) {
-            showError('Failed to delete comment');
+    const startDelete = async () => {
+        handleMenuClose();
+
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            'Delete Comment',
+            'Are you sure you want to delete this comment? This action cannot be undone.'
+        );
+
+        if (confirmed) {
+            try {
+                await commentService.deleteComment(videoId, selectedComment._id);
+                SweetAlert.showSuccessAlert('Success', 'Comment deleted successfully');
+                setSelectedComment(null);
+                loadComments();
+            } catch (error) {
+                SweetAlert.showErrorAlert('Error', 'Failed to delete comment');
+            }
         }
     };
 
@@ -114,10 +122,7 @@ const CommentList = ({ videoId }) => {
         handleMenuClose();
     };
 
-    const startDelete = () => {
-        setDeleteDialogOpen(true);
-        handleMenuClose();
-    };
+
 
     const canModifyComment = (comment) => {
         if (!user) return false;
@@ -241,16 +246,7 @@ const CommentList = ({ videoId }) => {
                 </MenuItem>
             </Menu>
 
-            {/* Delete Confirmation */}
-            <ConfirmDialog
-                open={deleteDialogOpen}
-                title="Delete Comment"
-                message="Are you sure you want to delete this comment? This action cannot be undone."
-                confirmText="Delete"
-                severity="error"
-                onConfirm={handleDeleteComment}
-                onCancel={() => setDeleteDialogOpen(false)}
-            />
+
         </Box>
     );
 };

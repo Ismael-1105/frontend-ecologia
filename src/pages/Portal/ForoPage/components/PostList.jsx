@@ -117,7 +117,11 @@ const PostList = forwardRef(({ selectedCategory, searchQuery }, ref) => {
                 <>
                     <Stack spacing={2}>
                         {posts.map((post) => (
-                            <PostCard key={post._id} post={post} />
+                            <PostCard
+                                key={post._id}
+                                post={post}
+                                onPostDeleted={fetchPosts}
+                            />
                         ))}
                     </Stack>
 

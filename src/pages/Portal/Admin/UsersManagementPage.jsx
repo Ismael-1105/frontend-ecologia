@@ -30,7 +30,7 @@ import { userService } from '../../../core/services';
 import { useSnackbar } from '../../../core/context/SnackbarContext.jsx';
 import LoadingSpinner from '../../../components/shared/LoadingSpinner';
 import PaginationComponent from '../../../components/shared/PaginationComponent';
-import ConfirmDialog from '../../../components/shared/ConfirmDialog';
+import SweetAlert from '../../../components/common/SweetAlert';
 
 /**
  * Users Management Page (Admin)
@@ -50,8 +50,7 @@ const UsersManagementPage = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [newRole, setNewRole] = useState('');
 
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
+
 
     useEffect(() => {
         loadUsers();
@@ -94,19 +93,20 @@ const UsersManagementPage = () => {
         }
     };
 
-    const handleDeleteUser = (user) => {
-        setUserToDelete(user);
-        setDeleteDialogOpen(true);
-    };
+    const handleDeleteUser = async (user) => {
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            'Delete User',
+            `Are you sure you want to delete ${user.name}? This action cannot be undone.`
+        );
 
-    const confirmDelete = async () => {
-        try {
-            await userService.deleteUser(userToDelete._id);
-            setDeleteDialogOpen(false);
-            showSuccess('User deleted successfully');
-            loadUsers();
-        } catch (error) {
-            showError(error.message || 'Failed to delete user');
+        if (confirmed) {
+            try {
+                await userService.deleteUser(user._id);
+                SweetAlert.showSuccessAlert('Success', 'User deleted successfully');
+                loadUsers();
+            } catch (error) {
+                SweetAlert.showErrorAlert('Error', error.message || 'Failed to delete user');
+            }
         }
     };
 
@@ -252,16 +252,7 @@ const UsersManagementPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Delete Confirmation */}
-            <ConfirmDialog
-                open={deleteDialogOpen}
-                title="Delete User"
-                message={`Are you sure you want to delete ${userToDelete?.name}? This action cannot be undone.`}
-                confirmText="Delete"
-                severity="error"
-                onConfirm={confirmDelete}
-                onCancel={() => setDeleteDialogOpen(false)}
-            />
+
         </Container>
     );
 };

@@ -26,6 +26,7 @@ import {
     deleteVideoComment,
     likeVideoComment
 } from '../../../../core/api/videoService';
+import SweetAlert from '../../../../components/common/SweetAlert';
 
 const VideoComment = ({ comment, videoId, onReply, onDelete, onLike, level = 0 }) => {
     const [showReplyForm, setShowReplyForm] = useState(false);
@@ -402,13 +403,20 @@ const VideoCommentSection = ({ videoId }) => {
     };
 
     const handleDeleteComment = async (commentId) => {
-        if (!window.confirm('¿Estás seguro de eliminar este comentario?')) return;
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            '¿Eliminar comentario?',
+            '¿Estás seguro de eliminar este comentario?'
+        );
+
+        if (!confirmed) return;
 
         try {
             await deleteVideoComment(commentId);
+            SweetAlert.showSuccessAlert('¡Eliminado!', 'Comentario eliminado');
             fetchComments();
         } catch (err) {
             console.error('Error deleting comment:', err);
+            SweetAlert.showErrorAlert('Error', 'Error al eliminar el comentario');
             setError('Error al eliminar el comentario');
         }
     };

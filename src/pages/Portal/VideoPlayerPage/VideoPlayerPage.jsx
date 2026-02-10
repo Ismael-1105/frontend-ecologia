@@ -4,12 +4,13 @@ import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import { videoService } from '../../../core/services';
 import { useAuth } from '../../../core/context/AuthContext';
 import VideoPlayerModal from '../DashboardPage/components/VideoPlayerModal.jsx';
+import SweetAlert from '../../../components/common/SweetAlert';
 import {
     PageHeader,
     VideoGrid,
     VideoCardMenu,
     EditVideoDialog,
-    DeleteVideoDialog,
+    EditVideoDialog,
 } from './components';
 
 const MyVideosPage = () => {
@@ -20,7 +21,7 @@ const MyVideosPage = () => {
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
     const [anchorEl, setAnchorEl] = useState(null);
     const [editFormData, setEditFormData] = useState({ title: '', description: '' });
 
@@ -88,19 +89,23 @@ const MyVideosPage = () => {
         }
     };
 
-    const handleDeleteClick = () => {
-        setIsDeleteDialogOpen(true);
+    const handleDeleteClick = async () => {
         handleMenuClose();
-    };
 
-    const handleDeleteConfirm = async () => {
-        try {
-            await videoService.deleteVideo(selectedVideo._id || selectedVideo.id);
-            setIsDeleteDialogOpen(false);
-            fetchMyVideos();
-        } catch (err) {
-            console.error('Error deleting video:', err);
-            alert('Error al eliminar el video');
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            '¿Eliminar video?',
+            '¿Estás seguro de que deseas eliminar este video? Esta acción no se puede deshacer.'
+        );
+
+        if (confirmed) {
+            try {
+                await videoService.deleteVideo(selectedVideo._id || selectedVideo.id);
+                SweetAlert.showSuccessAlert('¡Eliminado!', 'Video eliminado correctamente');
+                fetchMyVideos();
+            } catch (err) {
+                console.error('Error deleting video:', err);
+                SweetAlert.showErrorAlert('Error', 'Error al eliminar el video');
+            }
         }
     };
 
@@ -155,11 +160,7 @@ const MyVideosPage = () => {
                 onSave={handleEditSave}
             />
 
-            <DeleteVideoDialog
-                open={isDeleteDialogOpen}
-                onClose={() => setIsDeleteDialogOpen(false)}
-                onConfirm={handleDeleteConfirm}
-            />
+
 
             <VideoPlayerModal
                 open={isPlayerModalOpen}

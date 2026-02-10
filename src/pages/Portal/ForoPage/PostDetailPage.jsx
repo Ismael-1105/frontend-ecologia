@@ -23,10 +23,16 @@ import {
     Comment as CommentIcon,
     Visibility as VisibilityIcon,
     Schedule as ScheduleIcon,
-    Person as PersonIcon
+    Person as PersonIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon
 } from '@mui/icons-material';
+import { deletePost } from '../../../core/api/postService';
+import { useAuth } from '../../../core/context/AuthContext';
+import { useSnackbar } from '../../../core/context/SnackbarContext.jsx';
 import { getPostById, toggleLikePost } from '../../../core/api/postService';
 import CommentSection from './components/CommentSection';
+import SweetAlert from '../../../components/common/SweetAlert';
 
 const PostDetailPage = () => {
     const { postId } = useParams();
@@ -35,6 +41,13 @@ const PostDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [liked, setLiked] = useState(false);
+
+    const { user } = useAuth();
+    const { showSuccess, showError } = useSnackbar();
+
+    const isAdmin = user?.role === 'Administrador' || user?.role === 'SuperAdmin';
+    const isAuthor = user && post && (post.author?._id === user._id || post.author?._id === user.id || post.author === user.id);
+    const canManage = isAdmin || isAuthor;
 
     useEffect(() => {
         fetchPost();
@@ -69,12 +82,38 @@ const PostDetailPage = () => {
                 setPost(prev => ({
                     ...prev,
                     likes: response.data.liked
-                        ? [...(prev.likes || []), localStorage.getItem('userId')]
-                        : (prev.likes || []).filter(id => id !== localStorage.getItem('userId'))
+                        ? [...(prev.likes || []), user?._id || user?.id]
+                        : (prev.likes || []).filter(id => id !== (user?._id || user?.id))
                 }));
             }
         } catch (err) {
             console.error('Error toggling like:', err);
+        }
+    };
+
+    const handleEdit = () => {
+        navigate(`/portal/foro/edit/${postId}`);
+    };
+
+    const handleDelete = async () => {
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            '¿Eliminar publicación?',
+            '¿Estás seguro de eliminar esta publicación? Esta acción no se puede deshacer.'
+        );
+
+        if (confirmed) {
+            try {
+                const response = await deletePost(postId);
+                if (response.success) {
+                    SweetAlert.showSuccessAlert('¡Eliminado!', 'Publicación eliminada correctamente');
+                    // showSuccess('Publicación eliminada correctamente');
+                    navigate('/portal/foro');
+                }
+            } catch (err) {
+                console.error('Error deleting post:', err);
+                SweetAlert.showErrorAlert('Error', 'Error al eliminar la publicación');
+                // showError('Error al eliminar la publicación');
+            }
         }
     };
 
@@ -286,6 +325,31 @@ const PostDetailPage = () => {
                             >
                                 {likeCount} Me gusta
                             </Button>
+
+                            {canManage && (
+                                <>
+                                    <Button
+                                        startIcon={<EditIcon />}
+                                        onClick={handleEdit}
+                                        size="large"
+                                        variant="outlined"
+                                        color="primary"
+                                        sx={{ borderRadius: 2, px: 3, py: 1.5, fontWeight: 600 }}
+                                    >
+                                        Editar
+                                    </Button>
+                                    <Button
+                                        startIcon={<DeleteIcon />}
+                                        onClick={handleDelete}
+                                        size="large"
+                                        variant="outlined"
+                                        color="error"
+                                        sx={{ borderRadius: 2, px: 3, py: 1.5, fontWeight: 600 }}
+                                    >
+                                        Eliminar
+                                    </Button>
+                                </>
+                            )}
                         </Stack>
                     </CardContent>
                 </Card>

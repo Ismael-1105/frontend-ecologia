@@ -134,12 +134,12 @@ export const getFileInfo = async (filename) => {
 
 /**
  * Delete a file
- * @param {string} filename - Filename to delete
+ * @param {string} id - Upload ID to delete
  * @returns {Promise} API response
  */
-export const deleteFile = async (filename) => {
+export const deleteFile = async (id) => {
     try {
-        const response = await apiClient.delete(`/uploads/${filename}`);
+        const response = await apiClient.delete(`/uploads/${id}`);
         return response.data;
     } catch (error) {
         throw handleUploadError(error);

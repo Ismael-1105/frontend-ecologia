@@ -21,6 +21,7 @@
     "react-dom": "^19.2.0",
     "react-pdf": "^10.3.0",
     "react-router-dom": "^7.9.5",
+    "sweetalert2": "^11.26.18",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

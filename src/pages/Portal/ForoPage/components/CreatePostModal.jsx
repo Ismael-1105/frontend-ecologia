@@ -30,7 +30,10 @@ const CATEGORIES = [
     'Conservación',
     'Reciclaje',
     'Agua',
-    'Educación Ambiental'
+    'Educación Ambiental',
+    'Cambio Climático',
+    'Energías Renovables',
+    'Problemas Locales'
 ];
 
 const MAX_FILES = 5;

@@ -13,13 +13,7 @@ import {
 /**
  * All Videos Page
  * View all approved videos from all users
- * 
- * Architecture:
- * - PageHeader: Title and description
- * - EmptyState: Shown when no videos exist
- * - AllVideosGrid: Responsive grid of video cards
- * - VideoPlayerModal: Modal for playing videos
- * - useAllVideos: Custom hook for fetching all videos
+ * Now supports Admin management
  */
 const AllVideosPage = () => {
     const {
@@ -28,6 +22,8 @@ const AllVideosPage = () => {
         loading,
         page,
         setPage,
+        handleEdit,
+        handleDelete,
     } = useAllVideos();
 
     // Video player modal state
@@ -64,7 +60,12 @@ const AllVideosPage = () => {
             ) : (
                 /* Content: Video Grid */
                 <>
-                    <AllVideosGrid videos={videos} onVideoSelect={handleVideoSelect} />
+                    <AllVideosGrid
+                        videos={videos}
+                        onVideoSelect={handleVideoSelect}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    />
                     <PaginationComponent pagination={pagination} onPageChange={setPage} />
                 </>
             )}
@@ -75,6 +76,8 @@ const AllVideosPage = () => {
                 onClose={handleCloseModal}
                 videoId={selectedVideoId}
             />
+
+
         </Container>
     );
 };

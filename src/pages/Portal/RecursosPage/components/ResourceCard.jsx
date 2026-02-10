@@ -17,10 +17,14 @@ import {
     Description as DocIcon,
     Download as DownloadIcon,
     Visibility as VisibilityIcon,
-    AudioFile as AudioIcon
+    AudioFile as AudioIcon,
+    Delete as DeleteIcon
 } from '@mui/icons-material';
+import { useAuth } from '../../../../core/context/AuthContext';
 import * as uploadService from '../../../../core/api/uploadService';
 import PdfViewerModal from '../../../../components/shared/PdfViewerModal';
+import { useSnackbar } from '../../../../core/context/SnackbarContext.jsx';
+import SweetAlert from '../../../../components/common/SweetAlert';
 
 /**
  * Helper function to construct file URLs using environment variable
@@ -35,8 +39,14 @@ const getFileUrl = (path) => {
 };
 
 const ResourceCard = ({ resource, onUpdate }) => {
+    const { user } = useAuth();
+    const { showSuccess, showError } = useSnackbar();
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
     const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
+
+    const isAdmin = user?.role === 'Administrador' || user?.role === 'SuperAdmin';
+    const isAuthor = user && (resource.uploadedBy?._id === user._id || resource.uploadedBy === user.id || resource.uploadedBy?._id === user.id);
+    const canManage = isAdmin || isAuthor;
 
     const getIcon = (fileType) => {
         switch (fileType?.toLowerCase()) {
@@ -93,6 +103,28 @@ const ResourceCard = ({ resource, onUpdate }) => {
                 message: 'Error al descargar el archivo',
                 severity: 'error'
             });
+        }
+    };
+
+    const handleDelete = async () => {
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            '¿Eliminar recurso?',
+            '¿Estás seguro de que deseas eliminar este recurso? Esta acción no se puede deshacer.'
+        );
+
+        if (confirmed) {
+            try {
+                // Use ID for deletion as per updated backend logic
+                const identifier = resource._id || resource.id;
+                await uploadService.deleteFile(identifier);
+                SweetAlert.showSuccessAlert('¡Eliminado!', 'Recurso eliminado correctamente');
+                // showSuccess('Recurso eliminado correctamente'); // Optional: keep snackbar or rely on SweetAlert
+                if (onUpdate) onUpdate();
+            } catch (error) {
+                console.error('Error deleting file:', error);
+                SweetAlert.showErrorAlert('Error', 'Error al eliminar el recurso');
+                // showError('Error al eliminar el recurso');
+            }
         }
     };
 
@@ -207,6 +239,16 @@ const ResourceCard = ({ resource, onUpdate }) => {
                             >
                                 <DownloadIcon />
                             </IconButton>
+                            {canManage && (
+                                <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={handleDelete}
+                                    title="Eliminar recurso"
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            )}
                         </Box>
                     </Box>
                 </CardContent>

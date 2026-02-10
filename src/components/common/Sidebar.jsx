@@ -10,6 +10,7 @@ import {
     Badge,
     Button,
     Divider,
+    Typography,
     useMediaQuery,
     useTheme
 } from '@mui/material';
@@ -38,10 +39,15 @@ const navigationItems = [
     { name: 'Recursos', path: '/portal/recursos', icon: MenuBookIcon },
 ];
 
+// Admin-only navigation items
+const adminNavigationItems = [
+    { name: 'Gestión de Usuarios', path: '/portal/admin/users', icon: PeopleIcon },
+];
+
 const Sidebar = ({ mobileOpen, onMobileClose }) => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
@@ -143,6 +149,68 @@ const Sidebar = ({ mobileOpen, onMobileClose }) => {
                         );
                     })}
                 </List>
+
+                {/* Admin Section - Only for Administrador and SuperAdmin */}
+                {(user?.role === 'Administrador' || user?.role === 'SuperAdmin') && (
+                    <>
+                        <Divider sx={{ my: 2 }} />
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                px: 2.5,
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: 0.5,
+                                color: 'text.secondary',
+                                display: 'block',
+                                mb: 1.5
+                            }}
+                        >
+                            Administración
+                        </Typography>
+                        <List sx={{ px: 1.5 }}>
+                            {adminNavigationItems.map((item) => {
+                                const isActive = location.pathname === item.path ||
+                                    location.pathname.startsWith(item.path + '/');
+                                return (
+                                    <ListItem key={item.name} disablePadding sx={{ mb: 0.5 }}>
+                                        <ListItemButton
+                                            component={Link}
+                                            to={item.path}
+                                            onClick={isMobile ? onMobileClose : undefined}
+                                            sx={{
+                                                borderRadius: 2,
+                                                py: 1.25,
+                                                px: 1.5,
+                                                bgcolor: isActive ? 'error.main' : 'transparent',
+                                                color: isActive ? 'error.contrastText' : 'text.primary',
+                                                '&:hover': {
+                                                    bgcolor: isActive ? 'error.dark' : 'action.hover'
+                                                }
+                                            }}
+                                        >
+                                            <ListItemIcon
+                                                sx={{
+                                                    minWidth: 40,
+                                                    color: isActive ? 'error.contrastText' : 'text.secondary'
+                                                }}
+                                            >
+                                                <item.icon fontSize="small" />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={item.name}
+                                                primaryTypographyProps={{
+                                                    variant: 'body2',
+                                                    fontWeight: isActive ? 600 : 500
+                                                }}
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
+                    </>
+                )}
 
                 {/* Categories */}
                 <CategoryList />

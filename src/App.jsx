@@ -29,10 +29,12 @@ const ProfilePage = lazy(() => import('./pages/Portal/ProfilePage/ProfilePage'))
 const MyVideosPage = lazy(() => import('./pages/Portal/MyVideosPage/MyVideosPage'));
 const AllVideosPage = lazy(() => import('./pages/Portal/AllVideosPage/AllVideosPage'));
 const UploadVideoPage = lazy(() => import('./pages/Portal/UploadVideoPage/UploadVideoPage'));
+const EditVideoPage = lazy(() => import('./pages/Portal/EditVideoPage/EditVideoPage'));
 const VideoPlayerPage = lazy(() => import('./pages/Portal/VideoPlayerPage/VideoPlayerPage'));
 const UserProfilePage = lazy(() => import('./pages/Portal/UserProfilePage/UserProfilePage'));
 const ForoPage = lazy(() => import('./pages/Portal/ForoPage/ForoPage'));
 const PostDetailPage = lazy(() => import('./pages/Portal/ForoPage/PostDetailPage'));
+const EditPostPage = lazy(() => import('./pages/Portal/ForoPage/EditPostPage'));
 const RecursosPage = lazy(() => import('./pages/Portal/RecursosPage/RecursosPage'));
 const ComunidadPage = lazy(() => import('./pages/Portal/ComunidadPage/ComunidadPage'));
 
@@ -82,6 +84,7 @@ function AppContent() {
                   <Route path="video-player/:id" element={<VideoPlayerPage />} />
                   <Route path="foro" element={<ForoPage />} />
                   <Route path="foro/:postId" element={<PostDetailPage />} />
+                  <Route path="foro/edit/:id" element={<EditPostPage />} />
                   <Route path="recursos" element={<RecursosPage />} />
                   <Route path="comunidad" element={<ComunidadPage />} />
 
@@ -94,6 +97,14 @@ function AppContent() {
                       </RoleRoute>
                     }
                   />
+                  <Route
+                    path="edit-video/:id"
+                    element={
+                      <RoleRoute roles={['Docente', 'Administrador', 'SuperAdmin']}>
+                        <EditVideoPage />
+                      </RoleRoute>
+                    }
+                  />
 
                   {/* Admin Routes */}
                   <Route
@@ -101,14 +112,6 @@ function AppContent() {
                     element={
                       <RoleRoute roles={['Administrador', 'SuperAdmin']}>
                         <UsersManagementPage />
-                      </RoleRoute>
-                    }
-                  />
-                  <Route
-                    path="admin/pending-videos"
-                    element={
-                      <RoleRoute roles={['Administrador', 'SuperAdmin']}>
-                        <PendingVideosPage />
                       </RoleRoute>
                     }
                   />

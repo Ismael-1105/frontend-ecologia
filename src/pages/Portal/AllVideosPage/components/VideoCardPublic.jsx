@@ -8,21 +8,48 @@ import {
     Chip,
     IconButton,
     Avatar,
+    Tooltip,
 } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import { Visibility as ViewIcon, ThumbUp as LikeIcon } from '@mui/icons-material';
+import {
+    Visibility as ViewIcon,
+    ThumbUp as LikeIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon
+} from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
+import { useAuth } from '../../../../core/hooks/useAuth';
 
 /**
  * Public Video Card Component
  * Displays video information with author details (read-only)
- * Styled to match Dashboard VideoCard
+ * Shared with Admin management capabilities
  */
-const VideoCardPublic = ({ video, onVideoSelect }) => {
+const VideoCardPublic = ({ video, onVideoSelect, onEdit, onDelete }) => {
+    const { user } = useAuth();
+
+    // Check if user has management permissions (is author or admin)
+    const canManage = user && (
+        user.role === 'Administrador' ||
+        user.role === 'SuperAdmin' ||
+        user._id === video.author?._id ||
+        user.id === video.author?._id
+    );
+
     const handleCardClick = () => {
         if (onVideoSelect) {
             onVideoSelect(video._id);
         }
+    };
+
+    const handleEditClick = (e) => {
+        e.stopPropagation();
+        if (onEdit) onEdit(video);
+    };
+
+    const handleDeleteClick = (e) => {
+        e.stopPropagation();
+        if (onDelete) onDelete(video._id);
     };
 
     const getInitials = (name) => {
@@ -65,6 +92,9 @@ const VideoCardPublic = ({ video, onVideoSelect }) => {
                         opacity: 1,
                         transform: 'translate(-50%, -50%) scale(1.1)',
                     },
+                    '& .management-actions': {
+                        opacity: 1,
+                    }
                 },
             })}
         >
@@ -80,6 +110,51 @@ const VideoCardPublic = ({ video, onVideoSelect }) => {
                         bgcolor: 'grey.200',
                     }}
                 />
+
+                {/* Management Actions - Only visible to Admins/Authors */}
+                {canManage && (
+                    <Box
+                        className="management-actions"
+                        sx={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            display: 'flex',
+                            gap: 1,
+                            opacity: 0,
+                            transition: 'opacity 0.3s ease',
+                            zIndex: 2,
+                        }}
+                    >
+                        <Tooltip title="Editar Video">
+                            <IconButton
+                                size="small"
+                                onClick={handleEditClick}
+                                sx={{
+                                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                                    color: 'primary.main',
+                                    '&:hover': { bgcolor: 'white' }
+                                }}
+                            >
+                                <EditIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Eliminar Video">
+                            <IconButton
+                                size="small"
+                                onClick={handleDeleteClick}
+                                sx={{
+                                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                                    color: 'error.main',
+                                    '&:hover': { bgcolor: 'white' }
+                                }}
+                            >
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                )}
+
                 <IconButton
                     className="play-icon"
                     sx={{

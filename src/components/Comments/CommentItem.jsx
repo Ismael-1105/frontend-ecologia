@@ -25,6 +25,7 @@ import { es } from 'date-fns/locale';
 import { useAuth } from '../../core/context/AuthContext';
 import { BadgeList } from '../Badges';
 import CommentForm from './CommentForm';
+import SweetAlert from '../common/SweetAlert';
 
 /**
  * CommentItem Component
@@ -63,11 +64,15 @@ const CommentItem = ({
         handleMenuClose();
     };
 
-    const handleDelete = () => {
-        if (window.confirm('¿Estás seguro de eliminar este comentario?')) {
+    const handleDelete = async () => {
+        handleMenuClose();
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            '¿Eliminar comentario?',
+            '¿Estás seguro de eliminar este comentario?'
+        );
+        if (confirmed) {
             onDelete(comment._id);
         }
-        handleMenuClose();
     };
 
     const handleEditSubmit = async (content) => {

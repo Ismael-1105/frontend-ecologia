@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { videoService } from '../../../../core/services';
 import { useAuth } from '../../../../core/context/AuthContext';
 import { useSnackbar } from '../../../../core/context/SnackbarContext.jsx';
+import SweetAlert from '../../../../components/common/SweetAlert';
 
 /**
  * useMyVideos Hook
@@ -20,7 +21,7 @@ export const useMyVideos = () => {
     const [page, setPage] = useState(1);
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedVideo, setSelectedVideo] = useState(null);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    // const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // No longer needed
 
     // Load videos on mount and page change
     useEffect(() => {
@@ -60,24 +61,25 @@ export const useMyVideos = () => {
         handleMenuClose();
     };
 
-    const handleDelete = () => {
-        setDeleteDialogOpen(true);
+    const handleDelete = async () => {
         handleMenuClose();
-    };
 
-    const confirmDelete = async () => {
-        try {
-            await videoService.deleteVideo(selectedVideo._id);
-            setDeleteDialogOpen(false);
-            showSuccess('Video deleted successfully');
-            loadMyVideos();
-        } catch (error) {
-            showError(error.message || 'Failed to delete video');
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            '¿Eliminar video?',
+            '¿Estás seguro de que deseas eliminar este video? Esta acción no se puede deshacer.'
+        );
+
+        if (confirmed) {
+            try {
+                await videoService.deleteVideo(selectedVideo._id);
+                SweetAlert.showSuccessAlert('¡Eliminado!', 'Video eliminado correctamente');
+                // showSuccess('Video deleted successfully');
+                loadMyVideos();
+            } catch (error) {
+                SweetAlert.showErrorAlert('Error', error.message || 'Error al eliminar el video');
+                // showError(error.message || 'Failed to delete video');
+            }
         }
-    };
-
-    const cancelDelete = () => {
-        setDeleteDialogOpen(false);
     };
 
     return {
@@ -96,7 +98,5 @@ export const useMyVideos = () => {
         handleMenuClose,
         handleEdit,
         handleDelete,
-        confirmDelete,
-        cancelDelete,
     };
 };

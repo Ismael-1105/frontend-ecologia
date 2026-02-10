@@ -17,15 +17,24 @@ import {
     MoreVert as MoreVertIcon,
     ThumbUp as ThumbUpIcon,
     ThumbDown as ThumbDownIcon,
-    PushPin as PushPinIcon
+    PushPin as PushPinIcon,
+    Delete as DeleteIcon,
+    Edit as EditIcon
 } from '@mui/icons-material';
+import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { deletePost, togglePinPost } from '../../../../core/api/postService';
+import { useSnackbar } from '../../../../core/context/SnackbarContext.jsx';
 import { Link } from 'react-router-dom';
 import { toggleLikePost, toggleDislikePost } from '../../../../core/api/postService';
 import PostAttachments from './PostAttachments';
 import { useAuth } from '../../../../core/context/AuthContext';
+import SweetAlert from '../../../../components/common/SweetAlert';
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, onPostDeleted }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const { showSuccess, showError } = useSnackbar();
 
     // State for engagement metrics
     const [likeCount, setLikeCount] = useState(post.likes?.length || 0);
@@ -33,6 +42,13 @@ const PostCard = ({ post }) => {
     const [viewCount] = useState(post.views || 0);
     const [userLiked, setUserLiked] = useState(false);
     const [userDisliked, setUserDisliked] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [isPinned, setIsPinned] = useState(post.isPinned || false);
+
+    const open = Boolean(anchorEl);
+    const isAdmin = user?.role === 'Administrador' || user?.role === 'SuperAdmin';
+    const isAuthor = user && (post.author?._id === user._id || post.author?._id === user.id || post.author === user.id);
+    const canManage = isAdmin || isAuthor;
 
     // Initialize like/dislike state based on current user
     useEffect(() => {
@@ -103,6 +119,68 @@ const PostCard = ({ post }) => {
         }
     };
 
+    const handleMenuOpen = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setAnchorEl(e.currentTarget);
+    };
+
+    const handleMenuClose = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        setAnchorEl(null);
+    };
+
+    const handleEdit = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigate(`/portal/foro/edit/${post._id}`);
+        handleMenuClose();
+    };
+
+    const handleDelete = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            '¿Eliminar publicación?',
+            '¿Estás seguro de eliminar esta publicación? Esta acción no se puede deshacer.'
+        );
+
+        if (confirmed) {
+            try {
+                const response = await deletePost(post._id);
+                if (response.success) {
+                    SweetAlert.showSuccessAlert('¡Eliminado!', 'Publicación eliminada');
+                    // showSuccess('Publicación eliminada');
+                    if (onPostDeleted) onPostDeleted(post._id);
+                }
+            } catch (error) {
+                SweetAlert.showErrorAlert('Error', 'Error al eliminar la publicación');
+                // showError('Error al eliminar la publicación');
+            }
+        }
+        handleMenuClose();
+    };
+
+    const handleTogglePin = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        try {
+            const response = await togglePinPost(post._id, !isPinned);
+            if (response.success) {
+                setIsPinned(!isPinned);
+                showSuccess(isPinned ? 'Publicación desfijada' : 'Publicación fijada');
+            }
+        } catch (error) {
+            showError('Error al cambiar el estado de fijación');
+        }
+        handleMenuClose();
+    };
+
     return (
         <Card
             elevation={0}
@@ -157,14 +235,45 @@ const PostCard = ({ post }) => {
                                     {post.title}
                                 </Typography>
                             </Link>
-                            <IconButton size="small">
-                                <MoreVertIcon fontSize="small" />
-                            </IconButton>
+                            {canManage && (
+                                <IconButton size="small" onClick={handleMenuOpen}>
+                                    <MoreVertIcon fontSize="small" />
+                                </IconButton>
+                            )}
+
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleMenuClose}
+                                onClick={(e) => e.stopPropagation()}
+                                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                            >
+                                {isAdmin && (
+                                    <MenuItem onClick={handleTogglePin}>
+                                        <ListItemIcon>
+                                            <PushPinIcon fontSize="small" color={isPinned ? "warning" : "inherit"} />
+                                        </ListItemIcon>
+                                        <ListItemText>{isPinned ? 'Desfijar' : 'Fijar'}</ListItemText>
+                                    </MenuItem>
+                                )}
+                                <MenuItem onClick={handleEdit}>
+                                    <ListItemIcon>
+                                        <EditIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText>Editar</ListItemText>
+                                </MenuItem>
+                                <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
+                                    <ListItemIcon>
+                                        <DeleteIcon fontSize="small" color="error" />
+                                    </ListItemIcon>
+                                    <ListItemText>Eliminar</ListItemText>
+                                </MenuItem>
+                            </Menu>
                         </Box>
 
-                        {/* Badges */}
                         <Stack direction="row" spacing={1} sx={{ mb: 1.5, flexWrap: 'wrap', gap: 0.5 }}>
-                            {post.isPinned && (
+                            {isPinned && (
                                 <Chip
                                     icon={<PushPinIcon />}
                                     label="Fijado"

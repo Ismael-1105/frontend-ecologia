@@ -12,7 +12,8 @@ import {
 import {
     Person as PersonIcon,
     Settings as SettingsIcon,
-    Logout as LogoutIcon
+    Logout as LogoutIcon,
+    AdminPanelSettings as AdminPanelSettingsIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../core/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -90,7 +91,7 @@ const UserMenu = () => {
                             {user?.name || 'Usuario'}
                         </Typography>
                         <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
-                            {user?.role === 'teacher' ? 'Docente' : 'Estudiante'}
+                            {user?.role || 'Estudiante'}
                         </Typography>
                     </Box>
                 </Box>
@@ -137,6 +138,18 @@ const UserMenu = () => {
                     </ListItemIcon>
                     Mi Perfil
                 </MenuItem>
+
+                {['Administrador', 'SuperAdmin'].includes(user?.role) && (
+                    <MenuItem onClick={() => {
+                        navigate('/portal/admin/users');
+                        handleClose();
+                    }}>
+                        <ListItemIcon>
+                            <AdminPanelSettingsIcon fontSize="small" />
+                        </ListItemIcon>
+                        Gestión de Usuarios
+                    </MenuItem>
+                )}
 
 
                 <Divider />

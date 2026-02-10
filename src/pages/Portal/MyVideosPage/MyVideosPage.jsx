@@ -7,7 +7,6 @@ import {
     EmptyState,
     VideoGrid,
     VideoActionsMenu,
-    DeleteVideoDialog,
     useMyVideos,
 } from './components';
 
@@ -31,17 +30,12 @@ const MyVideosPage = () => {
         loading,
         page,
         anchorEl,
-        selectedVideo,
-        deleteDialogOpen,
+
 
         // Handlers
         setPage,
-        handleMenuOpen,
-        handleMenuClose,
         handleEdit,
         handleDelete,
-        confirmDelete,
-        cancelDelete,
     } = useMyVideos();
 
     // Loading state
@@ -72,13 +66,7 @@ const MyVideosPage = () => {
                 onDelete={handleDelete}
             />
 
-            {/* Delete Confirmation Dialog */}
-            <DeleteVideoDialog
-                open={deleteDialogOpen}
-                video={selectedVideo}
-                onConfirm={confirmDelete}
-                onCancel={cancelDelete}
-            />
+
         </Container>
     );
 };

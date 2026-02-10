@@ -26,6 +26,8 @@ import {
     deleteComment,
     toggleLikeComment
 } from '../../../../core/api/postService';
+import { useAuth } from '../../../../core/context/AuthContext';
+import SweetAlert from '../../../../components/common/SweetAlert';
 
 const Comment = ({ comment, postId, onReply, onDelete, onLike, level = 0 }) => {
     const [showReplyForm, setShowReplyForm] = useState(false);
@@ -38,7 +40,9 @@ const Comment = ({ comment, postId, onReply, onDelete, onLike, level = 0 }) => {
     const likeCount = comment.likes?.length || 0;
     const currentUserId = localStorage.getItem('userId');
     const isLiked = comment.likes?.includes(currentUserId);
-    const isAuthor = comment.author?._id === currentUserId;
+    const { user } = useAuth();
+    const isAdmin = user?.role === 'Administrador' || user?.role === 'SuperAdmin';
+    const isAuthor = comment.author?._id === currentUserId || comment.author === currentUserId;
     const hasReplies = comment.replies && comment.replies.length > 0;
 
     const getInitials = (name) => {
@@ -222,7 +226,7 @@ const Comment = ({ comment, postId, onReply, onDelete, onLike, level = 0 }) => {
                                 Responder
                             </Button>
 
-                            {isAuthor && (
+                            {(isAuthor || isAdmin) && (
                                 <Button
                                     size="small"
                                     startIcon={<DeleteIcon sx={{ fontSize: 14 }} />}
@@ -402,13 +406,20 @@ const CommentSection = ({ postId }) => {
     };
 
     const handleDeleteComment = async (commentId) => {
-        if (!window.confirm('¿Estás seguro de eliminar este comentario?')) return;
+        const confirmed = await SweetAlert.showDeleteConfirmation(
+            '¿Eliminar comentario?',
+            '¿Estás seguro de eliminar este comentario?'
+        );
+
+        if (!confirmed) return;
 
         try {
             await deleteComment(commentId);
+            SweetAlert.showSuccessAlert('¡Eliminado!', 'Comentario eliminado');
             fetchComments();
         } catch (err) {
             console.error('Error deleting comment:', err);
+            SweetAlert.showErrorAlert('Error', 'Error al eliminar el comentario');
             setError('Error al eliminar el comentario');
         }
     };
