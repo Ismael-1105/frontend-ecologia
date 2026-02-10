@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Card,
     CardContent,
@@ -22,14 +22,26 @@ import {
 import { Link } from 'react-router-dom';
 import { toggleLikePost, toggleDislikePost } from '../../../../core/api/postService';
 import PostAttachments from './PostAttachments';
+import { useAuth } from '../../../../core/context/AuthContext';
 
 const PostCard = ({ post }) => {
+    const { user } = useAuth();
+
     // State for engagement metrics
     const [likeCount, setLikeCount] = useState(post.likes?.length || 0);
     const [dislikeCount, setDislikeCount] = useState(post.dislikes?.length || 0);
     const [viewCount] = useState(post.views || 0);
     const [userLiked, setUserLiked] = useState(false);
     const [userDisliked, setUserDisliked] = useState(false);
+
+    // Initialize like/dislike state based on current user
+    useEffect(() => {
+        if (user && post) {
+            const userId = user._id || user.id;
+            setUserLiked(post.likes?.some(id => id === userId || id._id === userId) || false);
+            setUserDisliked(post.dislikes?.some(id => id === userId || id._id === userId) || false);
+        }
+    }, [user, post]);
 
     const getInitials = (name) => {
         if (!name) return '??';
@@ -56,12 +68,13 @@ const PostCard = ({ post }) => {
         try {
             const response = await toggleLikePost(post._id);
             if (response.success) {
+                // Update both counts from backend response
                 setLikeCount(response.data.likeCount);
+                setDislikeCount(response.data.dislikeCount || post.dislikes?.length || 0);
                 setUserLiked(response.data.liked);
-                // If liked, remove dislike
-                if (response.data.liked && userDisliked) {
+                // Backend handles mutual exclusivity, so update dislike state
+                if (response.data.liked) {
                     setUserDisliked(false);
-                    setDislikeCount(prev => Math.max(0, prev - 1));
                 }
             }
         } catch (error) {
@@ -76,12 +89,13 @@ const PostCard = ({ post }) => {
         try {
             const response = await toggleDislikePost(post._id);
             if (response.success) {
+                // Update both counts from backend response
+                setLikeCount(response.data.likeCount || post.likes?.length || 0);
                 setDislikeCount(response.data.dislikeCount);
                 setUserDisliked(response.data.disliked);
-                // If disliked, remove like
-                if (response.data.disliked && userLiked) {
+                // Backend handles mutual exclusivity, so update like state
+                if (response.data.disliked) {
                     setUserLiked(false);
-                    setLikeCount(prev => Math.max(0, prev - 1));
                 }
             }
         } catch (error) {

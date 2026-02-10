@@ -12,6 +12,15 @@ const PaginationComponent = ({ pagination, onPageChange }) => {
 
     const { currentPage, totalPages, totalCount, limit } = pagination;
 
+    // Validate that all required values are valid numbers
+    const isValidPagination =
+        !isNaN(currentPage) &&
+        !isNaN(totalPages) &&
+        !isNaN(totalCount) &&
+        !isNaN(limit) &&
+        currentPage > 0 &&
+        totalCount >= 0;
+
     const startItem = (currentPage - 1) * limit + 1;
     const endItem = Math.min(currentPage * limit, totalCount);
 
@@ -26,9 +35,11 @@ const PaginationComponent = ({ pagination, onPageChange }) => {
                 gap: 2,
             }}
         >
-            <Typography variant="body2" color="text.secondary">
-                Showing {startItem} to {endItem} of {totalCount} results
-            </Typography>
+            {isValidPagination && totalCount > 0 && (
+                <Typography variant="body2" color="text.secondary">
+                    Showing {startItem} to {endItem} of {totalCount} results
+                </Typography>
+            )}
 
             <MuiPagination
                 count={totalPages}

@@ -16,6 +16,7 @@ import {
 import {
     Dashboard as DashboardIcon,
     VideoLibrary as VideoLibraryIcon,
+    VideoFile as MyVideosIcon,
     Forum as ForumIcon,
     MenuBook as MenuBookIcon,
     People as PeopleIcon,
@@ -31,7 +32,8 @@ const DRAWER_WIDTH = 260;
 
 const navigationItems = [
     { name: 'Inicio', path: '/portal/dashboard', icon: DashboardIcon },
-    { name: 'Videos', path: '/portal/video-player', icon: VideoLibraryIcon },
+    { name: 'Todos los Videos', path: '/portal/videos', icon: VideoLibraryIcon },
+    { name: 'Mis Videos', path: '/portal/video-player', icon: MyVideosIcon },
     { name: 'Foro', path: '/portal/foro', icon: ForumIcon, badge: 12 },
     { name: 'Recursos', path: '/portal/recursos', icon: MenuBookIcon },
 ];

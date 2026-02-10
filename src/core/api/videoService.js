@@ -1,6 +1,19 @@
 import apiClient from './client';
 
 /**
+ * Get all videos (approved)
+ * @param {Object} params - Query parameters (page, limit)
+ * @returns {Promise} API response
+ */
+export const getAllVideos = async (params = {}) => {
+    const { page = 1, limit = 12 } = params;
+    const response = await apiClient.get('/videos', {
+        params: { page, limit }
+    });
+    return response.data;
+};
+
+/**
  * Get comments for a video
  * @param {string} videoId - Video ID
  * @param {Object} params - Query parameters
@@ -57,6 +70,7 @@ export const likeVideoComment = async (commentId) => {
 };
 
 export default {
+    getAllVideos,
     getVideoComments,
     createVideoComment,
     updateVideoComment,

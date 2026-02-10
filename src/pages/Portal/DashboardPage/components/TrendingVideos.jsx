@@ -34,7 +34,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
         try {
             setLoading(true);
             setError(null);
-            const trending = await statsService.getTrendingVideos(8);
+            const trending = await statsService.getTrendingVideos(3);
             setVideos(trending);
         } catch (err) {
             console.error('Error fetching trending videos:', err);
@@ -73,7 +73,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
             <CardHeader
                 title="Videos Populares"
                 action={
-                    <Link to="/portal/video-player" style={{ textDecoration: 'none' }}>
+                    <Link to="/portal/videos" style={{ textDecoration: 'none' }}>
                         <Typography
                             variant="body2"
                             color="primary"
@@ -94,8 +94,8 @@ const TrendingVideos = ({ onVideoSelect }) => {
                 ) : loading ? (
                     <SkeletonGrid
                         SkeletonComponent={VideoCardSkeleton}
-                        count={8}
-                        gridProps={{ xs: 3 }}
+                        count={3}
+                        gridProps={{ xs: 12, sm: 6, md: 4, lg: 3 }}
                     />
                 ) : videos.length === 0 ? (
                     <EmptyState
@@ -108,7 +108,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
                 ) : (
                     <Grid container spacing={2}>
                         {videos.map((video) => (
-                            <Grid item xs={3} key={video._id}>
+                            <Grid item xs={12} sm={6} md={4} lg={3} key={video._id}>
                                 <Link
                                     to={`/portal/dashboard?videoId=${video._id}`}
                                     style={{ textDecoration: 'none', color: 'inherit' }}
@@ -126,7 +126,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
                                     >
                                         <CardMedia
                                             component="img"
-                                            height="160"
+                                            height="140"
                                             image={video.thumbnailUrl || '/placeholder-video.jpg'}
                                             alt={video.title}
                                             sx={{ transition: 'transform 0.3s ease', bgcolor: 'grey.200' }}

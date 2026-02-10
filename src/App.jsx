@@ -27,6 +27,7 @@ const VideoDetailPage = lazy(() => import('./pages/VideoDetailPage/VideoDetailPa
 const DashboardPage = lazy(() => import('./pages/Portal/DashboardPage/DashboardPage'));
 const ProfilePage = lazy(() => import('./pages/Portal/ProfilePage/ProfilePage'));
 const MyVideosPage = lazy(() => import('./pages/Portal/MyVideosPage/MyVideosPage'));
+const AllVideosPage = lazy(() => import('./pages/Portal/AllVideosPage/AllVideosPage'));
 const UploadVideoPage = lazy(() => import('./pages/Portal/UploadVideoPage/UploadVideoPage'));
 const VideoPlayerPage = lazy(() => import('./pages/Portal/VideoPlayerPage/VideoPlayerPage'));
 const UserProfilePage = lazy(() => import('./pages/Portal/UserProfilePage/UserProfilePage'));
@@ -76,6 +77,7 @@ function AppContent() {
                   <Route path="dashboard" element={<DashboardPage />} />
                   <Route path="profile" element={<ProfilePage />} />
                   <Route path="profile/:userId" element={<UserProfilePage />} />
+                  <Route path="videos" element={<AllVideosPage />} />
                   <Route path="video-player" element={<VideoPlayerPage />} />
                   <Route path="video-player/:id" element={<VideoPlayerPage />} />
                   <Route path="foro" element={<ForoPage />} />
@@ -84,14 +86,6 @@ function AppContent() {
                   <Route path="comunidad" element={<ComunidadPage />} />
 
                   {/* Docente+ Routes */}
-                  <Route
-                    path="my-videos"
-                    element={
-                      <RoleRoute roles={['Docente', 'Administrador', 'SuperAdmin']}>
-                        <MyVideosPage />
-                      </RoleRoute>
-                    }
-                  />
                   <Route
                     path="upload-video"
                     element={

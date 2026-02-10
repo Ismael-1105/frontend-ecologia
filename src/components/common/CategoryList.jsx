@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Typography, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
 import { Circle as CircleIcon } from '@mui/icons-material';
-import { Link, useLocation } from 'react-router-dom';
 
 const categories = [
     { name: 'Flora Nativa', slug: 'flora-nativa', color: '#4caf50' },
@@ -12,8 +11,6 @@ const categories = [
 ];
 
 const CategoryList = () => {
-    const location = useLocation();
-
     return (
         <Box sx={{ pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
             <Typography
@@ -31,43 +28,37 @@ const CategoryList = () => {
                 Categorías
             </Typography>
             <List sx={{ py: 0 }}>
-                {categories.map((category) => {
-                    const isActive = location.search.includes(category.slug);
-                    return (
-                        <ListItem key={category.slug} disablePadding>
-                            <ListItemButton
-                                component={Link}
-                                to={`/portal/video-player?categoria=${category.slug}`}
+                {categories.map((category) => (
+                    <ListItem key={category.slug} disablePadding>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                py: 1,
+                                px: 2,
+                                borderRadius: 1.5,
+                                mx: 1,
+                                mb: 0.5,
+                                width: '100%'
+                            }}
+                        >
+                            <CircleIcon
                                 sx={{
-                                    py: 1,
-                                    px: 2,
-                                    borderRadius: 1.5,
-                                    mx: 1,
-                                    mb: 0.5,
-                                    bgcolor: isActive ? 'action.selected' : 'transparent',
-                                    '&:hover': {
-                                        bgcolor: 'action.hover'
-                                    }
+                                    fontSize: 8,
+                                    color: category.color,
+                                    mr: 1.5
                                 }}
-                            >
-                                <CircleIcon
-                                    sx={{
-                                        fontSize: 8,
-                                        color: category.color,
-                                        mr: 1.5
-                                    }}
-                                />
-                                <ListItemText
-                                    primary={category.name}
-                                    primaryTypographyProps={{
-                                        variant: 'body2',
-                                        sx: { fontWeight: isActive ? 600 : 400 }
-                                    }}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    );
-                })}
+                            />
+                            <ListItemText
+                                primary={category.name}
+                                primaryTypographyProps={{
+                                    variant: 'body2',
+                                    sx: { fontWeight: 400 }
+                                }}
+                            />
+                        </Box>
+                    </ListItem>
+                ))}
             </List>
         </Box>
     );

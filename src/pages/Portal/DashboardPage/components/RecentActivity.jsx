@@ -135,7 +135,7 @@ const RecentActivity = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <TimeIcon sx={{ mr: 1, color: 'primary.main' }} />
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                        Actividad Reciente
+                        Mi Actividad Reciente
                     </Typography>
                 </Box>
 

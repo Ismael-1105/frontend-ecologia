@@ -3,7 +3,7 @@ import { Box, AppBar, Toolbar, IconButton, useTheme, useMediaQuery } from '@mui/
 import { Menu as MenuIcon, LightMode as LightModeIcon, DarkMode as DarkModeIcon } from '@mui/icons-material';
 import { Outlet } from 'react-router-dom';
 import { useThemeMode } from '../core/context/ThemeContext';
-import { Sidebar, SearchBar, NotificationBell, UserMenu, DRAWER_WIDTH } from '../components/common';
+import { Sidebar, UserMenu, DRAWER_WIDTH } from '../components/common';
 
 const PortalLayout = ({ children }) => {
     const theme = useTheme();
@@ -40,11 +40,6 @@ const PortalLayout = ({ children }) => {
                         <MenuIcon />
                     </IconButton>
 
-                    {/* Search Bar */}
-                    <Box sx={{ display: { xs: 'none', md: 'block' }, flex: 1, maxWidth: 600 }}>
-                        <SearchBar />
-                    </Box>
-
                     <Box sx={{ flexGrow: 1 }} />
 
                     {/* Right side actions */}
@@ -53,9 +48,6 @@ const PortalLayout = ({ children }) => {
                         <IconButton onClick={toggleTheme} color="inherit">
                             {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
                         </IconButton>
-
-                        {/* Notifications */}
-                        <NotificationBell />
 
                         {/* User Menu */}
                         <UserMenu />
