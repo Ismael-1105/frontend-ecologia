@@ -26,8 +26,7 @@ import { uploadVideo } from '../../../../core/services/videoService';
 const UploadVideoModal = ({ open, onClose, onUploadSuccess }) => {
     const [formData, setFormData] = useState({
         title: '',
-        description: '',
-        duration: ''
+        description: ''
     });
 
     const [videoFile, setVideoFile] = useState(null);
@@ -107,7 +106,7 @@ const UploadVideoModal = ({ open, onClose, onUploadSuccess }) => {
     };
 
     const resetForm = () => {
-        setFormData({ title: '', description: '', duration: '' });
+        setFormData({ title: '', description: '' });
         removeVideo();
         removeThumbnail();
         setError('');
@@ -152,8 +151,7 @@ const UploadVideoModal = ({ open, onClose, onUploadSuccess }) => {
         try {
             const videoData = {
                 title: formData.title,
-                description: formData.description,
-                duration: formData.duration ? parseInt(formData.duration) : null
+                description: formData.description
             };
 
             await uploadVideo(
@@ -172,26 +170,22 @@ const UploadVideoModal = ({ open, onClose, onUploadSuccess }) => {
         } catch (err) {
             console.error('Upload error:', err);
 
-            // Better error messages
-            if (err.response) {
-                const status = err.response.status;
-                const message = err.response.data?.message || err.response.data?.error;
+            // `uploadVideo` throws normalized errors via handleApiError({ message, status, errorCode }).
+            const status = err?.status ?? err?.response?.status;
+            const message = err?.message || err?.response?.data?.message || err?.response?.data?.error;
 
-                if (status === 401) {
-                    setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-                } else if (status === 413) {
-                    setError('Los archivos son demasiado grandes. Video máx: 500MB, Miniatura máx: 5MB.');
-                } else if (status === 400) {
-                    setError(message || 'Datos inválidos. Verifica los campos del formulario.');
-                } else if (status === 500) {
-                    setError('Error en el servidor. Por favor, intenta más tarde.');
-                } else {
-                    setError(message || 'Error al subir el video. Inténtalo de nuevo.');
-                }
-            } else if (err.request) {
+            if (status === 401) {
+                setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            } else if (status === 413) {
+                setError('Los archivos son demasiado grandes para el servidor.');
+            } else if (status === 400) {
+                setError(message || 'Datos inválidos. Verifica los campos del formulario.');
+            } else if (status === 500) {
+                setError('Error en el servidor. Por favor, intenta más tarde.');
+            } else if (err?.errorCode === 'NETWORK_ERROR' || err?.request) {
                 setError('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
             } else {
-                setError(err.message || 'Error desconocido. Por favor, intenta de nuevo.');
+                setError(message || 'Error desconocido. Por favor, intenta de nuevo.');
             }
         } finally {
             setLoading(false);
@@ -264,18 +258,6 @@ const UploadVideoModal = ({ open, onClose, onUploadSuccess }) => {
                         disabled={loading}
                         inputProps={{ maxLength: 2000 }}
                         helperText={`${formData.description.length}/2000 caracteres`}
-                    />
-
-                    <TextField
-                        fullWidth
-                        label="Duración (segundos)"
-                        name="duration"
-                        type="number"
-                        value={formData.duration}
-                        onChange={handleChange}
-                        margin="normal"
-                        disabled={loading}
-                        helperText="Opcional"
                     />
 
                     {/* Video Upload */}

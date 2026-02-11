@@ -16,12 +16,13 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { CategoryChip } from '../../../../components/Categories';
+import { VIDEO_CARD_LAYOUT } from '../../../../config/constants';
 
 const VideoCard = ({ video, loading, onPlay, onMenuOpen, formatDate }) => {
     if (loading) {
         return (
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <Skeleton variant="rectangular" height={200} />
+            <Card sx={{ height: VIDEO_CARD_LAYOUT.HEIGHT, width: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Skeleton variant="rectangular" sx={{ width: '100%', aspectRatio: VIDEO_CARD_LAYOUT.THUMBNAIL_ASPECT_RATIO }} />
                 <CardContent sx={{ flexGrow: 1 }}>
                     <Skeleton variant="text" height={32} />
                     <Skeleton variant="text" />
@@ -31,7 +32,7 @@ const VideoCard = ({ video, loading, onPlay, onMenuOpen, formatDate }) => {
         );
     }
 
-    const thumbnailUrl = video?.thumbnailUrl || video?.thumbnail || '/placeholder-video.jpg';
+    const thumbnailUrl = video?.thumbnailUrl || video?.thumbnail || VIDEO_CARD_LAYOUT.FALLBACK_THUMBNAIL;
     const title = video?.title || video?.titulo || 'Sin título';
     const description = video?.description || video?.descripcion || '';
     const createdAt = video?.createdAt || video?.fecha_creacion;
@@ -42,7 +43,8 @@ const VideoCard = ({ video, loading, onPlay, onMenuOpen, formatDate }) => {
     return (
         <Card
             sx={{
-                height: '100%',
+                height: VIDEO_CARD_LAYOUT.HEIGHT,
+                width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 transition: 'transform 0.2s, box-shadow 0.2s',
@@ -53,13 +55,12 @@ const VideoCard = ({ video, loading, onPlay, onMenuOpen, formatDate }) => {
             }}
         >
             {/* Thumbnail */}
-            <Box sx={{ position: 'relative' }}>
+            <Box sx={{ position: 'relative', width: '100%', aspectRatio: VIDEO_CARD_LAYOUT.THUMBNAIL_ASPECT_RATIO, overflow: 'hidden' }}>
                 <CardMedia
                     component="img"
-                    height="200"
                     image={thumbnailUrl}
                     alt={title}
-                    sx={{ objectFit: 'cover', cursor: 'pointer' }}
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
                     onClick={() => onPlay(video)}
                 />
                 <IconButton
@@ -109,11 +110,13 @@ const VideoCard = ({ video, loading, onPlay, onMenuOpen, formatDate }) => {
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
                             mb: 1,
+                            minHeight: VIDEO_CARD_LAYOUT.DESCRIPTION_MIN_HEIGHT,
                         }}
                     >
                         {description}
                     </Typography>
                 )}
+                {!description && <Box sx={{ minHeight: VIDEO_CARD_LAYOUT.DESCRIPTION_MIN_HEIGHT, mb: 1 }} />}
 
                 {/* Categories */}
                 {categories.length > 0 && (
@@ -155,7 +158,7 @@ const VideoCard = ({ video, loading, onPlay, onMenuOpen, formatDate }) => {
             </CardContent>
 
             {/* Actions */}
-            <CardActions sx={{ justifyContent: 'space-between', pt: 0 }}>
+            <CardActions sx={{ justifyContent: 'space-between', pt: 0, mt: 'auto' }}>
                 <IconButton
                     size="small"
                     onClick={() => onPlay(video)}

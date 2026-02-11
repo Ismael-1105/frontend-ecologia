@@ -10,7 +10,7 @@ const VideoGrid = ({ videos, onMenuOpen }) => {
     return (
         <Grid container spacing={3}>
             {videos.map((video) => (
-                <Grid item xs={12} sm={6} md={4} key={video._id}>
+                <Grid item xs={12} sm={6} md={4} key={video._id} sx={{ display: 'flex' }}>
                     <VideoCard video={video} onMenuOpen={onMenuOpen} />
                 </Grid>
             ))}

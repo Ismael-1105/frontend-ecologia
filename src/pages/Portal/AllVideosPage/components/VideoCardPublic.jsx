@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
 import { useAuth } from '../../../../core/hooks/useAuth';
+import { VIDEO_CARD_LAYOUT } from '../../../../config/constants';
 
 /**
  * Public Video Card Component
@@ -79,7 +80,10 @@ const VideoCardPublic = ({ video, onVideoSelect, onEdit, onDelete }) => {
                 cursor: 'pointer',
                 position: 'relative',
                 overflow: 'hidden',
-                height: '100%',
+                height: VIDEO_CARD_LAYOUT.HEIGHT,
+                minHeight: VIDEO_CARD_LAYOUT.HEIGHT,
+                maxHeight: VIDEO_CARD_LAYOUT.HEIGHT,
+                width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 '&:hover': {
@@ -99,13 +103,24 @@ const VideoCardPublic = ({ video, onVideoSelect, onEdit, onDelete }) => {
             })}
         >
             {/* Thumbnail */}
-            <Box sx={{ position: 'relative' }}>
+            <Box
+                sx={{
+                    position: 'relative',
+                    width: '100%',
+                    height: VIDEO_CARD_LAYOUT.THUMBNAIL_HEIGHT,
+                    minHeight: VIDEO_CARD_LAYOUT.THUMBNAIL_HEIGHT,
+                    maxHeight: VIDEO_CARD_LAYOUT.THUMBNAIL_HEIGHT,
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                }}
+            >
                 <CardMedia
                     component="img"
-                    height="200"
-                    image={video.thumbnailUrl || video.thumbnail || '/placeholder-video.jpg'}
+                    image={video.thumbnailUrl || video.thumbnail || VIDEO_CARD_LAYOUT.FALLBACK_THUMBNAIL}
                     alt={video.title}
                     sx={{
+                        width: '100%',
+                        height: '100%',
                         objectFit: 'cover',
                         bgcolor: 'grey.200',
                     }}
@@ -194,7 +209,7 @@ const VideoCardPublic = ({ video, onVideoSelect, onEdit, onDelete }) => {
             </Box>
 
             {/* Content */}
-            <CardContent sx={{ pb: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ pb: 2, flexGrow: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                 {/* Title */}
                 <Typography
                     variant="h6"
@@ -207,13 +222,14 @@ const VideoCardPublic = ({ video, onVideoSelect, onEdit, onDelete }) => {
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
+                        minHeight: '3.2em',
                     }}
                 >
                     {video.title}
                 </Typography>
 
                 {/* Author Info */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, minHeight: 24 }}>
                     <Avatar
                         src={authorAvatar}
                         sx={{ width: 24, height: 24, bgcolor: 'primary.main' }}
@@ -237,13 +253,15 @@ const VideoCardPublic = ({ video, onVideoSelect, onEdit, onDelete }) => {
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
-                            minHeight: '40px',
+                            minHeight: VIDEO_CARD_LAYOUT.DESCRIPTION_MIN_HEIGHT,
+                            maxHeight: VIDEO_CARD_LAYOUT.DESCRIPTION_MIN_HEIGHT,
                             flexGrow: 1,
                         }}
                     >
                         {video.description}
                     </Typography>
                 )}
+                {!video.description && <Box sx={{ minHeight: VIDEO_CARD_LAYOUT.DESCRIPTION_MIN_HEIGHT, mb: 2 }} />}
 
                 {/* Bottom section: Category and Stats */}
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 'auto' }}>

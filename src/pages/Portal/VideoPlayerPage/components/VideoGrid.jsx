@@ -21,13 +21,14 @@ const VideoGrid = ({ videos, loading, onVideoPlay, onMenuOpen, formatDate }) => 
     return (
         <>
             {videos.map((video) => (
-                <VideoCard
-                    key={video._id || video.id}
-                    video={video}
-                    onPlay={onVideoPlay}
-                    onMenuOpen={onMenuOpen}
-                    formatDate={formatDate}
-                />
+                <Grid item xs={12} sm={6} md={4} key={video._id || video.id} sx={{ display: 'flex' }}>
+                    <VideoCard
+                        video={video}
+                        onPlay={onVideoPlay}
+                        onMenuOpen={onMenuOpen}
+                        formatDate={formatDate}
+                    />
+                </Grid>
             ))}
         </>
     );

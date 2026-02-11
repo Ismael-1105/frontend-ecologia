@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { alpha } from '@mui/material/styles';
+import { VIDEO_CARD_LAYOUT } from '../../../../config/constants';
 
 const renderStars = (rating) => {
   return '★'.repeat(rating) + '☆'.repeat(5 - rating);
@@ -40,6 +41,12 @@ const VideoCard = ({ video, onClick }) => {
           cursor: video.videoUrl ? 'pointer' : 'default',
           position: 'relative',
           overflow: 'hidden',
+          height: VIDEO_CARD_LAYOUT.HEIGHT,
+          minHeight: VIDEO_CARD_LAYOUT.HEIGHT,
+          maxHeight: VIDEO_CARD_LAYOUT.HEIGHT,
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
           '&:hover': {
             transform: 'translateY(-8px)',
             boxShadow: theme.palette.mode === 'dark'
@@ -53,13 +60,26 @@ const VideoCard = ({ video, onClick }) => {
           },
         })}
       >
-        <Box sx={{ position: 'relative' }}>
+        <Box 
+          sx={{ 
+            position: 'relative', 
+            width: '100%', 
+            height: 0,
+            paddingTop: `${(1 / VIDEO_CARD_LAYOUT.THUMBNAIL_ASPECT_RATIO) * 100}%`,
+            overflow: 'hidden',
+            flexShrink: 0,
+          }}
+        >
           <CardMedia
             component="img"
-            height="200"
-            image={video.image}
+            image={video.image || video.thumbnailUrl || video.thumbnail || VIDEO_CARD_LAYOUT.FALLBACK_THUMBNAIL}
             alt={video.title}
             sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
               objectFit: 'cover',
             }}
           />
@@ -89,7 +109,16 @@ const VideoCard = ({ video, onClick }) => {
           )}
         </Box>
 
-        <CardContent sx={{ pb: 2 }}>
+        <CardContent 
+          sx={{ 
+            pb: 2, 
+            flexGrow: 1, 
+            display: 'flex', 
+            flexDirection: 'column', 
+            minHeight: 0,
+            overflow: 'hidden',
+          }}
+        >
           <Typography
             variant="h6"
             sx={{
@@ -101,6 +130,8 @@ const VideoCard = ({ video, onClick }) => {
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
+              lineHeight: 1.3,
+              height: '2.6em',
             }}
           >
             {video.title}
@@ -109,30 +140,42 @@ const VideoCard = ({ video, onClick }) => {
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={{ mb: 1.5 }}
+            sx={{ 
+              mb: 1.5,
+              flexShrink: 0,
+            }}
           >
             Por: {video.author}
           </Typography>
 
-          {video.description && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                mb: 2,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                minHeight: '40px',
-              }}
-            >
-              {video.description}
-            </Typography>
-          )}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              mb: 2,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              lineHeight: 1.4,
+              height: video.description ? '2.8em' : VIDEO_CARD_LAYOUT.DESCRIPTION_MIN_HEIGHT,
+              minHeight: VIDEO_CARD_LAYOUT.DESCRIPTION_MIN_HEIGHT,
+              flexShrink: 0,
+            }}
+          >
+            {video.description || ''}
+          </Typography>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between', 
+              mt: 'auto',
+              flexShrink: 0,
+            }}
+          >
             <Chip
               label={video.tag}
               size="small"

@@ -3,6 +3,7 @@ import {
     Card,
     CardHeader,
     CardContent,
+    CardActionArea,
     Grid,
     Box,
     Typography,
@@ -17,6 +18,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { statsService } from '../../../../core/services';
 import { EmptyState, ErrorState } from '../../../../components/common';
 import { VideoCardSkeleton, SkeletonGrid } from '../../../../components/shared/Skeletons';
+import { VIDEO_CARD_LAYOUT } from '../../../../config/constants';
 
 const TrendingVideos = ({ onVideoSelect }) => {
     const [videos, setVideos] = useState([]);
@@ -108,118 +110,148 @@ const TrendingVideos = ({ onVideoSelect }) => {
                 ) : (
                     <Grid container spacing={2}>
                         {videos.map((video) => (
-                            <Grid item xs={12} sm={6} md={4} lg={3} key={video._id}>
+                            <Grid item xs={12} sm={6} md={4} lg={3} key={video._id} sx={{ display: 'flex' }}>
                                 <Link
                                     to={`/portal/dashboard?videoId=${video._id}`}
-                                    style={{ textDecoration: 'none', color: 'inherit' }}
+                                    style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}
                                     onClick={(e) => handleVideoClick(e, video._id)}
                                 >
-                                    <Box
+                                    <Card
+                                        elevation={0}
                                         sx={{
-                                            position: 'relative',
+                                            height: VIDEO_CARD_LAYOUT.HEIGHT,
+                                            width: '100%',
+                                            border: '1px solid',
+                                            borderColor: 'divider',
                                             borderRadius: 2,
                                             overflow: 'hidden',
-                                            cursor: 'pointer',
-                                            '&:hover .play-overlay': { opacity: 1 },
-                                            '&:hover img': { transform: 'scale(1.05)' }
+                                            display: 'flex',
+                                            flexDirection: 'column',
                                         }}
                                     >
-                                        <CardMedia
-                                            component="img"
-                                            height="140"
-                                            image={video.thumbnailUrl || '/placeholder-video.jpg'}
-                                            alt={video.title}
-                                            sx={{ transition: 'transform 0.3s ease', bgcolor: 'grey.200' }}
-                                        />
-
-                                        <Box
-                                            className="play-overlay"
-                                            sx={{
-                                                position: 'absolute',
-                                                top: 0,
-                                                left: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                bgcolor: 'rgba(0,0,0,0.3)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                opacity: 0,
-                                                transition: 'opacity 0.3s ease'
-                                            }}
-                                        >
-                                            <IconButton
+                                        <CardActionArea sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+                                            <Box
                                                 sx={{
-                                                    bgcolor: 'primary.main',
-                                                    color: 'white',
-                                                    '&:hover': { bgcolor: 'primary.dark' }
+                                                    position: 'relative',
+                                                    width: '100%',
+                                                    aspectRatio: VIDEO_CARD_LAYOUT.THUMBNAIL_ASPECT_RATIO,
+                                                    overflow: 'hidden',
+                                                    '&:hover .play-overlay': { opacity: 1 },
+                                                    '&:hover img': { transform: 'scale(1.05)' },
                                                 }}
                                             >
-                                                <PlayArrowIcon />
-                                            </IconButton>
-                                        </Box>
-
-                                        {video.duration && (
-                                            <Chip
-                                                icon={<AccessTimeIcon sx={{ fontSize: 14 }} />}
-                                                label={formatDuration(video.duration)}
-                                                size="small"
-                                                sx={{
-                                                    position: 'absolute',
-                                                    bottom: 8,
-                                                    right: 8,
-                                                    bgcolor: 'rgba(0,0,0,0.7)',
-                                                    color: 'white',
-                                                    fontSize: '0.75rem',
-                                                    height: 24
-                                                }}
-                                            />
-                                        )}
-                                    </Box>
-
-                                    <Box sx={{ mt: 1.5 }}>
-                                        <Typography
-                                            variant="body2"
-                                            sx={{
-                                                fontWeight: 600,
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                display: '-webkit-box',
-                                                WebkitLineClamp: 2,
-                                                WebkitBoxOrient: 'vertical',
-                                                lineHeight: 1.4,
-                                                minHeight: '2.8em'
-                                            }}
-                                        >
-                                            {video.title}
-                                        </Typography>
-
-                                        <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                                            {video.categories?.length > 0 && (
-                                                <Chip
-                                                    label={video.categories[0]}
-                                                    size="small"
-                                                    variant="outlined"
-                                                    sx={{ fontSize: '0.7rem', height: 20 }}
+                                                <CardMedia
+                                                    component="img"
+                                                    image={video.thumbnailUrl || video.thumbnail || VIDEO_CARD_LAYOUT.FALLBACK_THUMBNAIL}
+                                                    alt={video.title}
+                                                    sx={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        objectFit: 'cover',
+                                                        transition: 'transform 0.3s ease',
+                                                        bgcolor: 'grey.200',
+                                                    }}
                                                 />
-                                            )}
 
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                <VisibilityIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                                                <Typography variant="caption" color="text.secondary">
-                                                    {video.views || 0}
+                                                <Box
+                                                    className="play-overlay"
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: 0,
+                                                        left: 0,
+                                                        right: 0,
+                                                        bottom: 0,
+                                                        bgcolor: 'rgba(0,0,0,0.3)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        opacity: 0,
+                                                        transition: 'opacity 0.3s ease'
+                                                    }}
+                                                >
+                                                    <IconButton
+                                                        sx={{
+                                                            bgcolor: 'primary.main',
+                                                            color: 'white',
+                                                            '&:hover': { bgcolor: 'primary.dark' }
+                                                        }}
+                                                    >
+                                                        <PlayArrowIcon />
+                                                    </IconButton>
+                                                </Box>
+
+                                                {video.duration && (
+                                                    <Chip
+                                                        icon={<AccessTimeIcon sx={{ fontSize: 14 }} />}
+                                                        label={formatDuration(video.duration)}
+                                                        size="small"
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            bottom: 8,
+                                                            right: 8,
+                                                            bgcolor: 'rgba(0,0,0,0.7)',
+                                                            color: 'white',
+                                                            fontSize: '0.75rem',
+                                                            height: 24
+                                                        }}
+                                                    />
+                                                )}
+                                            </Box>
+
+                                            <Box
+                                                sx={{
+                                                    p: 1.5,
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'space-between',
+                                                    flex: 1,
+                                                    minHeight: 0,
+                                                }}
+                                            >
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        fontWeight: 600,
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        display: '-webkit-box',
+                                                        WebkitLineClamp: 2,
+                                                        WebkitBoxOrient: 'vertical',
+                                                        lineHeight: 1.4,
+                                                        minHeight: '2.8em'
+                                                    }}
+                                                >
+                                                    {video.title}
+                                                </Typography>
+
+                                                <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                                                    {video.categories?.length > 0 && (
+                                                        <Chip
+                                                            label={video.categories[0]}
+                                                            size="small"
+                                                            variant="outlined"
+                                                            sx={{ fontSize: '0.7rem', height: 20, maxWidth: 120 }}
+                                                        />
+                                                    )}
+
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                        <VisibilityIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            {video.views || 0}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+
+                                                <Typography
+                                                    variant="caption"
+                                                    color="text.secondary"
+                                                    sx={{ display: 'block', mt: 0.5 }}
+                                                >
+                                                    {getTimeAgo(video.createdAt)}
                                                 </Typography>
                                             </Box>
-                                        </Box>
-
-                                        <Typography
-                                            variant="caption"
-                                            color="text.secondary"
-                                            sx={{ display: 'block', mt: 0.5 }}
-                                        >
-                                            {getTimeAgo(video.createdAt)}
-                                        </Typography>
-                                    </Box>
+                                        </CardActionArea>
+                                    </Card>
                                 </Link>
                             </Grid>
                         ))}
