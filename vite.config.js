@@ -115,6 +115,7 @@ export default defineConfig({
             '@emotion/react',
             '@emotion/styled',
             'axios',
+            'pdfjs-dist', // ✅ CRITICAL: Include pdfjs-dist for worker stability
         ],
         // Excluir dependencias que no necesitan pre-bundling
         exclude: [],

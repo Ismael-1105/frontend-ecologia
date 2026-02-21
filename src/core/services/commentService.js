@@ -80,24 +80,6 @@ export const createComment = async (videoId, content, parentComment = null) => {
 
 
 /**
- * Update a comment
- * @param {string} videoId - Video ID
- * @param {string} commentId - Comment ID
- * @param {string} content - New content
- * @returns {Promise<Object>} Updated comment
- */
-export const updateComment = async (videoId, commentId, content) => {
-  try {
-    const response = await apiClient.put(`/videos/${videoId}/comments/${commentId}`, {
-      content,
-    });
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error);
-  }
-};
-
-/**
  * Delete a comment
  * @param {string} videoId - Video ID
  * @param {string} commentId - Comment ID
@@ -131,7 +113,6 @@ const commentService = {
   getCommentReplies,
   getCommentThread,
   createComment,
-  updateComment,
   deleteComment,
   toggleLikeComment,
 };

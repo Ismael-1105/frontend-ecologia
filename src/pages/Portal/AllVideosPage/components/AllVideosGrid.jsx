@@ -4,9 +4,9 @@ import VideoCardPublic from './VideoCardPublic';
 
 /**
  * Video Grid Component
- * Displays videos in a responsive grid
+ * Displays videos in a responsive grid with like/dislike support
  */
-const AllVideosGrid = ({ videos, onVideoSelect, onEdit, onDelete }) => {
+const AllVideosGrid = ({ videos, onVideoSelect, onEdit, onDelete, onLike, onDislike }) => {
     return (
         <Grid container spacing={3} sx={{ mb: 4 }}>
             {videos.map((video) => (
@@ -16,6 +16,8 @@ const AllVideosGrid = ({ videos, onVideoSelect, onEdit, onDelete }) => {
                         onVideoSelect={onVideoSelect}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onLike={onLike}
+                        onDislike={onDislike}
                     />
                 </Grid>
             ))}

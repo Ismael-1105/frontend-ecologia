@@ -24,6 +24,8 @@ const AllVideosPage = () => {
         setPage,
         handleEdit,
         handleDelete,
+        handleLike,
+        handleDislike,
     } = useAllVideos();
 
     // Video player modal state
@@ -65,6 +67,8 @@ const AllVideosPage = () => {
                         onVideoSelect={handleVideoSelect}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onLike={handleLike}
+                        onDislike={handleDislike}
                     />
                     <PaginationComponent pagination={pagination} onPageChange={setPage} />
                 </>

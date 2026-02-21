@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -7,27 +7,23 @@ import {
     Button,
     Box,
     Typography,
-    IconButton,
-    Stack,
-    Chip,
     CircularProgress,
-    Alert
+    Alert,
 } from '@mui/material';
 import {
     Close as CloseIcon,
     Download as DownloadIcon,
-    NavigateBefore as NavigateBeforeIcon,
-    NavigateNext as NavigateNextIcon,
-    ZoomIn as ZoomInIcon,
-    ZoomOut as ZoomOutIcon
 } from '@mui/icons-material';
 import { Document, Page, pdfjs } from 'react-pdf';
 import * as uploadService from '../../core/api/uploadService';
+import { usePdfViewer } from '../../hooks/usePdfViewer';
 
 
-
-// ✅ Worker desde CDN - garantiza la versión correcta automáticamente
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// ✅ Configure worker from local node_modules
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.mjs',
+    import.meta.url
+).toString();
 
 const getFileUrl = (path) => {
     const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
@@ -37,53 +33,142 @@ const getFileUrl = (path) => {
 
 const PdfViewerModal = ({ open, onClose, resource }) => {
     const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [scale, setScale] = useState(1.0);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [pdfSource, setPdfSource] = useState(null);
 
-    const onDocumentLoadSuccess = ({ numPages }) => {
+    const uploadId = resource?.id || resource?._id;
+    const hasUrl = !!resource?.url;
+    const isBase64Pdf = !hasUrl && !!uploadId; // ✅ FIXED: Force boolean
+
+    // Hook para PDFs base64
+    const { pdfUrl, loading: urlLoading, error: urlError, download } = 
+        usePdfViewer(isBase64Pdf ? uploadId : null, isBase64Pdf && open);
+
+    // Cuando se abre o cambia el recurso
+    useEffect(() => {
+        if (!open) {
+            setPdfSource(null);
+            setNumPages(null);
+            setError(null);
+            setLoading(false);
+            return;
+        }
+
+        console.log('🔍 Modal abierto', {
+            hasUrl,
+            isBase64Pdf,
+            uploadId,
+            pdfUrlAvailable: !!pdfUrl,
+            resourceUrl: resource?.url
+        });
+
+        // Prioridad 1: PDF base64 con URL disponible
+        if (isBase64Pdf && pdfUrl) {
+            console.log('✓ Setting pdfSource from pdfUrl');
+            setPdfSource(pdfUrl);
+            setLoading(true);
+            setError(null);
+            return;
+        }
+
+        // Prioridad 2: PDF con URL directa en resource
+        if (hasUrl && resource?.url) {
+            const fileUrl = getFileUrl(resource.url);
+            console.log('✓ Setting pdfSource from resource.url:', fileUrl);
+            setPdfSource(fileUrl);
+            setLoading(true);
+            setError(null);
+            return;
+        }
+
+        // Prioridad 3: Si es base64, esperar a que cargue el hook
+        if (isBase64Pdf && !pdfUrl) {
+            console.log('⏳ Waiting for pdfUrl from hook...');
+            setLoading(true);
+            setError(null);
+            return;
+        }
+
+        // No hay forma de cargar el PDF
+        console.error('❌ Cannot load PDF - invalid resource');
+        setError('No se encontró el PDF. Verifica los datos del recurso.');
+        setLoading(false);
+    }, [open, isBase64Pdf, pdfUrl, hasUrl, resource?.url, uploadId]);
+
+    // Cuando el pdfUrl está disponible (para base64)
+    useEffect(() => {
+        if (open && isBase64Pdf && pdfUrl && !pdfSource) {
+            console.log('✓ pdfUrl updated, setting pdfSource');
+            setPdfSource(pdfUrl);
+            setLoading(true);
+            setError(null);
+        }
+    }, [open, isBase64Pdf, pdfUrl, pdfSource]);
+
+    // Handle PDF load success
+    const onDocumentLoadSuccess = useCallback(({ numPages }) => {
+        console.log('✓ PDF document loaded:', numPages, 'pages');
         setNumPages(numPages);
         setLoading(false);
         setError(null);
-    };
+    }, []);
 
-    const onDocumentLoadError = (error) => {
-        console.error('Error loading PDF:', error);
-        setError('Error al cargar el PDF. Por favor, intenta descargarlo.');
+    // Handle PDF load error
+    const onDocumentLoadError = useCallback((err) => {
+        console.error('❌ PDF load error:', err);
+        const errorMsg = err?.message || 'Unknown error loading PDF';
+        setError(`Error loading PDF: ${errorMsg}`);
         setLoading(false);
-    };
+    }, []);
 
-    const handlePreviousPage = () => setPageNumber(prev => Math.max(prev - 1, 1));
-    const handleNextPage = () => setPageNumber(prev => Math.min(prev + 1, numPages));
-    const handleZoomIn = () => setScale(prev => Math.min(prev + 0.2, 2.0));
-    const handleZoomOut = () => setScale(prev => Math.max(prev - 0.2, 0.5));
-
-    const handleDownload = async () => {
+    // Handle download
+    const handleDownload = useCallback(async () => {
         try {
-            await uploadService.downloadFile(resource.id || resource._id, resource.originalName || resource.filename);
+            const filename = resource?.originalName || resource?.filename || 'documento.pdf';
+            
+            if (isBase64Pdf && uploadId) {
+                console.log('📥 Downloading base64 PDF:', uploadId);
+                await download(uploadId, filename);
+            } else if (hasUrl && resource?.url) {
+                console.log('📥 Downloading PDF from URL');
+                const link = document.createElement('a');
+                link.href = getFileUrl(resource.url);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         } catch (err) {
-            console.error('Error downloading file:', err);
-            // Fallback to direct link if API fails
-            const link = document.createElement('a');
-            link.href = getFileUrl(resource.url);
-            link.download = resource.originalName || resource.filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            console.error('❌ Download error:', err);
+            setError(`Download failed: ${err.message}`);
         }
-    };
+    }, [isBase64Pdf, uploadId, hasUrl, resource, download]);
 
-    const handleClose = () => {
-        setPageNumber(1);
-        setScale(1.0);
-        setLoading(true);
-        setError(null);
+    // Handle close
+    const handleClose = useCallback(() => {
+        setPdfSource(null);
         setNumPages(null);
+        setError(null);
+        setLoading(false);
         onClose();
-    };
+    }, [onClose]);
 
-    const authorName = resource?.uploadedBy?.name || resource?.author || 'Desconocido';
+
+
+    const authorName = resource?.uploadedBy?.name || resource?.author || 'Unknown';
+    const isLoading = loading || (isBase64Pdf && urlLoading);
+    const displayError = error || urlError;
+
+    console.log('📊 Render state:', {
+        pdfSource: !!pdfSource,
+        isLoading,
+        hasError: !!displayError,
+        numPages,
+        isBase64Pdf,
+        uploadId: !!uploadId
+    });
+
 
     return (
         <Dialog
@@ -91,98 +176,110 @@ const PdfViewerModal = ({ open, onClose, resource }) => {
             onClose={handleClose}
             maxWidth="lg"
             fullWidth
-            PaperProps={{ sx: { height: '90vh', maxHeight: '90vh' } }}
+            PaperProps={{
+                sx: {
+                    height: '90vh',
+                    maxHeight: '90vh',
+                }
+            }}
         >
-            <DialogTitle sx={{ pb: 1 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <Box sx={{ flex: 1, pr: 2 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
-                            {resource?.title || 'Documento PDF'}
+            {/* Header */}
+            <DialogTitle>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box>
+                        <Typography variant="h6">{resource?.title || 'PDF'}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            Por {authorName} {numPages && `• ${numPages} páginas`}
                         </Typography>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: 1 }}>
-                            <Typography variant="caption" color="text.secondary">
-                                Por {authorName}
-                            </Typography>
-                            {resource?.category && resource.category !== 'Otro' && (
-                                <>
-                                    <Typography variant="caption" color="text.secondary">•</Typography>
-                                    <Chip label={resource.category} size="small" variant="outlined" sx={{ height: 20 }} />
-                                </>
-                            )}
-                            {resource?.downloads !== undefined && (
-                                <>
-                                    <Typography variant="caption" color="text.secondary">•</Typography>
-                                    <Typography variant="caption" color="text.secondary">
-                                        {resource.downloads} descargas
-                                    </Typography>
-                                </>
-                            )}
-                        </Stack>
                     </Box>
-                    <IconButton onClick={handleClose} size="small">
-                        <CloseIcon />
-                    </IconButton>
+                    <Button
+                        size="small"
+                        onClick={handleClose}
+                        startIcon={<CloseIcon />}
+                        variant="text"
+                    />
                 </Box>
             </DialogTitle>
 
-            <DialogContent sx={{ p: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2, py: 1, borderBottom: 1, borderColor: 'divider', bgcolor: 'background.default' }}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                        <IconButton size="small" onClick={handlePreviousPage} disabled={pageNumber <= 1 || loading}>
-                            <NavigateBeforeIcon />
-                        </IconButton>
-                        <Typography variant="body2" sx={{ minWidth: 80, textAlign: 'center' }}>
-                            {numPages ? `${pageNumber} / ${numPages}` : '--'}
-                        </Typography>
-                        <IconButton size="small" onClick={handleNextPage} disabled={pageNumber >= numPages || loading}>
-                            <NavigateNextIcon />
-                        </IconButton>
-                    </Stack>
+            {/* Content */}
+            <DialogContent sx={{ p: 2, display: 'flex', flexDirection: 'column', flex: 1, overflow: 'auto', bgcolor: '#f5f5f5' }}>
+                {/* Error state */}
+                {displayError && !pdfSource && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {displayError}
+                        <Box sx={{ mt: 2 }}>
+                            <Typography variant="caption" display="block">
+                                Datos del recurso:
+                            </Typography>
+                            <Typography variant="caption" component="pre" sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '10px' }}>
+                                {JSON.stringify({ hasUrl, isBase64Pdf, uploadId, resourceUrl: resource?.url }, null, 2)}
+                            </Typography>
+                        </Box>
+                    </Alert>
+                )}
 
-                    <Stack direction="row" spacing={1} alignItems="center">
-                        <IconButton size="small" onClick={handleZoomOut} disabled={scale <= 0.5}>
-                            <ZoomOutIcon />
-                        </IconButton>
-                        <Typography variant="body2" sx={{ minWidth: 50, textAlign: 'center' }}>
-                            {Math.round(scale * 100)}%
-                        </Typography>
-                        <IconButton size="small" onClick={handleZoomIn} disabled={scale >= 2.0}>
-                            <ZoomInIcon />
-                        </IconButton>
-                    </Stack>
-                </Box>
+                {/* No PDF available */}
+                {!pdfSource && !displayError && (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, py: 4, flex: 1 }}>
+                        <Typography color="error">No se pudo cargar el PDF</Typography>
+                        <Typography variant="caption">Verifica que el recurso tenga una URL o ID válido</Typography>
+                    </Box>
+                )}
 
-                <Box sx={{ flex: 1, overflow: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', bgcolor: 'grey.100', p: 2 }}>
-                    {error ? (
-                        <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
-                    ) : (
-                        <Document
-                            file={getFileUrl(resource?.url)}
-                            onLoadSuccess={onDocumentLoadSuccess}
-                            onLoadError={onDocumentLoadError}
-                            loading={
-                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 4 }}>
-                                    <CircularProgress />
-                                    <Typography variant="body2" color="text.secondary">Cargando PDF...</Typography>
-                                </Box>
-                            }
-                        >
-                            <Page pageNumber={pageNumber} scale={scale} renderTextLayer={true} renderAnnotationLayer={true} />
-                        </Document>
-                    )}
-                </Box>
-
-                {resource?.description && (
-                    <Box sx={{ px: 2, py: 1.5, borderTop: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>Descripción:</Typography>
-                        <Typography variant="body2" sx={{ mt: 0.5 }}>{resource.description}</Typography>
+                {/* PDF Viewer - Always render Document, let it handle loading */}
+                {pdfSource && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', flex: 1, overflow: 'auto', bgcolor: 'white' }}>
+                        <Box sx={{ p: 2, maxWidth: '100%' }}>
+                            <Document
+                                file={pdfSource}
+                                onLoadSuccess={onDocumentLoadSuccess}
+                                onLoadError={onDocumentLoadError}
+                                loading={
+                                    <Box sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                                        <CircularProgress size={40} />
+                                        <Typography variant="body2">Procesando PDF...</Typography>
+                                    </Box>
+                                }
+                                error={
+                                    <Alert severity="error">
+                                        Error al procesar el PDF. Verifica que sea un PDF válido.
+                                    </Alert>
+                                }
+                                options={{
+                                    cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
+                                    cMapPacked: true,
+                                }}
+                            >
+                                {numPages && Array.from({ length: numPages }, (_, i) => (
+                                    <Box key={`page-${i + 1}`} sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
+                                        <Page
+                                            pageNumber={i + 1}
+                                            scale={1.5}
+                                            renderTextLayer={false}
+                                            renderAnnotationLayer={false}
+                                        />
+                                    </Box>
+                                ))}
+                            </Document>
+                        </Box>
                     </Box>
                 )}
             </DialogContent>
 
-            <DialogActions sx={{ px: 3, py: 2 }}>
+            {/* Footer */}
+            <DialogActions sx={{ p: 2, borderTop: '1px solid #eee' }}>
+                <Typography variant="caption" color="text.secondary">
+                    {pdfSource ? (numPages ? `${numPages} páginas` : 'Cargando...') : 'Sin PDF'}
+                </Typography>
                 <Button onClick={handleClose}>Cerrar</Button>
-                <Button variant="contained" startIcon={<DownloadIcon />} onClick={handleDownload}>Descargar</Button>
+                <Button
+                    variant="contained"
+                    startIcon={<DownloadIcon />}
+                    onClick={handleDownload}
+                    disabled={isLoading || !pdfSource}
+                >
+                    Descargar
+                </Button>
             </DialogActions>
         </Dialog>
     );

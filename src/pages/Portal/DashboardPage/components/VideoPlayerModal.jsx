@@ -71,11 +71,17 @@ const VideoPlayerModal = ({ open, onClose, videoId }) => {
         }
 
         try {
-            const updatedVideo = await videoService.likeVideo(videoId);
-            // Update local state instead of refetching to avoid video reload
-            setVideo(updatedVideo);
+            const updatedVideo = await videoService.toggleLike(videoId);
+            // Update only like/dislike fields, preserve other data (comments, etc)
+            setVideo(prevVideo => ({
+                ...prevVideo,
+                likes: updatedVideo.likes || updatedVideo.data?.likes,
+                dislikes: updatedVideo.dislikes || updatedVideo.data?.dislikes,
+                likeCount: updatedVideo.likeCount || updatedVideo.data?.likeCount,
+                dislikeCount: updatedVideo.dislikeCount || updatedVideo.data?.dislikeCount,
+            }));
         } catch (err) {
-            console.error('Error liking video:', err);
+            console.error('Error toggling like:', err);
         }
     };
 
@@ -86,16 +92,22 @@ const VideoPlayerModal = ({ open, onClose, videoId }) => {
         }
 
         try {
-            const updatedVideo = await videoService.dislikeVideo(videoId);
-            // Update local state instead of refetching to avoid video reload
-            setVideo(updatedVideo);
+            const updatedVideo = await videoService.toggleDislike(videoId);
+            // Update only like/dislike fields, preserve other data (comments, etc)
+            setVideo(prevVideo => ({
+                ...prevVideo,
+                likes: updatedVideo.likes || updatedVideo.data?.likes,
+                dislikes: updatedVideo.dislikes || updatedVideo.data?.dislikes,
+                likeCount: updatedVideo.likeCount || updatedVideo.data?.likeCount,
+                dislikeCount: updatedVideo.dislikeCount || updatedVideo.data?.dislikeCount,
+            }));
         } catch (err) {
-            console.error('Error disliking video:', err);
+            console.error('Error toggling dislike:', err);
         }
     };
 
-    const hasLiked = video?.likes?.includes(user?._id);
-    const hasDisliked = video?.dislikes?.includes(user?._id);
+    const hasLiked = video?.likes?.includes(user?._id || user?.id);
+    const hasDisliked = video?.dislikes?.includes(user?._id || user?.id);
 
     return (
         <Dialog

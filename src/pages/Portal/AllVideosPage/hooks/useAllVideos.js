@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllVideos } from '../../../../core/api/videoService';
 import { videoService } from '../../../../core/services';
+import { useAuth } from '../../../../core/context/AuthContext';
 import { useSnackbar } from '../../../../core/context/SnackbarContext.jsx';
+import { useLikesDislikesToggle } from '../../../../core/hooks/useLikesDislikesToggle';
 import SweetAlert from '../../../../components/common/SweetAlert';
 
 /**
@@ -12,6 +14,7 @@ import SweetAlert from '../../../../components/common/SweetAlert';
  */
 export const useAllVideos = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const { showSuccess, showError } = useSnackbar();
 
     const [videos, setVideos] = useState([]);
@@ -78,6 +81,9 @@ export const useAllVideos = () => {
         }
     };
 
+    // Like/Dislike handlers with smart toggle (removes opposite vote)
+    const { handleLike, handleDislike } = useLikesDislikesToggle(videos, setVideos);
+
     return {
         videos,
         pagination,
@@ -86,5 +92,7 @@ export const useAllVideos = () => {
         setPage,
         handleEdit,
         handleDelete,
+        handleLike,
+        handleDislike,
     };
 };

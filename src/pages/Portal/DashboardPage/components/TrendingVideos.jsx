@@ -4,6 +4,7 @@ import {
     CardHeader,
     CardContent,
     CardActionArea,
+    CardActions,
     Grid,
     Box,
     Typography,
@@ -15,15 +16,25 @@ import { Link } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import { statsService } from '../../../../core/services';
+import { useAuth } from '../../../../core/context/AuthContext';
 import { EmptyState, ErrorState } from '../../../../components/common';
 import { VideoCardSkeleton, SkeletonGrid } from '../../../../components/shared/Skeletons';
 import { VIDEO_CARD_LAYOUT } from '../../../../config/constants';
 
-const TrendingVideos = ({ onVideoSelect }) => {
+const TrendingVideos = ({ onVideoSelect, onLike, onDislike, videos: externalVideos, onVideosUpdate }) => {
+    const { user } = useAuth();
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Use external videos if provided, otherwise manage internally
+    const displayVideos = externalVideos || videos;
+    const updateVideos = onVideosUpdate || setVideos;
 
     const handleVideoClick = (e, videoId) => {
         if (onVideoSelect) {
@@ -37,7 +48,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
             setLoading(true);
             setError(null);
             const trending = await statsService.getTrendingVideos(3);
-            setVideos(trending);
+            updateVideos(trending);
         } catch (err) {
             console.error('Error fetching trending videos:', err);
             setError(err.message || 'Error al cargar videos');
@@ -97,9 +108,9 @@ const TrendingVideos = ({ onVideoSelect }) => {
                     <SkeletonGrid
                         SkeletonComponent={VideoCardSkeleton}
                         count={3}
-                        gridProps={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+                        gridProps={{ xs: 12, sm: 6, md: 4, lg: 4 }}
                     />
-                ) : videos.length === 0 ? (
+                ) : displayVideos.length === 0 ? (
                     <EmptyState
                         type="videos"
                         title="No hay videos disponibles"
@@ -109,8 +120,8 @@ const TrendingVideos = ({ onVideoSelect }) => {
                     />
                 ) : (
                     <Grid container spacing={2}>
-                        {videos.map((video) => (
-                            <Grid item xs={12} sm={6} md={4} lg={3} key={video._id} sx={{ display: 'flex' }}>
+                        {displayVideos.map((video) => (
+                            <Grid item xs={12} sm={6} md={4} lg={4} key={video._id} sx={{ display: 'flex' }}>
                                 <Link
                                     to={`/portal/dashboard?videoId=${video._id}`}
                                     style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}
@@ -251,6 +262,43 @@ const TrendingVideos = ({ onVideoSelect }) => {
                                                 </Typography>
                                             </Box>
                                         </CardActionArea>
+
+                                        {/* Like/Dislike Actions */}
+                                        <CardActions sx={{ gap: 1, p: 1 }}>
+                                            {(() => {
+                                                const hasLiked = video.likes?.includes(user?._id || user?.id);
+                                                const hasDisliked = video.dislikes?.includes(user?._id || user?.id);
+                                                return (
+                                                    <>
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                if (onLike) onLike(video._id);
+                                                            }}
+                                                            color={hasLiked ? 'primary' : 'default'}
+                                                        >
+                                                            {hasLiked ? <ThumbUpIcon sx={{ fontSize: 18 }} /> : <ThumbUpOutlinedIcon sx={{ fontSize: 18 }} />}
+                                                        </IconButton>
+                                                        <Typography variant="caption">{video.likeCount || 0}</Typography>
+
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                if (onDislike) onDislike(video._id);
+                                                            }}
+                                                            color={hasDisliked ? 'error' : 'default'}
+                                                        >
+                                                            {hasDisliked ? <ThumbDownIcon sx={{ fontSize: 18 }} /> : <ThumbDownOutlinedIcon sx={{ fontSize: 18 }} />}
+                                                        </IconButton>
+                                                        <Typography variant="caption">{video.dislikeCount || 0}</Typography>
+                                                    </>
+                                                );
+                                            })()}
+                                        </CardActions>
                                     </Card>
                                 </Link>
                             </Grid>

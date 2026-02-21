@@ -263,6 +263,66 @@ export const incrementDownloads = async (id) => {
     }
 };
 
+/**
+ * Get PDF blob for viewing (base64 PDFs)
+ * @param {string} id - Upload ID
+ * @returns {Promise<Blob>} PDF blob
+ */
+export const getPdfBlob = async (id) => {
+    try {
+        const response = await apiClient.get(`/uploads/view/${id}`, {
+            responseType: 'blob'
+        });
+        return response.data;
+    } catch (error) {
+        throw handleUploadError(error);
+    }
+};
+
+/**
+ * Get PDF URL for viewing inline (creates object URL from blob)
+ * @param {string} id - Upload ID
+ * @returns {Promise<string>} Object URL for the PDF
+ */
+export const getPdfUrl = async (id) => {
+    try {
+        const blob = await getPdfBlob(id);
+        const url = window.URL.createObjectURL(blob);
+        return url;
+    } catch (error) {
+        throw handleUploadError(error);
+    }
+};
+
+/**
+ * View PDF in new tab
+ * @param {string} id - Upload ID
+ * @returns {Promise<void>}
+ */
+export const viewPdfInNewTab = async (id) => {
+    try {
+        const url = await getPdfUrl(id);
+        window.open(url, '_blank');
+        
+        // Cleanup URL after a delay to allow browser to load it
+        setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+        }, 1000);
+    } catch (error) {
+        throw handleUploadError(error);
+    }
+};
+
+/**
+ * Download PDF file (works for both base64 and filesystem PDFs)
+ * @param {string} id - Upload ID
+ * @param {string} originalName - Original filename
+ * @returns {Promise<boolean>}
+ */
+export const downloadPdf = async (id, originalName = 'documento.pdf') => {
+    return downloadFile(id, originalName);
+};
+
 export default {
     uploadFile,
     uploadMultipleFiles,
@@ -274,5 +334,10 @@ export default {
     getAllUploads,
     getMyUploads,
     updateUploadMetadata,
+    downloadFile,
     incrementDownloads,
+    getPdfBlob,
+    getPdfUrl,
+    viewPdfInNewTab,
+    downloadPdf,
 };

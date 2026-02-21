@@ -3,112 +3,59 @@ import {
     Card,
     CardMedia,
     CardContent,
+    CardActions,
     Typography,
-    Box,
     IconButton,
-    Chip,
+    Button,
+    Box,
 } from '@mui/material';
-import { MoreVert } from '@mui/icons-material';
-import RatingStars from '../../../../components/shared/RatingStars';
-import { VIDEO_CARD_LAYOUT } from '../../../../config/constants';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import { useAuth } from '../../../../core/context/AuthContext';
 
-/**
- * VideoCard Component
- * Displays individual video card with thumbnail, info, and actions
- */
-const VideoCard = ({ video, onMenuOpen }) => {
-    const thumbnailUrl = video.thumbnailUrl || video.thumbnail || VIDEO_CARD_LAYOUT.FALLBACK_THUMBNAIL;
+const VideoCard = ({ video, onMenuOpen, onLike, onDislike }) => {
+    const { user } = useAuth();
+    const thumbnailUrl = video.thumbnailUrl || video.thumbnail || '/placeholder-video.jpg';
     const title = video.titulo || video.title || 'Sin titulo';
-    const description = video.descripcion || video.description || '';
+    const views = video.views || 0;
+    const likeCount = video.likeCount || video.likes?.length || 0;
+    const dislikeCount = video.dislikeCount || video.dislikes?.length || 0;
+    
+    const hasLiked = video.likes?.includes(user?._id || user?.id);
+    const hasDisliked = video.dislikes?.includes(user?._id || user?.id);
 
     return (
-        <Card
-            sx={{
-                height: VIDEO_CARD_LAYOUT.HEIGHT,
-                minHeight: VIDEO_CARD_LAYOUT.HEIGHT,
-                maxHeight: VIDEO_CARD_LAYOUT.HEIGHT,
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-            }}
-        >
-            {/* Thumbnail */}
+        <Card>
             <CardMedia
-                component="div"
-                sx={{
-                    width: '100%',
-                    height: VIDEO_CARD_LAYOUT.THUMBNAIL_HEIGHT,
-                    minHeight: VIDEO_CARD_LAYOUT.THUMBNAIL_HEIGHT,
-                    maxHeight: VIDEO_CARD_LAYOUT.THUMBNAIL_HEIGHT,
-                    bgcolor: 'grey.300',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                }}
-            >
-                <img
-                    src={thumbnailUrl}
-                    alt={title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-            </CardMedia>
-
-            <CardContent sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
-                {/* Title and Actions */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <Typography variant="h6" gutterBottom noWrap sx={{ flex: 1, minHeight: '1.6em' }}>
-                        {title}
-                    </Typography>
-                    <IconButton
-                        size="small"
-                        onClick={(e) => onMenuOpen(e, video)}
-                        aria-label="video options"
-                    >
-                        <MoreVert />
-                    </IconButton>
-                </Box>
-
-                {/* Description */}
-                <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        mb: 2,
-                        minHeight: VIDEO_CARD_LAYOUT.DESCRIPTION_MIN_HEIGHT,
-                        maxHeight: VIDEO_CARD_LAYOUT.DESCRIPTION_MIN_HEIGHT,
-                    }}
-                >
-                    {description}
+                component="img"
+                image={thumbnailUrl}
+                alt={title}
+                sx={{ width: '100%', height: 200, objectFit: 'cover' }}
+            />
+            <CardContent>
+                <Typography variant="h6" gutterBottom>
+                    {title}
                 </Typography>
-
-                {/* Rating */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <RatingStars
-                        value={video.averageRating || 0}
-                        readOnly
-                        size="small"
-                        showValue
-                    />
-                    <Typography variant="caption" color="text.secondary">
-                        ({video.totalRatings || 0})
-                    </Typography>
-                </Box>
-
-                {/* Status and Views */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
-                    <Typography variant="caption" color="text.secondary">
-                        {video.views || 0} views
-                    </Typography>
-                </Box>
+                <Typography variant="body2" color="textSecondary">
+                    {views} vistas
+                </Typography>
             </CardContent>
+            <CardActions>
+                <IconButton size="small" onClick={() => onLike?.(video._id)} color={hasLiked ? 'primary' : 'default'}>
+                    {hasLiked ? <ThumbUpIcon fontSize="small" /> : <ThumbUpOutlinedIcon fontSize="small" />}
+                </IconButton>
+                <Typography variant="caption">{likeCount}</Typography>
+                <IconButton size="small" onClick={() => onDislike?.(video._id)} color={hasDisliked ? 'error' : 'default'}>
+                    {hasDisliked ? <ThumbDownIcon fontSize="small" /> : <ThumbDownOutlinedIcon fontSize="small" />}
+                </IconButton>
+                <Typography variant="caption">{dislikeCount}</Typography>
+                <IconButton size="small" onClick={(e) => onMenuOpen(e, video)}>
+                    <MoreVertIcon fontSize="small" />
+                </IconButton>
+            </CardActions>
         </Card>
     );
 };

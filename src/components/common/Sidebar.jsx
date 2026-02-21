@@ -33,8 +33,8 @@ const DRAWER_WIDTH = 260;
 
 const navigationItems = [
     { name: 'Inicio', path: '/portal/dashboard', icon: DashboardIcon },
-    { name: 'Todos los Videos', path: '/portal/videos', icon: VideoLibraryIcon },
     { name: 'Mis Videos', path: '/portal/video-player', icon: MyVideosIcon },
+    { name: 'Todos los Videos', path: '/portal/videos', icon: VideoLibraryIcon },
     { name: 'Foro', path: '/portal/foro', icon: ForumIcon, badge: 12 },
     { name: 'Recursos', path: '/portal/recursos', icon: MenuBookIcon },
 ];

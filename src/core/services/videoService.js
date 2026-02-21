@@ -49,20 +49,6 @@ export const getVideosByAuthor = async (authorId, params = {}) => {
 };
 
 /**
- * Get pending approval videos (Admin only)
- * @param {Object} params - Query parameters
- * @returns {Promise<Object>} Paginated pending videos
- */
-export const getPendingVideos = async (params = {}) => {
-  try {
-    const response = await apiClient.get('/videos/pending', { params });
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error);
-  }
-};
-
-/**
  * Upload video with thumbnail (Cloudinary)
  * @param {Object} videoData - Video metadata (title, description, duration)
  * @param {File} videoFile - Video file
@@ -116,20 +102,6 @@ export const updateVideo = async (videoId, data) => {
 };
 
 /**
- * Approve video (Admin only)
- * @param {string} videoId - Video ID
- * @returns {Promise<Object>} Approved video data
- */
-export const approveVideo = async (videoId) => {
-  try {
-    const response = await apiClient.put(`/videos/${videoId}/approve`);
-    return response.data.data;
-  } catch (error) {
-    throw handleApiError(error);
-  }
-};
-
-/**
  * Delete video
  * @param {string} videoId - Video ID
  * @returns {Promise<void>}
@@ -137,23 +109,6 @@ export const approveVideo = async (videoId) => {
 export const deleteVideo = async (videoId) => {
   try {
     const response = await apiClient.delete(`/videos/${videoId}`);
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error);
-  }
-};
-
-/**
- * Search videos
- * @param {string} query - Search query
- * @param {Object} params - Additional parameters
- * @returns {Promise<Object>} Search results
- */
-export const searchVideos = async (query, params = {}) => {
-  try {
-    const response = await apiClient.get('/videos', {
-      params: { search: query, ...params },
-    });
     return response.data;
   } catch (error) {
     throw handleApiError(error);
@@ -188,18 +143,45 @@ export const dislikeVideo = async (videoId) => {
   }
 };
 
+/**
+ * Toggle like on a video
+ * @param {string} videoId - Video ID
+ * @returns {Promise<Object>} Updated video data
+ */
+export const toggleLike = async (videoId) => {
+  try {
+    const response = await apiClient.post(`/videos/${videoId}/toggle-like`);
+    return response.data.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+/**
+ * Toggle dislike on a video
+ * @param {string} videoId - Video ID
+ * @returns {Promise<Object>} Updated video data
+ */
+export const toggleDislike = async (videoId) => {
+  try {
+    const response = await apiClient.post(`/videos/${videoId}/toggle-dislike`);
+    return response.data.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
 const videoService = {
   getAllVideos,
   getVideoById,
   getVideosByAuthor,
-  getPendingVideos,
   uploadVideo,
   updateVideo,
-  approveVideo,
   deleteVideo,
-  searchVideos,
   likeVideo,
   dislikeVideo,
+  toggleLike,
+  toggleDislike,
 };
 
 export default videoService;

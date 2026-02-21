@@ -36,6 +36,10 @@ const MyVideosPage = () => {
         setPage,
         handleEdit,
         handleDelete,
+        handleLike,
+        handleDislike,
+        handleMenuOpen,
+        handleMenuClose,
     } = useMyVideos();
 
     // Loading state
@@ -53,7 +57,12 @@ const MyVideosPage = () => {
                 <EmptyState />
             ) : (
                 <>
-                    <VideoGrid videos={videos} onMenuOpen={handleMenuOpen} />
+                    <VideoGrid 
+                        videos={videos} 
+                        onMenuOpen={handleMenuOpen}
+                        onLike={handleLike}
+                        onDislike={handleDislike}
+                    />
                     <PaginationComponent pagination={pagination} onPageChange={setPage} />
                 </>
             )}

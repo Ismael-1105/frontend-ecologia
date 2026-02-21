@@ -27,13 +27,10 @@ export const FILE_UPLOAD = {
     ALLOWED_DOCUMENT_TYPES: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
 };
 
-// Shared Video Card Layout
+// Shared Video Card Layout - Simple Design
 export const VIDEO_CARD_LAYOUT = {
-    HEIGHT: 430,
-    THUMBNAIL_HEIGHT: 220,
     THUMBNAIL_ASPECT_RATIO: '16 / 9',
     FALLBACK_THUMBNAIL: '/placeholder-video.jpg',
-    DESCRIPTION_MIN_HEIGHT: '40px',
 };
 
 // User Roles

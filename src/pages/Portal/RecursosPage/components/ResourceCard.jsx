@@ -38,7 +38,7 @@ const getFileUrl = (path) => {
     return `${cleanBaseUrl}${path}`;
 };
 
-const ResourceCard = ({ resource, onUpdate }) => {
+const ResourceCard = ({ resource, onUpdate, onOpenPdfModal }) => {
     const { user } = useAuth();
     const { showSuccess, showError } = useSnackbar();
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -131,7 +131,13 @@ const ResourceCard = ({ resource, onUpdate }) => {
     const handleView = () => {
         // For PDF documents, open in modal viewer
         if (resource.fileType === 'document') {
-            setPdfViewerOpen(true);
+            if (onOpenPdfModal) {
+                // Use global PDF modal from parent component
+                onOpenPdfModal(resource);
+            } else {
+                // Fallback to local state (for backward compatibility)
+                setPdfViewerOpen(true);
+            }
         } else {
             // For other file types (images, videos, audio), open in new tab
             window.open(getFileUrl(resource.url), '_blank');

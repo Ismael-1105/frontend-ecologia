@@ -13,13 +13,19 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { DashboardStats, TrendingVideos, RecentActivity, VideoPlayerModal, UploadVideoModal } from './components/index.jsx';
 import { videoService } from '../../../core/services';
+import { useAuth } from '../../../core/context/AuthContext';
+import { useLikesDislikesToggle } from '../../../core/hooks/useLikesDislikesToggle';
 
 const DashboardPage = () => {
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [trendingVideos, setTrendingVideos] = useState([]);
   const navigate = useNavigate();
+
+  // Get like/dislike handlers from custom hook with state management
+  const { handleLike, handleDislike } = useLikesDislikesToggle(trendingVideos, setTrendingVideos);
 
   // Check for videoId in URL params (from TrendingVideos links)
   useEffect(() => {
@@ -83,10 +89,16 @@ const DashboardPage = () => {
         <Grid container spacing={3}>
           {/* Main Content - Trending Videos */}
           <Grid item xs={12} lg={8}>
-            <TrendingVideos onVideoSelect={(id) => {
-              setSelectedVideoId(id);
-              setIsPlayerModalOpen(true);
-            }} />
+            <TrendingVideos 
+              videos={trendingVideos}
+              onVideosUpdate={setTrendingVideos}
+              onVideoSelect={(id) => {
+                setSelectedVideoId(id);
+                setIsPlayerModalOpen(true);
+              }}
+              onLike={handleLike}
+              onDislike={handleDislike}
+            />
           </Grid>
 
           {/* Sidebar */}

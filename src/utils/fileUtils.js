@@ -262,6 +262,24 @@ export const validateMultipleFiles = (files, type, maxCount = 5) => {
     return { valid: true, error: null, validFiles };
 };
 
+/**
+ * Format date to readable string
+ * @param {string|Date} date - Date to format
+ * @returns {string} Formatted date string
+ */
+export const formatDate = (date) => {
+    if (!date) return 'Fecha desconocida';
+    
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return 'Fecha inválida';
+    
+    return dateObj.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+};
+
 export default {
     FILE_LIMITS,
     validateFileType,
@@ -269,6 +287,7 @@ export default {
     validateFile,
     validateMultipleFiles,
     formatFileSize,
+    formatDate,
     getFileExtension,
     isImage,
     isVideo,

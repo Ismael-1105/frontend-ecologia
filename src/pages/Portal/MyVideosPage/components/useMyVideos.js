@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { videoService } from '../../../../core/services';
 import { useAuth } from '../../../../core/context/AuthContext';
 import { useSnackbar } from '../../../../core/context/SnackbarContext.jsx';
+import { useLikesDislikesToggle } from '../../../../core/hooks/useLikesDislikesToggle';
 import SweetAlert from '../../../../components/common/SweetAlert';
 
 /**
@@ -82,6 +83,9 @@ export const useMyVideos = () => {
         }
     };
 
+    // Like/Dislike handlers with toggle logic (removes dislike when liking, vice versa)
+    const { handleLike, handleDislike } = useLikesDislikesToggle(videos, setVideos);
+
     return {
         // State
         videos,
@@ -98,5 +102,7 @@ export const useMyVideos = () => {
         handleMenuClose,
         handleEdit,
         handleDelete,
+        handleLike,
+        handleDislike,
     };
 };

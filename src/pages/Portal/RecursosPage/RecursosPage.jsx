@@ -1,33 +1,26 @@
 import React, { useState } from 'react';
-import {
-    Container,
-    Box,
-    Typography,
-    Button,
-    Stack,
-    TextField,
-    InputAdornment,
-    Snackbar,
-    Alert
-} from '@mui/material';
-import { Search as SearchIcon, CloudUpload as CloudUploadIcon } from '@mui/icons-material';
+import { Container } from '@mui/material';
 import ResourceList from './components/ResourceList';
 import UploadResourceModal from './components/UploadResourceModal';
+import ResourcesHeader from './components/ResourcesHeader';
+import ResourcesSearchBar from './components/ResourcesSearchBar';
+import NotificationSnackbar from './components/NotificationSnackbar';
+import PdfModal from './components/PdfModal';
 
 const RecursosPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
     const [uploadedResources, setUploadedResources] = useState([]);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+    const [pdfModalOpen, setPdfModalOpen] = useState(false);
+    const [selectedPdfResource, setSelectedPdfResource] = useState(null);
 
     const handleUploadResource = () => {
         setModalOpen(true);
     };
 
     const handleResourceUploaded = (uploadedResource) => {
-        // Add the new resource to the local state
         setUploadedResources(prev => [uploadedResource, ...prev]);
-
         setSnackbar({
             open: true,
             message: 'Recurso subido exitosamente',
@@ -35,77 +28,36 @@ const RecursosPage = () => {
         });
     };
 
-    const getFileType = (filename) => {
-        const extension = filename.split('.').pop().toLowerCase();
-        const typeMap = {
-            'pdf': 'PDF',
-            'doc': 'DOC',
-            'docx': 'DOCX',
-            'txt': 'TXT',
-            'jpg': 'Imagen',
-            'jpeg': 'Imagen',
-            'png': 'Imagen',
-            'mp4': 'Video',
-            'avi': 'Video'
-        };
-        return typeMap[extension] || 'Documento';
-    };
-
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
+    };
+
+    const handleOpenPdfModal = (resource) => {
+        setSelectedPdfResource(resource);
+        setPdfModalOpen(true);
+    };
+
+    const handleClosePdfModal = () => {
+        setPdfModalOpen(false);
+        setSelectedPdfResource(null);
     };
 
     return (
         <Container maxWidth="xl" sx={{ py: 0 }}>
             {/* Header */}
-            <Box sx={{ mb: 4 }}>
-                <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
-                    justifyContent="space-between"
-                    alignItems={{ xs: 'flex-start', sm: 'center' }}
-                    spacing={2}
-                >
-                    <Box>
-                        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
-                            Recursos Educativos
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary">
-                            Documentos, guías y materiales para el aprendizaje
-                        </Typography>
-                    </Box>
-                    <Button
-                        variant="contained"
-                        startIcon={<CloudUploadIcon />}
-                        onClick={handleUploadResource}
-                        sx={{ whiteSpace: 'nowrap' }}
-                    >
-                        Subir Recurso
-                    </Button>
-                </Stack>
-            </Box>
+            <ResourcesHeader onUploadClick={handleUploadResource} />
 
             {/* Search Bar */}
-            <Box sx={{ mb: 4 }}>
-                <TextField
-                    fullWidth
-                    placeholder="Buscar recursos..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon />
-                            </InputAdornment>
-                        )
-                    }}
-                    sx={{ maxWidth: 600 }}
-                />
-            </Box>
+            <ResourcesSearchBar
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+            />
 
             {/* Resource List */}
             <ResourceList
                 searchQuery={searchQuery}
                 uploadedResources={uploadedResources}
+                onOpenPdfModal={handleOpenPdfModal}
             />
 
             {/* Upload Modal */}
@@ -115,17 +67,20 @@ const RecursosPage = () => {
                 onResourceUploaded={handleResourceUploaded}
             />
 
-            {/* Success Snackbar */}
-            <Snackbar
+            {/* Notification Snackbar */}
+            <NotificationSnackbar
                 open={snackbar.open}
-                autoHideDuration={6000}
+                message={snackbar.message}
+                severity={snackbar.severity}
                 onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            >
-                <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
+            />
+
+            {/* PDF Viewer Modal */}
+            <PdfModal
+                open={pdfModalOpen}
+                resource={selectedPdfResource}
+                onClose={handleClosePdfModal}
+            />
         </Container>
     );
 };
