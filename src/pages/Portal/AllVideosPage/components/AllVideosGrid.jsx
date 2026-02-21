@@ -10,7 +10,7 @@ const AllVideosGrid = ({ videos, onVideoSelect, onEdit, onDelete, onLike, onDisl
     return (
         <Grid container spacing={3} sx={{ mb: 4 }}>
             {videos.map((video) => (
-                <Grid item xs={12} sm={6} md={4} key={video._id} sx={{ display: 'flex' }}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={video._id} sx={{ display: 'flex' }}>
                     <VideoCardPublic
                         video={video}
                         onVideoSelect={onVideoSelect}

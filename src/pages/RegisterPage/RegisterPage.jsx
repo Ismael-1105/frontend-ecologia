@@ -13,7 +13,7 @@ import {
   FormControl,
   InputLabel,
   IconButton,
-
+  useTheme,
 } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../core/context/AuthContext';
@@ -23,6 +23,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -119,7 +121,6 @@ const RegisterPage = () => {
         }}
       >
         {/* Botón de regreso */}
-        {/* Botón de regreso */}
         <IconButton
           onClick={() => navigate('/')}
           sx={{
@@ -128,7 +129,7 @@ const RegisterPage = () => {
             left: 16,
             color: 'primary.main',
             '&:hover': {
-              backgroundColor: 'rgba(255, 215, 0, 0.1)',
+              backgroundColor: isDark ? 'rgba(255, 215, 0, 0.1)' : 'rgba(65, 171, 93, 0.1)',
               transform: 'translateX(-4px)',
             },
             transition: 'all 0.3s ease',
@@ -141,7 +142,6 @@ const RegisterPage = () => {
         <Typography component="h1" variant="h5" sx={{ mb: 3, color: 'primary.main' }}>
           Crear Cuenta
         </Typography>
-
 
         {error && (
           <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
@@ -163,7 +163,7 @@ const RegisterPage = () => {
             value={formData.name}
             onChange={handleChange}
             disabled={loading}
-            sx={{ input: { color: 'white' }, label: { color: '#b0b0b0' } }}
+            sx={{ input: { color: 'text.primary' }, label: { color: 'text.secondary' } }}
           />
 
           <TextField
@@ -179,7 +179,7 @@ const RegisterPage = () => {
             value={formData.email}
             onChange={handleChange}
             disabled={loading}
-            sx={{ input: { color: 'white' }, label: { color: '#b0b0b0' } }}
+            sx={{ input: { color: 'text.primary' }, label: { color: 'text.secondary' } }}
           />
 
           <TextField
@@ -192,47 +192,25 @@ const RegisterPage = () => {
             value={formData.institution}
             onChange={handleChange}
             disabled={loading}
-            sx={{ input: { color: 'white' }, label: { color: '#b0b0b0' } }}
+            sx={{ input: { color: 'text.primary' }, label: { color: 'text.secondary' } }}
           />
 
           <FormControl fullWidth margin="normal" variant="filled" disabled={loading}>
-            <InputLabel id="role-label" sx={{ color: '#b0b0b0' }}>Rol</InputLabel>
+            <InputLabel id="role-label" sx={{ color: 'text.secondary' }}>Rol</InputLabel>
             <Select
               labelId="role-label"
               name="role"
               value={formData.role}
               onChange={handleChange}
               sx={{
-                color: 'white',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                '& .MuiSvgIcon-root': { color: 'white' },
-                '&:before': { borderColor: 'rgba(255, 255, 255, 0.23)' },
-                '&:hover:before': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                color: 'text.primary',
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                '& .MuiSvgIcon-root': { color: 'text.primary' },
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
                 },
                 '&.Mui-focused': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                },
-              }}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    backgroundColor: 'rgba(30, 36, 45, 0.95)',
-                    backdropFilter: 'blur(10px)',
-                    '& .MuiMenuItem-root': {
-                      color: 'white',
-                      '&:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      },
-                      '&.Mui-selected': {
-                        backgroundColor: 'rgba(134, 167, 137, 0.3)',
-                        '&:hover': {
-                          backgroundColor: 'rgba(134, 167, 137, 0.4)',
-                        },
-                      },
-                    },
-                  },
+                  backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
                 },
               }}
             >
@@ -255,7 +233,7 @@ const RegisterPage = () => {
             onChange={handleChange}
             disabled={loading}
             helperText="Mínimo 8 caracteres, debe incluir mayúscula, minúscula, número y carácter especial"
-            sx={{ input: { color: 'white' }, label: { color: '#b0b0b0' }, '& .MuiFormHelperText-root': { color: '#b0b0b0' } }}
+            sx={{ input: { color: 'text.primary' }, label: { color: 'text.secondary' }, '& .MuiFormHelperText-root': { color: 'text.secondary' } }}
           />
 
           <TextField
@@ -270,7 +248,7 @@ const RegisterPage = () => {
             value={formData.confirmPassword}
             onChange={handleChange}
             disabled={loading}
-            sx={{ input: { color: 'white' }, label: { color: '#b0b0b0' } }}
+            sx={{ input: { color: 'text.primary' }, label: { color: 'text.secondary' } }}
           />
 
           <Button
@@ -283,7 +261,9 @@ const RegisterPage = () => {
               mt: 3,
               mb: 2,
               '&:hover': {
-                boxShadow: '0 0 15px 5px rgba(255, 215, 0, 0.7)',
+                boxShadow: isDark
+                  ? '0 0 15px 5px rgba(65, 171, 93, 0.5)'
+                  : '0 0 15px 5px rgba(65, 171, 93, 0.35)',
               },
             }}
           >
@@ -291,7 +271,7 @@ const RegisterPage = () => {
           </Button>
 
           <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Typography variant="body2" sx={{ color: '#b0b0b0' }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               ¿Ya tienes una cuenta?{' '}
               <Link component={RouterLink} to="/login" sx={{ color: 'primary.main', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
                 Inicia sesión aquí

@@ -333,10 +333,13 @@ const VideoCommentSection = ({ videoId }) => {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        fetchComments();
+        if (videoId) {
+            fetchComments();
+        }
     }, [videoId]);
 
     const fetchComments = async () => {
+        if (!videoId) return;
         try {
             setLoading(true);
             setError(null);

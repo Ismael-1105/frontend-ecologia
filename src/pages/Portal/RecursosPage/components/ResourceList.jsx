@@ -4,7 +4,7 @@ import ResourceCard from './ResourceCard';
 import { ResourceCardSkeleton } from '../../../../components/shared/Skeletons';
 import { getAllUploads } from '../../../../core/api/uploadService';
 
-const ResourceList = ({ searchQuery, uploadedResources = [], onOpenPdfModal }) => {
+const ResourceList = ({ searchQuery, selectedCategory, uploadedResources = [], onOpenPdfModal }) => {
     const [resources, setResources] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -35,22 +35,27 @@ const ResourceList = ({ searchQuery, uploadedResources = [], onOpenPdfModal }) =
     // Combine uploaded resources with fetched resources
     const allResources = [...uploadedResources, ...resources];
 
-    // Filter resources by search query
-    const filteredResources = searchQuery
-        ? allResources.filter(resource => {
+    // Filter resources by category and search query
+    const filteredResources = allResources.filter(resource => {
+        // Category filter
+        if (selectedCategory && resource.category !== selectedCategory) {
+            return false;
+        }
+        // Text search filter
+        if (searchQuery) {
             const title = resource.title?.toLowerCase() || '';
             const author = resource.uploadedBy?.name?.toLowerCase() || '';
             const query = searchQuery.toLowerCase();
-
             return title.includes(query) || author.includes(query);
-        })
-        : allResources;
+        }
+        return true;
+    });
 
     if (loading) {
         return (
             <Grid container spacing={3}>
-                {[1, 2, 3, 4, 5, 6].map((item) => (
-                    <Grid item xs={12} md={6} key={item}>
+                {[1, 2, 3, 4].map((item) => (
+                    <Grid size={{ xs: 12, md: 6 }} key={item}>
                         <ResourceCardSkeleton />
                     </Grid>
                 ))}
@@ -79,7 +84,7 @@ const ResourceList = ({ searchQuery, uploadedResources = [], onOpenPdfModal }) =
             ) : (
                 <Grid container spacing={3}>
                     {filteredResources.map((resource, index) => (
-                        <Grid item xs={12} md={6} key={resource._id || resource.id || `resource-${index}`}>
+                        <Grid size={{ xs: 12, md: 6 }} key={resource._id || resource.id || `resource-${index}`}>
                             <ResourceCard 
                                 resource={resource} 
                                 onUpdate={fetchResources}

@@ -1,10 +1,5 @@
 @import './styles/animations.css';
 
-:root {
-  --dark-bg-1: #0D1117;
-  --dark-bg-2: #1a202c;
-}
-
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -12,25 +7,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Improve font loading performance */
   font-display: swap;
-  background: linear-gradient(-45deg, var(--dark-bg-1), var(--dark-bg-2), var(--dark-bg-1), var(--dark-bg-2));
-  background-size: 400% 400%;
-  animation: gradientAnimation 15s ease infinite;
-}
-
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
+  /* Background is controlled by MUI CssBaseline / ThemeProvider */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 code {
@@ -41,22 +20,4 @@ code {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
-}
-
-/* Custom scrollbar */
-body::-webkit-scrollbar {
-  width: 10px;
-}
-
-body::-webkit-scrollbar-track {
-  background: var(--dark-bg-1);
-}
-
-body::-webkit-scrollbar-thumb {
-  background: #86A789;
-  border-radius: 5px;
-}
-
-body::-webkit-scrollbar-thumb:hover {
-  background: #a8c5aa;
 }

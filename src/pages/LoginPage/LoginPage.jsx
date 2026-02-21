@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Link,
   IconButton,
+  useTheme,
 } from '@mui/material';
 import { useNavigate, Link as RouterLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../core/context/AuthContext';
@@ -19,6 +20,8 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -44,7 +47,7 @@ const LoginPage = () => {
 
       if (result.success) {
         // Redirect to intended page or dashboard
-        const from = location.state?.from?.pathname || '/portal/dashboard';
+        const from = location.state?.from?.pathname || '/portal/home';
         navigate(from, { replace: true });
       } else {
         setError(result.error || 'Error al iniciar sesión. Por favor, intenta nuevamente.');
@@ -78,7 +81,7 @@ const LoginPage = () => {
             left: 16,
             color: 'primary.main',
             '&:hover': {
-              backgroundColor: 'rgba(255, 215, 0, 0.1)',
+              backgroundColor: isDark ? 'rgba(255, 215, 0, 0.1)' : 'rgba(65, 171, 93, 0.1)',
               transform: 'translateX(-4px)',
             },
             transition: 'all 0.3s ease',
@@ -113,7 +116,7 @@ const LoginPage = () => {
             value={formData.email}
             onChange={handleChange}
             disabled={loading}
-            sx={{ input: { color: 'white' }, label: { color: '#b0b0b0' } }}
+            sx={{ input: { color: 'text.primary' }, label: { color: 'text.secondary' } }}
           />
           <TextField
             margin="normal"
@@ -128,7 +131,7 @@ const LoginPage = () => {
             value={formData.password}
             onChange={handleChange}
             disabled={loading}
-            sx={{ input: { color: 'white' }, label: { color: '#b0b0b0' } }}
+            sx={{ input: { color: 'text.primary' }, label: { color: 'text.secondary' } }}
           />
           <Button
             type="submit"
@@ -140,7 +143,9 @@ const LoginPage = () => {
               mt: 3,
               mb: 2,
               '&:hover': {
-                boxShadow: '0 0 15px 5px rgba(255, 215, 0, 0.7)',
+                boxShadow: isDark
+                  ? '0 0 15px 5px rgba(65, 171, 93, 0.5)'
+                  : '0 0 15px 5px rgba(65, 171, 93, 0.35)',
               },
             }}
           >
@@ -148,7 +153,7 @@ const LoginPage = () => {
           </Button>
 
           <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Typography variant="body2" sx={{ color: '#b0b0b0' }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               ¿No tienes una cuenta?{' '}
               <Link component={RouterLink} to="/register" sx={{ color: 'primary.main', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
                 Regístrate aquí

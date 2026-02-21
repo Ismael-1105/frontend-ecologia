@@ -128,7 +128,7 @@ const UserProfilePage = () => {
 
             <Grid container spacing={3}>
                 {/* Profile Card */}
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                     <UserProfileCard
                         user={{
                             ...profileUser,
@@ -143,7 +143,7 @@ const UserProfilePage = () => {
                 </Grid>
 
                 {/* Content Area */}
-                <Grid item xs={12} md={8}>
+                <Grid size={{ xs: 12, md: 8 }}>
                     {/* Tabs */}
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
                         <Tabs value={currentTab} onChange={handleTabChange}>

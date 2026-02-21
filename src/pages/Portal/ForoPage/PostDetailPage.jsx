@@ -4,17 +4,17 @@ import {
     Container,
     Box,
     Typography,
-    Paper,
     Avatar,
     Chip,
-    IconButton,
     Button,
     CircularProgress,
     Alert,
     Divider,
     Stack,
     Card,
-    CardContent
+    CardContent,
+    Grid,
+    Fade
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -23,7 +23,6 @@ import {
     Comment as CommentIcon,
     Visibility as VisibilityIcon,
     Schedule as ScheduleIcon,
-    Person as PersonIcon,
     Edit as EditIcon,
     Delete as DeleteIcon
 } from '@mui/icons-material';
@@ -32,6 +31,9 @@ import { useAuth } from '../../../core/context/AuthContext';
 import { useSnackbar } from '../../../core/context/SnackbarContext.jsx';
 import { getPostById, toggleLikePost } from '../../../core/api/postService';
 import CommentSection from './components/CommentSection';
+import SidebarRecentPosts from './components/SidebarRecentPosts';
+import SidebarVideos from './components/SidebarVideos';
+import SidebarResources from './components/SidebarResources';
 import SweetAlert from '../../../components/common/SweetAlert';
 
 const PostDetailPage = () => {
@@ -106,13 +108,11 @@ const PostDetailPage = () => {
                 const response = await deletePost(postId);
                 if (response.success) {
                     SweetAlert.showSuccessAlert('¡Eliminado!', 'Publicación eliminada correctamente');
-                    // showSuccess('Publicación eliminada correctamente');
                     navigate('/portal/foro');
                 }
             } catch (err) {
                 console.error('Error deleting post:', err);
                 SweetAlert.showErrorAlert('Error', 'Error al eliminar la publicación');
-                // showError('Error al eliminar la publicación');
             }
         }
     };
@@ -139,41 +139,37 @@ const PostDetailPage = () => {
 
     if (loading) {
         return (
-            <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
-                <Container maxWidth="md">
-                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-                        <CircularProgress size={60} thickness={4} />
-                    </Box>
-                </Container>
-            </Box>
+            <Container maxWidth="xl" sx={{ py: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+                    <CircularProgress size={60} thickness={4} />
+                </Box>
+            </Container>
         );
     }
 
     if (error || !post) {
         return (
-            <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
-                <Container maxWidth="md">
-                    <Alert
-                        severity="error"
-                        sx={{
-                            mb: 2,
-                            borderRadius: 3,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                        }}
-                    >
-                        {error || 'Publicación no encontrada'}
-                    </Alert>
-                    <Button
-                        startIcon={<ArrowBackIcon />}
-                        onClick={() => navigate('/portal/foro')}
-                        variant="outlined"
-                        size="large"
-                        sx={{ borderRadius: 2 }}
-                    >
-                        Regresar
-                    </Button>
-                </Container>
-            </Box>
+            <Container maxWidth="xl" sx={{ py: 2 }}>
+                <Alert
+                    severity="error"
+                    sx={{
+                        mb: 2,
+                        borderRadius: 3,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}
+                >
+                    {error || 'Publicación no encontrada'}
+                </Alert>
+                <Button
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => navigate('/portal/foro')}
+                    variant="outlined"
+                    size="large"
+                    sx={{ borderRadius: 2 }}
+                >
+                    Regresar
+                </Button>
+            </Container>
         );
     }
 
@@ -182,207 +178,209 @@ const PostDetailPage = () => {
     const likeCount = post.likes?.length || 0;
 
     return (
-        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pb: 6 }}>
-            {/* Header with gradient */}
-            <Box
-                sx={{
-                    background: 'linear-gradient(135deg, #2E7D32 0%, #66BB6A 100%)',
-                    color: 'white',
-                    py: 3,
-                    mb: 4
-                }}
-            >
-                <Container maxWidth="md">
+        <Fade in={true} timeout={500}>
+            <Container maxWidth="xl" sx={{ py: 0 }}>
+                {/* Back button */}
+                <Box sx={{ mb: 2 }}>
                     <Button
                         startIcon={<ArrowBackIcon />}
                         onClick={() => navigate('/portal/foro')}
-                        sx={{
-                            color: 'white',
-                            '&:hover': {
-                                bgcolor: 'rgba(255,255,255,0.1)'
-                            }
-                        }}
+                        sx={{ fontWeight: 600 }}
                     >
                         Volver al foro
                     </Button>
-                </Container>
-            </Box>
+                </Box>
 
-            <Container maxWidth="md">
-                {/* Post Content Card */}
-                <Card
-                    elevation={0}
-                    sx={{
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        borderRadius: 3,
-                        mb: 3,
-                        overflow: 'hidden'
-                    }}
-                >
-                    <CardContent sx={{ p: { xs: 2, md: 4 } }}>
-                        {/* Author Header */}
-                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 3 }}>
-                            <Avatar
-                                src={authorAvatar}
-                                sx={{
-                                    width: 64,
-                                    height: 64,
-                                    bgcolor: 'primary.main',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-                                }}
-                            >
-                                {getInitials(authorName)}
-                            </Avatar>
-                            <Box sx={{ flex: 1 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5, flexWrap: 'wrap' }}>
-                                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                                        {authorName}
-                                    </Typography>
-                                    <Chip
-                                        label={post.category}
-                                        size="small"
+                <Grid container spacing={3}>
+                    {/* Left Column - Post + Comments */}
+                    <Grid size={{ xs: 12, md: 8 }}>
+                        {/* Post Content Card */}
+                        <Card
+                            elevation={0}
+                            sx={{
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                borderRadius: 3,
+                                mb: 3,
+                                overflow: 'hidden'
+                            }}
+                        >
+                            <CardContent sx={{ p: { xs: 2, md: 4 } }}>
+                                {/* Author Header */}
+                                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 3 }}>
+                                    <Avatar
+                                        src={authorAvatar}
                                         sx={{
+                                            width: 64,
+                                            height: 64,
                                             bgcolor: 'primary.main',
-                                            color: 'white',
-                                            fontWeight: 600
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                                         }}
-                                    />
+                                    >
+                                        {getInitials(authorName)}
+                                    </Avatar>
+                                    <Box sx={{ flex: 1 }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5, flexWrap: 'wrap' }}>
+                                            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                                {authorName}
+                                            </Typography>
+                                            <Chip
+                                                label={post.category}
+                                                size="small"
+                                                sx={{
+                                                    bgcolor: 'primary.main',
+                                                    color: 'white',
+                                                    fontWeight: 600
+                                                }}
+                                            />
+                                        </Box>
+                                        <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" sx={{ gap: 1 }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                <ScheduleIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {formatDate(post.createdAt)}
+                                                </Typography>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                <VisibilityIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {post.views || 0} vistas
+                                                </Typography>
+                                            </Box>
+                                        </Stack>
+                                    </Box>
                                 </Box>
-                                <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" sx={{ gap: 1 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                        <ScheduleIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                        <Typography variant="caption" color="text.secondary">
-                                            {formatDate(post.createdAt)}
-                                        </Typography>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                        <VisibilityIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                        <Typography variant="caption" color="text.secondary">
-                                            {post.views || 0} vistas
-                                        </Typography>
-                                    </Box>
+
+                                {/* Title */}
+                                <Typography
+                                    variant="h4"
+                                    sx={{
+                                        fontWeight: 700,
+                                        mb: 3,
+                                        fontSize: { xs: '1.75rem', md: '2.125rem' },
+                                        lineHeight: 1.3
+                                    }}
+                                >
+                                    {post.title}
+                                </Typography>
+
+                                <Divider sx={{ my: 3 }} />
+
+                                {/* Content */}
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        mb: 3,
+                                        whiteSpace: 'pre-wrap',
+                                        lineHeight: 1.8,
+                                        fontSize: '1.05rem',
+                                        color: 'text.primary'
+                                    }}
+                                >
+                                    {post.content}
+                                </Typography>
+
+                                <Divider sx={{ my: 3 }} />
+
+                                {/* Actions */}
+                                <Stack
+                                    direction={{ xs: 'column', sm: 'row' }}
+                                    spacing={2}
+                                    alignItems={{ xs: 'stretch', sm: 'center' }}
+                                >
+                                    <Button
+                                        startIcon={liked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
+                                        onClick={handleLike}
+                                        size="large"
+                                        variant={liked ? 'contained' : 'outlined'}
+                                        sx={{
+                                            borderRadius: 2,
+                                            px: 3,
+                                            py: 1.5,
+                                            fontWeight: 600,
+                                            boxShadow: liked ? '0 4px 12px rgba(46, 125, 50, 0.3)' : 'none',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: liked
+                                                    ? '0 6px 16px rgba(46, 125, 50, 0.4)'
+                                                    : '0 4px 12px rgba(0,0,0,0.1)'
+                                            },
+                                            transition: 'all 0.3s ease'
+                                        }}
+                                    >
+                                        {likeCount} Me gusta
+                                    </Button>
+
+                                    {canManage && (
+                                        <>
+                                            <Button
+                                                startIcon={<EditIcon />}
+                                                onClick={handleEdit}
+                                                size="large"
+                                                variant="outlined"
+                                                color="primary"
+                                                sx={{ borderRadius: 2, px: 3, py: 1.5, fontWeight: 600 }}
+                                            >
+                                                Editar
+                                            </Button>
+                                            <Button
+                                                startIcon={<DeleteIcon />}
+                                                onClick={handleDelete}
+                                                size="large"
+                                                variant="outlined"
+                                                color="error"
+                                                sx={{ borderRadius: 2, px: 3, py: 1.5, fontWeight: 600 }}
+                                            >
+                                                Eliminar
+                                            </Button>
+                                        </>
+                                    )}
                                 </Stack>
-                            </Box>
-                        </Box>
+                            </CardContent>
+                        </Card>
 
-                        {/* Title */}
-                        <Typography
-                            variant="h4"
+                        {/* Comments Section */}
+                        <Card
+                            elevation={0}
                             sx={{
-                                fontWeight: 700,
-                                mb: 3,
-                                fontSize: { xs: '1.75rem', md: '2.125rem' },
-                                lineHeight: 1.3
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                borderRadius: 3,
+                                overflow: 'hidden'
                             }}
                         >
-                            {post.title}
-                        </Typography>
-
-                        <Divider sx={{ my: 3 }} />
-
-                        {/* Content */}
-                        <Typography
-                            variant="body1"
-                            sx={{
-                                mb: 3,
-                                whiteSpace: 'pre-wrap',
-                                lineHeight: 1.8,
-                                fontSize: '1.05rem',
-                                color: 'text.primary'
-                            }}
-                        >
-                            {post.content}
-                        </Typography>
-
-                        <Divider sx={{ my: 3 }} />
-
-                        {/* Actions */}
-                        <Stack
-                            direction={{ xs: 'column', sm: 'row' }}
-                            spacing={2}
-                            alignItems={{ xs: 'stretch', sm: 'center' }}
-                        >
-                            <Button
-                                startIcon={liked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
-                                onClick={handleLike}
-                                size="large"
-                                variant={liked ? 'contained' : 'outlined'}
+                            <Box
                                 sx={{
-                                    borderRadius: 2,
-                                    px: 3,
-                                    py: 1.5,
-                                    fontWeight: 600,
-                                    boxShadow: liked ? '0 4px 12px rgba(46, 125, 50, 0.3)' : 'none',
-                                    '&:hover': {
-                                        transform: 'translateY(-2px)',
-                                        boxShadow: liked
-                                            ? '0 6px 16px rgba(46, 125, 50, 0.4)'
-                                            : '0 4px 12px rgba(0,0,0,0.1)'
-                                    },
-                                    transition: 'all 0.3s ease'
+                                    p: 2.5,
+                                    borderBottom: '1px solid',
+                                    borderColor: 'divider',
+                                    bgcolor: 'action.hover'
                                 }}
                             >
-                                {likeCount} Me gusta
-                            </Button>
+                                <Typography variant="h6" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <CommentIcon />
+                                    Comentarios
+                                </Typography>
+                            </Box>
+                            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+                                <CommentSection postId={postId} />
+                            </CardContent>
+                        </Card>
+                    </Grid>
 
-                            {canManage && (
-                                <>
-                                    <Button
-                                        startIcon={<EditIcon />}
-                                        onClick={handleEdit}
-                                        size="large"
-                                        variant="outlined"
-                                        color="primary"
-                                        sx={{ borderRadius: 2, px: 3, py: 1.5, fontWeight: 600 }}
-                                    >
-                                        Editar
-                                    </Button>
-                                    <Button
-                                        startIcon={<DeleteIcon />}
-                                        onClick={handleDelete}
-                                        size="large"
-                                        variant="outlined"
-                                        color="error"
-                                        sx={{ borderRadius: 2, px: 3, py: 1.5, fontWeight: 600 }}
-                                    >
-                                        Eliminar
-                                    </Button>
-                                </>
-                            )}
-                        </Stack>
-                    </CardContent>
-                </Card>
-
-                {/* Comments Section */}
-                <Card
-                    elevation={0}
-                    sx={{
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        borderRadius: 3,
-                        overflow: 'hidden'
-                    }}
-                >
-                    <Box
-                        sx={{
-                            background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
-                            p: 2.5,
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
-                        }}
-                    >
-                        <Typography variant="h6" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <CommentIcon />
-                            Comentarios
-                        </Typography>
-                    </Box>
-                    <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-                        <CommentSection postId={postId} />
-                    </CardContent>
-                </Card>
+                    {/* Right Column - Sidebar */}
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Box sx={{ position: 'sticky', top: 80 }}>
+                            <Stack spacing={2}>
+                                <SidebarRecentPosts excludePostId={postId} limit={4} />
+                                <SidebarVideos limit={5} />
+                                <SidebarResources limit={6} />
+                            </Stack>
+                        </Box>
+                    </Grid>
+                </Grid>
             </Container>
-        </Box>
+        </Fade>
     );
 };
 

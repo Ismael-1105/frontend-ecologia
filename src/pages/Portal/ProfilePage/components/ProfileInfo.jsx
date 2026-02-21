@@ -32,7 +32,7 @@ const ProfileInfo = ({
                 </Box>
 
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             label="Nombre Completo"
                             name="name"
@@ -50,7 +50,7 @@ const ProfileInfo = ({
                         />
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             label="Correo Electrónico"
                             name="email"
@@ -69,7 +69,7 @@ const ProfileInfo = ({
                         />
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                         <TextField
                             label="Institución / Universidad"
                             name="institution"

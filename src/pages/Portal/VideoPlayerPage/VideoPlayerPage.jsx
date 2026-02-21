@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Grid, Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import { videoService } from '../../../core/services';
 import { useAuth } from '../../../core/context/AuthContext';
-import VideoPlayerModal from '../DashboardPage/components/VideoPlayerModal.jsx';
 import SweetAlert from '../../../components/common/SweetAlert';
 import {
     PageHeader,
@@ -14,11 +14,11 @@ import {
 
 const MyVideosPage = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedVideo, setSelectedVideo] = useState(null);
-    const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -63,8 +63,7 @@ const MyVideosPage = () => {
     };
 
     const handlePlayVideo = (video) => {
-        setSelectedVideo(video);
-        setIsPlayerModalOpen(true);
+        navigate(`/portal/watch/${video._id || video.id}`);
         handleMenuClose();
     };
 
@@ -157,14 +156,6 @@ const MyVideosPage = () => {
                 formData={editFormData}
                 onChange={setEditFormData}
                 onSave={handleEditSave}
-            />
-
-
-
-            <VideoPlayerModal
-                open={isPlayerModalOpen}
-                onClose={() => setIsPlayerModalOpen(false)}
-                videoId={selectedVideo?._id || selectedVideo?.id}
             />
         </Container>
     );

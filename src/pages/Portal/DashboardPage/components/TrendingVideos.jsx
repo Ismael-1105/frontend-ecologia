@@ -47,7 +47,7 @@ const TrendingVideos = ({ onVideoSelect, onLike, onDislike, videos: externalVide
         try {
             setLoading(true);
             setError(null);
-            const trending = await statsService.getTrendingVideos(3);
+            const trending = await statsService.getTrendingVideos(4);
             updateVideos(trending);
         } catch (err) {
             console.error('Error fetching trending videos:', err);
@@ -82,7 +82,7 @@ const TrendingVideos = ({ onVideoSelect, onLike, onDislike, videos: externalVide
     };
 
     return (
-        <Card elevation={2}>
+        <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3 }}>
             <CardHeader
                 title="Videos Populares"
                 action={
@@ -107,8 +107,8 @@ const TrendingVideos = ({ onVideoSelect, onLike, onDislike, videos: externalVide
                 ) : loading ? (
                     <SkeletonGrid
                         SkeletonComponent={VideoCardSkeleton}
-                        count={3}
-                        gridProps={{ xs: 12, sm: 6, md: 4, lg: 4 }}
+                        count={4}
+                        gridProps={{ xs: 12, sm: 6 }}
                     />
                 ) : displayVideos.length === 0 ? (
                     <EmptyState
@@ -121,7 +121,7 @@ const TrendingVideos = ({ onVideoSelect, onLike, onDislike, videos: externalVide
                 ) : (
                     <Grid container spacing={2}>
                         {displayVideos.map((video) => (
-                            <Grid item xs={12} sm={6} md={4} lg={4} key={video._id} sx={{ display: 'flex' }}>
+                            <Grid size={{ xs: 12, sm: 6 }} key={video._id} sx={{ display: 'flex' }}>
                                 <Link
                                     to={`/portal/dashboard?videoId=${video._id}`}
                                     style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}
@@ -130,7 +130,6 @@ const TrendingVideos = ({ onVideoSelect, onLike, onDislike, videos: externalVide
                                     <Card
                                         elevation={0}
                                         sx={{
-                                            height: VIDEO_CARD_LAYOUT.HEIGHT,
                                             width: '100%',
                                             border: '1px solid',
                                             borderColor: 'divider',
@@ -180,15 +179,22 @@ const TrendingVideos = ({ onVideoSelect, onLike, onDislike, videos: externalVide
                                                         transition: 'opacity 0.3s ease'
                                                     }}
                                                 >
-                                                    <IconButton
+                                                    <Box
                                                         sx={{
+                                                            width: 48,
+                                                            height: 48,
+                                                            borderRadius: '50%',
                                                             bgcolor: 'primary.main',
                                                             color: 'white',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            transition: 'background-color 0.2s ease',
                                                             '&:hover': { bgcolor: 'primary.dark' }
                                                         }}
                                                     >
                                                         <PlayArrowIcon />
-                                                    </IconButton>
+                                                    </Box>
                                                 </Box>
 
                                                 {video.duration && (

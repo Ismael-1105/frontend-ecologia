@@ -4,17 +4,17 @@ const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#2E7D32',
-      light: '#66BB6A',
-      dark: '#1B5E20',
+      main: '#41ab5d',
+      light: '#6bc17d',
+      dark: '#328a48',
     },
     secondary: {
-      main: '#81C784',
-      light: '#A5D6A7',
-      dark: '#4CAF50',
+      main: '#5a9e6a',
+      light: '#82b88e',
+      dark: '#3d7a4c',
     },
     success: {
-      main: '#43A047',
+      main: '#41ab5d',
     },
     info: {
       main: '#0288D1',
@@ -26,8 +26,8 @@ const lightTheme = createTheme({
       main: '#D32F2F',
     },
     background: {
-      default: '#F5F7FA',
-      paper: '#FFFFFF',
+      default: '#ffffff',
+      paper: '#e6ebf9',
     },
     text: {
       primary: '#1A1A1A',
@@ -76,10 +76,10 @@ const lightTheme = createTheme({
           transition: 'all 0.25s ease',
         },
         containedPrimary: {
-          boxShadow: '0 6px 16px rgba(46, 125, 50, 0.25)',
+          boxShadow: '0 6px 16px rgba(65, 171, 93, 0.25)',
           '&:hover': {
             transform: 'translateY(-2px)',
-            boxShadow: '0 10px 24px rgba(46, 125, 50, 0.35)',
+            boxShadow: '0 10px 24px rgba(65, 171, 93, 0.35)',
           },
         },
         outlinedPrimary: {

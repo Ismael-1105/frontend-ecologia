@@ -4,17 +4,20 @@ import { Card, CardContent, Box, Typography } from '@mui/material';
 const StatsCard = ({ icon: Icon, label, value, change, color = 'primary' }) => {
     return (
         <Card
-            elevation={2}
+            elevation={0}
             sx={{
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'relative',
                 overflow: 'hidden',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 3,
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: 6
+                    boxShadow: 3
                 }
             }}
         >

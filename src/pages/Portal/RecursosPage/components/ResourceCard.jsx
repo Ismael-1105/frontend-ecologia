@@ -154,13 +154,18 @@ const ResourceCard = ({ resource, onUpdate, onOpenPdfModal }) => {
     return (
         <>
             <Card
-                elevation={1}
+                elevation={0}
                 sx={{
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 3,
+                    overflow: 'hidden',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
-                        boxShadow: 3,
-                        transform: 'translateY(-2px)'
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                        transform: 'translateY(-4px)',
+                        borderColor: 'primary.light'
                     },
-                    transition: 'all 0.2s ease'
                 }}
             >
                 <CardContent>

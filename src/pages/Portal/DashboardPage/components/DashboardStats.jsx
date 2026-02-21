@@ -9,6 +9,7 @@ import {
     UploadFile as UploadFileIcon
 } from '@mui/icons-material';
 import StatsCard from '../../../../components/common/StatsCard';
+import { StatsCardSkeleton } from '../../../../components/shared/Skeletons';
 import { statsService } from '../../../../core/services';
 import { useAuth } from '../../../../core/context/AuthContext';
 
@@ -58,44 +59,56 @@ const DashboardStats = () => {
         {
             icon: VideoLibraryIcon,
             label: 'Mis Videos',
-            value: loading ? '...' : stats.totalVideos,
-            change: loading ? '...' : `+${stats.recentVideos} esta semana`,
+            value: stats.totalVideos,
+            change: `+${stats.recentVideos} esta semana`,
             color: 'primary'
         },
         {
             icon: VisibilityIcon,
             label: 'Mis Vistas',
-            value: loading ? '...' : stats.totalViews.toLocaleString(),
-            change: loading ? '...' : `+${stats.viewsGrowthPercent}% esta semana`,
+            value: stats.totalViews.toLocaleString(),
+            change: `+${stats.viewsGrowthPercent}% esta semana`,
             color: 'success'
         },
         {
             icon: CommentIcon,
             label: 'Mis Comentarios',
-            value: loading ? '...' : stats.userComments,
-            change: loading ? '...' : `${stats.totalComments} en mis videos`,
+            value: stats.userComments,
+            change: `${stats.totalComments} en mis videos`,
             color: 'info'
         },
         {
             icon: ForumIcon,
             label: 'Mis Discusiones',
-            value: loading ? '...' : stats.totalPosts,
-            change: loading ? '...' : 'en el foro',
+            value: stats.totalPosts,
+            change: 'en el foro',
             color: 'secondary'
         },
         {
             icon: UploadFileIcon,
             label: 'Mis Recursos',
-            value: loading ? '...' : stats.totalResources,
-            change: loading ? '...' : 'documentos compartidos',
+            value: stats.totalResources,
+            change: 'documentos compartidos',
             color: 'warning'
         },
     ];
 
+    if (loading) {
+        return (
+            <Grid container spacing={3}>
+                {[...Array(5)].map((_, index) => (
+                    <Grid size={{ xs: 6, md: 4 }} key={index}>
+                        <StatsCardSkeleton />
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    }
+
     return (
         <Grid container spacing={3}>
             {statsData.map((stat, index) => (
-                <Grid item xs={12} sm={6} lg={3} key={index}>
+                <Grid size={{ xs: 6, md: 4 }} key={index}>
                     <StatsCard {...stat} />
                 </Grid>
             ))}

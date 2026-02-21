@@ -10,7 +10,7 @@ const VideoGrid = ({ videos, loading, onVideoPlay, onMenuOpen, formatDate }) => 
 
     if (videos.length === 0) {
         return (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
                 <Alert severity="info">
                     No has subido ningún video. Únete a esta comunidad y sube tu primer video.
                 </Alert>
@@ -21,7 +21,7 @@ const VideoGrid = ({ videos, loading, onVideoPlay, onMenuOpen, formatDate }) => 
     return (
         <>
             {videos.map((video) => (
-                <Grid item xs={12} sm={6} md={4} key={video._id || video.id} sx={{ display: 'flex' }}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={video._id || video.id} sx={{ display: 'flex' }}>
                     <VideoCard
                         video={video}
                         onPlay={onVideoPlay}

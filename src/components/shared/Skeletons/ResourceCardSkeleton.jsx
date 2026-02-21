@@ -15,8 +15,11 @@ import {
 const ResourceCardSkeleton = () => {
     return (
         <Card
-            elevation={1}
+            elevation={0}
             sx={{
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 3,
                 transition: 'all 0.2s ease'
             }}
         >

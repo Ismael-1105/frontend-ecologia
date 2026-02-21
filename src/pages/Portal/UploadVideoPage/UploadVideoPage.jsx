@@ -206,7 +206,7 @@ const UploadVideoPage = () => {
 
             <Grid container spacing={3}>
                 {/* Main Form */}
-                <Grid item xs={12} lg={8}>
+                <Grid size={{ xs: 12, lg: 8 }}>
                     <Paper elevation={2} sx={{ p: 4, borderRadius: 3 }}>
                         <Box component="form" onSubmit={handleSubmit}>
                             {/* Información del Video */}
@@ -276,7 +276,7 @@ const UploadVideoPage = () => {
                                 </Stack>
 
                                 <Grid container spacing={3}>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
                                         <VideoUploadZone
                                             videoFile={videoFile}
                                             videoPreview={videoPreview}
@@ -286,7 +286,7 @@ const UploadVideoPage = () => {
                                         />
                                     </Grid>
 
-                                    <Grid item xs={12} md={6}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
                                         <ThumbnailUploadZone
                                             thumbnailFile={thumbnailFile}
                                             thumbnailPreview={thumbnailPreview}
@@ -324,7 +324,7 @@ const UploadVideoPage = () => {
                 </Grid>
 
                 {/* Sidebar Info */}
-                <Grid item xs={12} lg={4}>
+                <Grid size={{ xs: 12, lg: 4 }}>
                     <Stack spacing={3}>
                         <RequirementsCard />
                         <StatusCard />

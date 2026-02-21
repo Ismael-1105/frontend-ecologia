@@ -9,7 +9,6 @@ import {
     ListItemText,
     Box,
     Chip,
-    CircularProgress
 } from '@mui/material';
 import {
     VideoLibrary as VideoIcon,
@@ -20,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../../../core/context/AuthContext';
 import apiClient from '../../../../core/api/client';
+import { ActivityListSkeleton } from '../../../../components/shared/Skeletons';
 
 const RecentActivity = () => {
     const { user } = useAuth();
@@ -131,18 +131,16 @@ const RecentActivity = () => {
                 borderRadius: 3
             }}
         >
-            <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <TimeIcon sx={{ mr: 1, color: 'primary.main' }} />
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2.5 }}>
+                    <TimeIcon sx={{ mr: 1.5, color: 'primary.main', fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.15rem' }}>
                         Mi Actividad Reciente
                     </Typography>
                 </Box>
 
                 {loading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                        <CircularProgress size={40} />
-                    </Box>
+                    <ActivityListSkeleton count={5} />
                 ) : activities.length === 0 ? (
                     <Box sx={{ textAlign: 'center', py: 4 }}>
                         <Typography variant="body2" color="text.secondary">
@@ -158,13 +156,13 @@ const RecentActivity = () => {
                                     key={index}
                                     sx={{
                                         px: 0,
-                                        py: 1.5,
+                                        py: 2,
                                         borderBottom: index < activities.length - 1 ? '1px solid' : 'none',
                                         borderColor: 'divider'
                                     }}
                                 >
-                                    <ListItemIcon sx={{ minWidth: 40 }}>
-                                        <Icon color={activity.color} fontSize="small" />
+                                    <ListItemIcon sx={{ minWidth: 44 }}>
+                                        <Icon color={activity.color} />
                                     </ListItemIcon>
                                     <ListItemText
                                         primary={
@@ -172,21 +170,24 @@ const RecentActivity = () => {
                                                 {activity.title}
                                             </Typography>
                                         }
+                                        secondaryTypographyProps={{ component: 'div' }}
                                         secondary={
                                             <Box>
                                                 <Typography
-                                                    variant="caption"
+                                                    variant="body2"
                                                     color="text.secondary"
                                                     sx={{
                                                         display: 'block',
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
-                                                        whiteSpace: 'nowrap'
+                                                        whiteSpace: 'nowrap',
+                                                        fontSize: '0.85rem',
+                                                        mt: 0.25
                                                     }}
                                                 >
                                                     {activity.subtitle}
                                                 </Typography>
-                                                <Typography variant="caption" color="text.disabled">
+                                                <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.75rem', mt: 0.5, display: 'block' }}>
                                                     {formatTimeAgo(activity.time)}
                                                 </Typography>
                                             </Box>

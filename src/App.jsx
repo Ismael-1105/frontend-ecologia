@@ -24,6 +24,8 @@ const VideosPage = lazy(() => import('./pages/VideosPage/VideosPage'));
 const VideoDetailPage = lazy(() => import('./pages/VideoDetailPage/VideoDetailPage'));
 
 // Lazy-loaded Authenticated Pages
+const HomeFeedPage = lazy(() => import('./pages/Portal/HomeFeedPage/HomeFeedPage'));
+const WatchPage = lazy(() => import('./pages/Portal/WatchPage/WatchPage'));
 const DashboardPage = lazy(() => import('./pages/Portal/DashboardPage/DashboardPage'));
 const ProfilePage = lazy(() => import('./pages/Portal/ProfilePage/ProfilePage'));
 const MyVideosPage = lazy(() => import('./pages/Portal/MyVideosPage/MyVideosPage'));
@@ -75,7 +77,9 @@ function AppContent() {
                     </ProtectedRoute>
                   }
                 >
-                  <Route index element={<Navigate to="/portal/dashboard" replace />} />
+                  <Route index element={<Navigate to="/portal/home" replace />} />
+                  <Route path="home" element={<HomeFeedPage />} />
+                  <Route path="watch/:id" element={<WatchPage />} />
                   <Route path="dashboard" element={<DashboardPage />} />
                   <Route path="profile" element={<ProfilePage />} />
                   <Route path="profile/:userId" element={<UserProfilePage />} />

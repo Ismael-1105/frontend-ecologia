@@ -27,7 +27,7 @@ const BadgeGrid = ({ badges = [], title = 'Logros', emptyMessage = 'No hay logro
 
             <Grid container spacing={2}>
                 {badges.map((badge) => (
-                    <Grid item key={badge._id || badge.id} xs={6} sm={4} md={3}>
+                    <Grid size={{ xs: 6, sm: 4, md: 3 }} key={badge._id || badge.id}>
                         <Paper
                             elevation={0}
                             sx={{

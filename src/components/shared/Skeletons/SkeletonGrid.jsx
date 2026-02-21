@@ -19,7 +19,7 @@ const SkeletonGrid = ({
     return (
         <Grid container spacing={3}>
             {Array.from(new Array(count)).map((_, index) => (
-                <Grid item {...gridProps} key={index}>
+                <Grid size={gridProps} key={index}>
                     <SkeletonComponent />
                 </Grid>
             ))}

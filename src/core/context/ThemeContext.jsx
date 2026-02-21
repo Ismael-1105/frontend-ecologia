@@ -17,29 +17,29 @@ const lightTheme = createTheme({
         mode: 'light',
         // Light mode colors - Eco Green Theme
         primary: {
-            main: '#859864', // Sage green
-            light: '#a3b584',
-            dark: '#6a7a50',
+            main: '#41ab5d',
+            light: '#6bc17d',
+            dark: '#328a48',
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#7a9b76', // Complementary green
-            light: '#9bb598',
-            dark: '#5f7c5c',
+            main: '#5a9e6a',
+            light: '#82b88e',
+            dark: '#3d7a4c',
             contrastText: '#ffffff',
         },
         success: {
-            main: '#6b9b37', // Vibrant green for success
-            light: '#8fb35f',
-            dark: '#547c2c',
+            main: '#41ab5d',
+            light: '#6bc17d',
+            dark: '#328a48',
         },
         background: {
-            default: '#f8f9f6', // Very light sage
-            paper: '#ffffff',
+            default: '#ffffff',
+            paper: '#e6ebf9',
         },
         text: {
-            primary: '#2d3319', // Dark green-gray
-            secondary: '#5a6147', // Medium green-gray
+            primary: '#1a1a1a',
+            secondary: '#555555',
         },
     },
     typography: {
@@ -59,6 +59,16 @@ const lightTheme = createTheme({
         borderRadius: 12,
     },
     components: {
+        MuiCssBaseline: {
+            styleOverrides: {
+                body: {
+                    '&::-webkit-scrollbar': { width: 10 },
+                    '&::-webkit-scrollbar-track': { background: '#ffffff' },
+                    '&::-webkit-scrollbar-thumb': { background: '#c1c1c1', borderRadius: 5 },
+                    '&::-webkit-scrollbar-thumb:hover': { background: '#909090' },
+                },
+            },
+        },
         MuiButton: {
             styleOverrides: {
                 root: {
@@ -68,7 +78,7 @@ const lightTheme = createTheme({
                 contained: {
                     boxShadow: 'none',
                     '&:hover': {
-                        boxShadow: '0 4px 12px rgba(133, 152, 100, 0.3)',
+                        boxShadow: '0 4px 12px rgba(65, 171, 93, 0.3)',
                     },
                 },
             },
@@ -95,21 +105,21 @@ const darkTheme = createTheme({
         mode: 'dark',
         // Dark mode colors - Soft Charcoal Theme
         primary: {
-            main: '#a3b584', // Lighter sage for dark mode
-            light: '#bcc9a3',
-            dark: '#859864',
-            contrastText: '#0f1410',
+            main: '#6bc17d',
+            light: '#8fd4a0',
+            dark: '#41ab5d',
+            contrastText: '#0f0f0f',
         },
         secondary: {
-            main: '#9bb598', // Lighter complementary green
-            light: '#b5c9b2',
-            dark: '#7a9b76',
-            contrastText: '#0f1410',
+            main: '#82b88e',
+            light: '#a3ccad',
+            dark: '#5a9e6a',
+            contrastText: '#0f0f0f',
         },
         success: {
-            main: '#8fb35f', // Lighter vibrant green
-            light: '#a8c47f',
-            dark: '#6b9b37',
+            main: '#6bc17d',
+            light: '#8fd4a0',
+            dark: '#41ab5d',
         },
         error: {
             main: '#ef5350',
@@ -122,19 +132,19 @@ const darkTheme = createTheme({
             dark: '#c66900',
         },
         info: {
-            main: '#7a9b76',
-            light: '#a8c4a4',
-            dark: '#5a7a56',
+            main: '#5a9e6a',
+            light: '#82b88e',
+            dark: '#3d7a4c',
         },
         background: {
-            default: '#0f1410', // Very dark charcoal with green tint
-            paper: '#1a1f1a', // Dark charcoal
+            default: '#0f0f0f',
+            paper: '#272727',
         },
         text: {
-            primary: '#e8ebe4', // Light sage
-            secondary: '#b8bdb3', // Muted light sage
+            primary: '#f1f1f1',
+            secondary: '#aaaaaa',
         },
-        divider: 'rgba(163, 181, 132, 0.12)',
+        divider: 'rgba(255, 255, 255, 0.12)',
     },
     typography: {
         fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
@@ -153,6 +163,16 @@ const darkTheme = createTheme({
         borderRadius: 12,
     },
     components: {
+        MuiCssBaseline: {
+            styleOverrides: {
+                body: {
+                    '&::-webkit-scrollbar': { width: 10 },
+                    '&::-webkit-scrollbar-track': { background: '#0f0f0f' },
+                    '&::-webkit-scrollbar-thumb': { background: '#555555', borderRadius: 5 },
+                    '&::-webkit-scrollbar-thumb:hover': { background: '#888888' },
+                },
+            },
+        },
         MuiButton: {
             styleOverrides: {
                 root: {
@@ -162,7 +182,7 @@ const darkTheme = createTheme({
                 contained: {
                     boxShadow: 'none',
                     '&:hover': {
-                        boxShadow: '0 4px 12px rgba(133, 152, 100, 0.3)',
+                        boxShadow: '0 4px 12px rgba(65, 171, 93, 0.3)',
                     },
                 },
             },

@@ -5,17 +5,17 @@ const neoCarbonTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#2E7D32',
-      light: '#66BB6A',
-      dark: '#1B5E20',
+      main: '#6bc17d',
+      light: '#8fd4a0',
+      dark: '#41ab5d',
     },
     secondary: {
-      main: '#81C784',
-      light: '#A5D6A7',
-      dark: '#4CAF50',
+      main: '#82b88e',
+      light: '#a3ccad',
+      dark: '#5a9e6a',
     },
     success: {
-      main: '#66BB6A',
+      main: '#6bc17d',
     },
     info: {
       main: '#29B6F6',
@@ -27,8 +27,8 @@ const neoCarbonTheme = createTheme({
       main: '#E57373',
     },
     background: {
-      default: '#0B1117',
-      paper: '#121821',
+      default: '#0f0f0f',
+      paper: '#272727',
     },
     text: {
       primary: '#E6E6E6',
@@ -77,10 +77,10 @@ const neoCarbonTheme = createTheme({
           transition: 'all 0.25s ease',
         },
         containedPrimary: {
-          boxShadow: '0 6px 16px rgba(46, 125, 50, 0.35)',
+          boxShadow: '0 6px 16px rgba(65, 171, 93, 0.35)',
           '&:hover': {
             transform: 'translateY(-2px)',
-            boxShadow: '0 10px 24px rgba(46, 125, 50, 0.45)',
+            boxShadow: '0 10px 24px rgba(65, 171, 93, 0.45)',
           },
         },
         outlinedPrimary: {

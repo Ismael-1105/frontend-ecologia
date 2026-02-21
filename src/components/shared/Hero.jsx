@@ -23,7 +23,7 @@ const Hero = () => {
         >
             <Container maxWidth="lg">
                 <Grid container spacing={4} alignItems="center">
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Typography
                             variant="h2"
                             component="h1"
@@ -91,7 +91,7 @@ const Hero = () => {
                             </Button>
                         </Box>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Box
                             sx={{
                                 display: 'flex',

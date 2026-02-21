@@ -80,7 +80,7 @@ const ContactSection = () => {
         <Grid container spacing={4} justifyContent="space-between" alignItems="flex-start">
 
           {/* Brand & Description */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
               <VolunteerActivismIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />
               <Typography variant="h6" fontWeight="700" sx={{ color: 'text.primary' }}>
@@ -93,7 +93,7 @@ const ContactSection = () => {
           </Grid>
 
           {/* Contact Info - Compact List */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Typography variant="subtitle1" fontWeight="700" sx={{ mb: 2, color: 'text.primary' }}>
               Contacto
             </Typography>
@@ -123,7 +123,7 @@ const ContactSection = () => {
           </Grid>
 
           {/* Social Links */}
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Typography variant="subtitle1" fontWeight="700" sx={{ mb: 2, color: 'text.primary' }}>
               Síguenos
             </Typography>

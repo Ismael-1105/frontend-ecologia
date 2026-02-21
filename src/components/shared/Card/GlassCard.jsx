@@ -1,16 +1,9 @@
 import React from 'react';
-import { Card as MuiCard } from '@mui/material';
+import { Card as MuiCard, useTheme } from '@mui/material';
 
 /**
  * GlassCard - Reusable card component with glassmorphism effect
- * 
- * @param {object} props
- * @param {number} props.elevation - Shadow elevation (default: 3)
- * @param {boolean} props.hover - Enable hover effects (default: true)
- * @param {string} props.gradient - Optional gradient background
- * @param {string} props.className - Additional CSS classes
- * @param {object} props.sx - Additional MUI sx props
- * @param {React.ReactNode} props.children - Card content
+ * Adapts to light/dark theme automatically.
  */
 const GlassCard = ({
     elevation = 3,
@@ -21,16 +14,25 @@ const GlassCard = ({
     children,
     ...rest
 }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
+
     const defaultSx = {
-        backgroundColor: 'rgba(30, 36, 45, 0.6)',
+        backgroundColor: isDark
+            ? 'rgba(39, 39, 39, 0.85)'
+            : 'rgba(255, 255, 255, 0.75)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        border: isDark
+            ? '1px solid rgba(255, 255, 255, 0.1)'
+            : '1px solid rgba(0, 0, 0, 0.08)',
         borderRadius: '15px',
         transition: 'all 0.3s ease-in-out',
         ...(hover && {
             '&:hover': {
                 transform: 'translateY(-4px)',
-                boxShadow: '0 10px 24px rgba(134, 167, 137, 0.25)',
+                boxShadow: isDark
+                    ? '0 10px 24px rgba(65, 171, 93, 0.25)'
+                    : '0 10px 24px rgba(0, 0, 0, 0.12)',
             },
         }),
         ...(gradient && {

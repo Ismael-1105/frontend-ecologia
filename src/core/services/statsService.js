@@ -15,11 +15,7 @@ const statsService = {
      */
     getDashboardStats: async (userId = null) => {
         try {
-            // TODO: Replace with API call when endpoint is available
-            // const response = await api.get('/api/stats/overview');
-            // return response.data;
-
-            // For now, calculate from existing videos
+            // Calculate stats from existing data
             const response = await videoService.getAllVideos();
             const allVideos = response.data || response || [];
 
@@ -164,11 +160,7 @@ const statsService = {
      */
     getTrendingVideos: async (limit = 4) => {
         try {
-            // TODO: Replace with API call when endpoint is available
-            // const response = await api.get('/api/stats/trending', { params: { limit } });
-            // return response.data;
-
-            // For now, get all videos and sort by views
+            // Get all videos and sort by views
             const response = await videoService.getAllVideos();
             const videos = response.data || response || [];
 
@@ -186,18 +178,62 @@ const statsService = {
 
     /**
      * Get activity statistics
+     * Calculates real stats from videos, posts, and users
      * @returns {Promise<Object>} Activity stats
      */
     getActivityStats: async () => {
         try {
-            // TODO: Implement when backend endpoint is available
-            // const response = await api.get('/api/stats/activity');
-            // return response.data;
+            const now = new Date();
+            const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+            // Fetch videos to count this week's uploads
+            let videosThisWeek = 0;
+            try {
+                const videosResponse = await videoService.getAllVideos();
+                const allVideos = videosResponse.data || videosResponse || [];
+                videosThisWeek = allVideos.filter(video => {
+                    const createdAt = new Date(video.createdAt);
+                    return createdAt >= oneWeekAgo;
+                }).length;
+            } catch (e) {
+                console.error('Error fetching videos for activity stats:', e);
+            }
+
+            // Fetch posts to count today's comments
+            let commentsToday = 0;
+            try {
+                const postsResponse = await apiClient.get('/posts');
+                const allPosts = postsResponse.data?.data || [];
+                allPosts.forEach(post => {
+                    const comments = post.comments || [];
+                    commentsToday += comments.filter(comment => {
+                        const createdAt = new Date(comment.createdAt);
+                        return createdAt >= startOfToday;
+                    }).length;
+                });
+            } catch (e) {
+                console.error('Error fetching posts for activity stats:', e);
+            }
+
+            // Fetch users to count new users this month
+            let newUsersThisMonth = 0;
+            try {
+                const usersResponse = await apiClient.get('/users');
+                const allUsers = usersResponse.data?.data || usersResponse.data || [];
+                newUsersThisMonth = allUsers.filter(user => {
+                    const createdAt = new Date(user.createdAt);
+                    return createdAt >= oneMonthAgo;
+                }).length;
+            } catch (e) {
+                console.error('Error fetching users for activity stats:', e);
+            }
 
             return {
-                videosThisWeek: 3,
-                commentsToday: 8,
-                newUsersThisMonth: 45
+                videosThisWeek,
+                commentsToday,
+                newUsersThisMonth
             };
         } catch (error) {
             console.error('Error fetching activity stats:', error);

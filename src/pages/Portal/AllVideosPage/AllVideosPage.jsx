@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { VideoCardSkeleton } from '../../../components/shared/Skeletons';
 import PaginationComponent from '../../../components/shared/PaginationComponent';
-import { VideoPlayerModal } from '../DashboardPage/components';
 import {
     PageHeader,
     EmptyState,
@@ -13,9 +13,10 @@ import {
 /**
  * All Videos Page
  * View all approved videos from all users
- * Now supports Admin management
+ * Now navigates to WatchPage instead of opening a modal
  */
 const AllVideosPage = () => {
+    const navigate = useNavigate();
     const {
         videos,
         pagination,
@@ -28,18 +29,8 @@ const AllVideosPage = () => {
         handleDislike,
     } = useAllVideos();
 
-    // Video player modal state
-    const [selectedVideoId, setSelectedVideoId] = useState(null);
-    const [modalOpen, setModalOpen] = useState(false);
-
     const handleVideoSelect = (videoId) => {
-        setSelectedVideoId(videoId);
-        setModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setModalOpen(false);
-        setSelectedVideoId(null);
+        navigate(`/portal/watch/${videoId}`);
     };
 
     return (
@@ -51,7 +42,7 @@ const AllVideosPage = () => {
             {loading && videos.length === 0 ? (
                 <Grid container spacing={3} sx={{ mb: 4 }}>
                     {[...Array(6)].map((_, index) => (
-                        <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
                             <VideoCardSkeleton />
                         </Grid>
                     ))}
@@ -73,15 +64,6 @@ const AllVideosPage = () => {
                     <PaginationComponent pagination={pagination} onPageChange={setPage} />
                 </>
             )}
-
-            {/* Video Player Modal */}
-            <VideoPlayerModal
-                open={modalOpen}
-                onClose={handleCloseModal}
-                videoId={selectedVideoId}
-            />
-
-
         </Container>
     );
 };

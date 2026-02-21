@@ -13,12 +13,16 @@ import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
 import { useDebounce } from '../../../../hooks/useDebounce';
 
 const CATEGORIES = [
+    'General',
+    'Flora Nativa',
+    'Fauna Local',
+    'Conservación',
     'Reciclaje',
+    'Agua',
+    'Educación Ambiental',
     'Cambio Climático',
     'Energías Renovables',
-    'Educación Ambiental',
-    'Problemas Locales',
-    'General'
+    'Problemas Locales'
 ];
 
 const SearchBar = ({ onSearch, onCategoryChange, selectedCategory }) => {

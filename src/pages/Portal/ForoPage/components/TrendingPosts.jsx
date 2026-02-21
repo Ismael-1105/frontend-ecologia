@@ -10,7 +10,6 @@ import {
     Avatar,
     Chip,
     Box,
-    Skeleton
 } from '@mui/material';
 import {
     Whatshot as WhatshotIcon,
@@ -18,6 +17,7 @@ import {
     Visibility as VisibilityIcon
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import { TrendingPostSkeleton } from '../../../../components/shared/Skeletons';
 import { getTrendingPosts } from '../../../../core/api/postService';
 
 const TrendingPosts = ({ timeframe = 7, limit = 5, category = null }) => {
@@ -49,30 +49,46 @@ const TrendingPosts = ({ timeframe = 7, limit = 5, category = null }) => {
         }
     };
 
+    const cardSx = { border: '1px solid', borderColor: 'divider', borderRadius: 3 };
+
     if (loading) {
         return (
-            <Card>
+            <Card elevation={0} sx={cardSx}>
                 <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <WhatshotIcon sx={{ color: 'error.main', mr: 1 }} />
+                        <WhatshotIcon sx={{ color: 'error.main', mr: 1, fontSize: 28 }} />
                         <Typography variant="h6" fontWeight="bold">
                             Trending
                         </Typography>
                     </Box>
-                    {[1, 2, 3].map((i) => (
-                        <Skeleton key={i} height={60} sx={{ mb: 1 }} />
-                    ))}
+                    <TrendingPostSkeleton count={3} />
                 </CardContent>
             </Card>
         );
     }
 
     if (error || trendingPosts.length === 0) {
-        return null;
+        return (
+            <Card elevation={0} sx={cardSx}>
+                <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <WhatshotIcon sx={{ color: 'error.main', mr: 1, fontSize: 28 }} />
+                        <Typography variant="h6" fontWeight="bold">
+                            Trending
+                        </Typography>
+                    </Box>
+                    <Box sx={{ textAlign: 'center', py: 3 }}>
+                        <Typography variant="body2" color="text.secondary">
+                            No hay posts trending aún
+                        </Typography>
+                    </Box>
+                </CardContent>
+            </Card>
+        );
     }
 
     return (
-        <Card elevation={2}>
+        <Card elevation={0} sx={cardSx}>
             <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <WhatshotIcon sx={{ color: 'error.main', mr: 1, fontSize: 28 }} />
@@ -116,6 +132,7 @@ const TrendingPosts = ({ timeframe = 7, limit = 5, category = null }) => {
                             </ListItemAvatar>
                             <ListItemText
                                 primary={post.title}
+                                secondaryTypographyProps={{ component: 'div' }}
                                 secondary={
                                     <Box sx={{ display: 'flex', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
                                         <Chip
