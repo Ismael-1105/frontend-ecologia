@@ -30,6 +30,7 @@ import { deletePost } from '../../../core/api/postService';
 import { useAuth } from '../../../core/context/AuthContext';
 import { useSnackbar } from '../../../core/context/SnackbarContext.jsx';
 import { getPostById, toggleLikePost } from '../../../core/api/postService';
+import { safeGetItem } from '../../../core/utils/safeStorage';
 import CommentSection from './components/CommentSection';
 import SidebarRecentPosts from './components/SidebarRecentPosts';
 import SidebarVideos from './components/SidebarVideos';
@@ -65,7 +66,7 @@ const PostDetailPage = () => {
             if (response.success) {
                 setPost(response.data);
                 // Check if current user has liked the post
-                const currentUserId = localStorage.getItem('userId');
+                const currentUserId = safeGetItem('userId');
                 setLiked(response.data.likes?.includes(currentUserId));
             }
         } catch (err) {

@@ -26,6 +26,7 @@ import {
     deleteVideoComment,
     likeVideoComment
 } from '../../../../core/api/videoService';
+import { safeGetItem } from '../../../../core/utils/safeStorage';
 import SweetAlert from '../../../../components/common/SweetAlert';
 
 const VideoComment = ({ comment, videoId, onReply, onDelete, onLike, level = 0 }) => {
@@ -37,7 +38,7 @@ const VideoComment = ({ comment, videoId, onReply, onDelete, onLike, level = 0 }
     const authorName = comment.authorId?.name || 'Anónimo';
     const authorAvatar = comment.authorId?.profilePicture;
     const likeCount = comment.likes?.length || 0;
-    const currentUserId = localStorage.getItem('userId');
+    const currentUserId = safeGetItem('userId');
     const isLiked = comment.likes?.includes(currentUserId);
     const isAuthor = comment.authorId?._id === currentUserId;
     const hasReplies = comment.replies && comment.replies.length > 0;

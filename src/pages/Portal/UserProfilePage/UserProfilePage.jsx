@@ -84,7 +84,6 @@ const UserProfilePage = () => {
 
     const handleVideoPlay = (video) => {
         // Navigate to video player or open modal
-        console.log('Play video:', video);
     };
 
     const formatDate = (dateString) => {

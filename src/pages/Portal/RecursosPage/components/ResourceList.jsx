@@ -4,7 +4,7 @@ import ResourceCard from './ResourceCard';
 import { ResourceCardSkeleton } from '../../../../components/shared/Skeletons';
 import { getAllUploads } from '../../../../core/api/uploadService';
 
-const ResourceList = ({ searchQuery, selectedCategory, uploadedResources = [], onOpenPdfModal }) => {
+const ResourceList = ({ searchQuery, selectedCategory, uploadedResources = [] }) => {
     const [resources, setResources] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -88,7 +88,6 @@ const ResourceList = ({ searchQuery, selectedCategory, uploadedResources = [], o
                             <ResourceCard 
                                 resource={resource} 
                                 onUpdate={fetchResources}
-                                onOpenPdfModal={onOpenPdfModal}
                             />
                         </Grid>
                     ))}

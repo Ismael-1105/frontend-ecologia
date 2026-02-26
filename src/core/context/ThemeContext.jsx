@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { createTheme } from '@mui/material/styles';
+import { safeGetItem, safeSetItem } from '../utils/safeStorage';
 
 const ThemeContext = createContext();
 
@@ -207,13 +208,13 @@ const darkTheme = createTheme({
 export const ThemeModeProvider = ({ children }) => {
     // Initialize theme from localStorage or default to 'light'
     const [mode, setMode] = useState(() => {
-        const savedMode = localStorage.getItem('themeMode');
+        const savedMode = safeGetItem('themeMode');
         return savedMode || 'light';
     });
 
     // Save theme preference to localStorage whenever it changes
     useEffect(() => {
-        localStorage.setItem('themeMode', mode);
+        safeSetItem('themeMode', mode);
     }, [mode]);
 
     const toggleTheme = () => {

@@ -41,8 +41,6 @@ const VideoPlayerModal = ({ open, onClose, videoId }) => {
         try {
             const videoData = await videoService.getVideoById(videoId);
 
-            console.log('Video data received:', videoData);
-
             if (!videoData) {
                 setError("No se encontró información del video");
                 return;
@@ -58,8 +56,6 @@ const VideoPlayerModal = ({ open, onClose, videoId }) => {
     }, [videoId]);
 
     useEffect(() => {
-        console.log("VIDEO ID:", videoId);
-
         if (open && videoId) {
             fetchVideoDetails();
         }

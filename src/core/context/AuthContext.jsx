@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { authService } from '../services';
 import { setAuthToken } from '../api/client';
+import { safeGetItem, safeSetItem, safeRemoveItem } from '../utils/safeStorage';
 import logger from '../../utils/logger';
 
 const authLogger = logger.create('AuthContext');
@@ -9,16 +10,16 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refreshToken'));
+  const [accessToken, setAccessToken] = useState(safeGetItem('accessToken'));
+  const [refreshToken, setRefreshToken] = useState(safeGetItem('refreshToken'));
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load user on mount
   useEffect(() => {
     const loadUser = async () => {
-      const token = localStorage.getItem('accessToken');
-      const refresh = localStorage.getItem('refreshToken');
+      const token = safeGetItem('accessToken');
+      const refresh = safeGetItem('refreshToken');
 
       authLogger.log('Loading user...', { hasToken: !!token, hasRefresh: !!refresh });
 
@@ -35,7 +36,7 @@ export const AuthProvider = ({ children }) => {
           authLogger.error('Failed to load user:', error);
           // Clear invalid tokens
           setAuthToken(null);
-          localStorage.removeItem('refreshToken');
+          safeRemoveItem('refreshToken');
           setAccessToken(null);
           setRefreshToken(null);
         }
@@ -63,7 +64,7 @@ export const AuthProvider = ({ children }) => {
 
       // Save tokens and set in axios headers
       setAuthToken(newAccessToken);
-      localStorage.setItem('refreshToken', newRefreshToken);
+      safeSetItem('refreshToken', newRefreshToken);
 
       setUser(userData);
       setAccessToken(newAccessToken);
@@ -89,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
       // Save tokens and set in axios headers
       setAuthToken(newAccessToken);
-      localStorage.setItem('refreshToken', newRefreshToken);
+      safeSetItem('refreshToken', newRefreshToken);
 
       setUser(newUser);
       setAccessToken(newAccessToken);
@@ -109,7 +110,7 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = useCallback(async () => {
     try {
-      const currentRefreshToken = localStorage.getItem('refreshToken');
+      const currentRefreshToken = safeGetItem('refreshToken');
       if (currentRefreshToken) {
         await authService.logout(currentRefreshToken);
       }
@@ -118,7 +119,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       // Clear state, storage, and axios headers
       setAuthToken(null);
-      localStorage.removeItem('refreshToken');
+      safeRemoveItem('refreshToken');
       setUser(null);
       setAccessToken(null);
       setRefreshToken(null);
@@ -135,7 +136,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       // Clear state, storage, and axios headers
       setAuthToken(null);
-      localStorage.removeItem('refreshToken');
+      safeRemoveItem('refreshToken');
       setUser(null);
       setAccessToken(null);
       setRefreshToken(null);

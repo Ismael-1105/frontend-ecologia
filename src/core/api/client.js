@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { safeGetItem, safeSetItem, safeRemoveItem, safeClearStorage } from '../utils/safeStorage';
 
 // Get API URL from environment variable
 const API_URL = import.meta.env.VITE_API_URL;
@@ -24,10 +25,10 @@ const apiClient = axios.create({
 export const setAuthToken = (token) => {
   if (token) {
     apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    localStorage.setItem('accessToken', token);
+    safeSetItem('accessToken', token);
   } else {
     delete apiClient.defaults.headers.common['Authorization'];
-    localStorage.removeItem('accessToken');
+    safeRemoveItem('accessToken');
   }
 };
 
@@ -50,7 +51,7 @@ const processQueue = (error, token = null) => {
 // Request interceptor - Add access token to requests
 apiClient.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = safeGetItem('accessToken');
 
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -95,11 +96,11 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = safeGetItem('refreshToken');
 
       if (!refreshToken) {
         // No refresh token, logout
-        localStorage.clear();
+        safeClearStorage();
         window.location.href = '/login';
         return Promise.reject(error);
       }
@@ -113,7 +114,7 @@ apiClient.interceptors.response.use(
         const { accessToken } = response.data.data;
 
         // Save new access token
-        localStorage.setItem('accessToken', accessToken);
+        safeSetItem('accessToken', accessToken);
 
         // Update authorization header
         apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
@@ -131,7 +132,7 @@ apiClient.interceptors.response.use(
         processQueue(refreshError, null);
         isRefreshing = false;
 
-        localStorage.clear();
+        safeClearStorage();
         window.location.href = '/login';
 
         return Promise.reject(refreshError);
@@ -140,7 +141,7 @@ apiClient.interceptors.response.use(
 
     // For other 401 errors (invalid token, etc.), logout
     if (error.response?.status === 401) {
-      localStorage.clear();
+      safeClearStorage();
       window.location.href = '/login';
     }
 

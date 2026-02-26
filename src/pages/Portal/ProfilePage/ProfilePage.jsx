@@ -71,27 +71,10 @@ const ProfilePage = () => {
     };
 
     const handleProfilePictureUpload = async (file) => {
-        console.log('📸 Profile Picture Upload Started');
-        console.log('File info:', {
-            name: file.name,
-            size: file.size,
-            type: file.type
-        });
-
         try {
-            console.log('⏳ Uploading to backend...');
-            console.log('Current user profilePicture:', user.profilePicture);
-
             const updatedUser = await userService.updateProfilePicture(file);
 
-            console.log('✅ Backend response (full object):', JSON.stringify(updatedUser, null, 2));
-            console.log('New profilePicture URL:', updatedUser.profilePicture);
-            console.log('Type of profilePicture:', typeof updatedUser.profilePicture);
-
-            console.log('🔄 Calling updateUser with:', updatedUser);
             updateUser(updatedUser);
-
-            console.log('✔️ User context updated, new user state:', user);
 
             showSuccess('Profile picture updated successfully');
         } catch (error) {

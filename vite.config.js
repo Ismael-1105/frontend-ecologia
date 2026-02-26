@@ -36,6 +36,9 @@ export default defineConfig({
 
     // Configuración de build para producción
     build: {
+        // Target moderno para soportar top-level await (necesario para pdfjs-dist)
+        target: 'es2022',
+
         // Directorio de salida
         outDir: 'dist',
 
@@ -97,7 +100,13 @@ export default defineConfig({
                 // Nombres de archivos con hash para caché
                 entryFileNames: 'assets/[name]-[hash].js',
                 chunkFileNames: 'assets/[name]-[hash].js',
-                assetFileNames: 'assets/[name]-[hash].[ext]',
+                // ⚠️ Excluir pdf.worker.min.mjs del hash (lo maneja el plugin)
+                assetFileNames: (assetInfo) => {
+                    if (assetInfo.name === 'pdf.worker.min.mjs') {
+                        return 'assets/[name].[ext]'; // Sin hash
+                    }
+                    return 'assets/[name]-[hash].[ext]'; // Con hash
+                },
             },
         },
 
@@ -115,10 +124,13 @@ export default defineConfig({
             '@emotion/react',
             '@emotion/styled',
             'axios',
-            'pdfjs-dist', // ✅ CRITICAL: Include pdfjs-dist for worker stability
         ],
         // Excluir dependencias que no necesitan pre-bundling
         exclude: [],
+        // Configuración de esbuild para soportar top-level await
+        esbuildOptions: {
+            target: 'es2022',
+        },
     },
 
     // Configuración del servidor de desarrollo

@@ -27,6 +27,7 @@ import {
     toggleLikeComment
 } from '../../../../core/api/postService';
 import { useAuth } from '../../../../core/context/AuthContext';
+import { safeGetItem } from '../../../../core/utils/safeStorage';
 import SweetAlert from '../../../../components/common/SweetAlert';
 
 const Comment = ({ comment, postId, onReply, onDelete, onLike, level = 0 }) => {
@@ -38,7 +39,7 @@ const Comment = ({ comment, postId, onReply, onDelete, onLike, level = 0 }) => {
     const authorName = comment.author?.name || 'Anónimo';
     const authorAvatar = comment.author?.profilePicture;
     const likeCount = comment.likes?.length || 0;
-    const currentUserId = localStorage.getItem('userId');
+    const currentUserId = safeGetItem('userId');
     const isLiked = comment.likes?.includes(currentUserId);
     const { user } = useAuth();
     const isAdmin = user?.role === 'Administrador' || user?.role === 'SuperAdmin';

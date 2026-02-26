@@ -18,10 +18,6 @@ export { default as FileUploader } from './FileUploader';
 export { default as FileUploadButton } from './FileUploadButton';
 export { default as ImageUploader } from './ImageUploader';
 
-// PDF Components
-export { default as PdfViewerModal } from './PdfViewerModal';
-export { default as PdfCard } from './PdfCard';
-
 // Other Components
 export { default as CommentList } from './CommentList';
 export { default as ErrorBoundary } from './ErrorBoundary';

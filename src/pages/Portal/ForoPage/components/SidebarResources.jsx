@@ -19,13 +19,6 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { getAllUploads } from '../../../../core/api/uploadService';
-import { Document, Page, pdfjs } from 'react-pdf';
-
-// Configure pdf.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.mjs',
-    import.meta.url
-).toString();
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
@@ -56,52 +49,11 @@ const getFileTypeLabel = (fileType) => {
     return labels[fileType] || 'Archivo';
 };
 
-// PDF first-page thumbnail
-const PdfThumbnail = ({ filePath, width = 150 }) => {
-    const [error, setError] = useState(false);
-    const fileUrl = getFileUrl(filePath);
-
-    if (!fileUrl || error) {
-        return (
-            <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100' }}>
-                <PdfIcon sx={{ fontSize: 48, color: 'error.light', opacity: 0.7 }} />
-            </Box>
-        );
-    }
-
-    return (
-        <Document
-            file={fileUrl}
-            loading={
-                <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Skeleton variant="rectangular" width="100%" height="100%" animation="wave" />
-                </Box>
-            }
-            error={
-                <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100' }}>
-                    <PdfIcon sx={{ fontSize: 48, color: 'error.light', opacity: 0.7 }} />
-                </Box>
-            }
-            onLoadError={() => setError(true)}
-        >
-            <Page
-                pageNumber={1}
-                width={width}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-            />
-        </Document>
-    );
-};
-
-// File thumbnail (PDF, image, or icon fallback)
+// File thumbnail (image or icon fallback)
 const FileThumbnail = ({ resource }) => {
     const fileType = resource.fileType?.toLowerCase();
 
-    if (fileType === 'document' && resource.filePath) {
-        return <PdfThumbnail filePath={resource.filePath} width={150} />;
-    }
-
+    // Para imágenes, mostrar la imagen
     if (fileType === 'image' && resource.filePath) {
         const imageUrl = getFileUrl(resource.filePath);
         return (
@@ -160,25 +112,8 @@ const ResourceShortCard = ({ resource }) => {
                     borderColor: 'divider',
                     position: 'relative',
                     display: 'flex',
-                    alignItems: 'flex-start',
+                    alignItems: 'center',
                     justifyContent: 'center',
-                    '& .react-pdf__Document': {
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                        width: '100%',
-                        height: '100%',
-                    },
-                    '& .react-pdf__Page': {
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        justifyContent: 'center',
-                    },
-                    '& .react-pdf__Page canvas': {
-                        width: '100% !important',
-                        height: 'auto !important',
-                    },
                 }}
             >
                 <FileThumbnail resource={resource} />

@@ -16,13 +16,11 @@ import {
     Image as ImageIcon,
     Description as DocIcon,
     Download as DownloadIcon,
-    Visibility as VisibilityIcon,
     AudioFile as AudioIcon,
     Delete as DeleteIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../../../core/context/AuthContext';
 import * as uploadService from '../../../../core/api/uploadService';
-import PdfViewerModal from '../../../../components/shared/PdfViewerModal';
 import { useSnackbar } from '../../../../core/context/SnackbarContext.jsx';
 import SweetAlert from '../../../../components/common/SweetAlert';
 
@@ -38,11 +36,10 @@ const getFileUrl = (path) => {
     return `${cleanBaseUrl}${path}`;
 };
 
-const ResourceCard = ({ resource, onUpdate, onOpenPdfModal }) => {
+const ResourceCard = ({ resource, onUpdate }) => {
     const { user } = useAuth();
     const { showSuccess, showError } = useSnackbar();
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-    const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
 
     const isAdmin = user?.role === 'Administrador' || user?.role === 'SuperAdmin';
     const isAuthor = user && (resource.uploadedBy?._id === user._id || resource.uploadedBy === user.id || resource.uploadedBy?._id === user.id);
@@ -125,22 +122,6 @@ const ResourceCard = ({ resource, onUpdate, onOpenPdfModal }) => {
                 SweetAlert.showErrorAlert('Error', 'Error al eliminar el recurso');
                 // showError('Error al eliminar el recurso');
             }
-        }
-    };
-
-    const handleView = () => {
-        // For PDF documents, open in modal viewer
-        if (resource.fileType === 'document') {
-            if (onOpenPdfModal) {
-                // Use global PDF modal from parent component
-                onOpenPdfModal(resource);
-            } else {
-                // Fallback to local state (for backward compatibility)
-                setPdfViewerOpen(true);
-            }
-        } else {
-            // For other file types (images, videos, audio), open in new tab
-            window.open(getFileUrl(resource.url), '_blank');
         }
     };
 
@@ -237,14 +218,6 @@ const ResourceCard = ({ resource, onUpdate, onOpenPdfModal }) => {
                             <IconButton
                                 size="small"
                                 color="primary"
-                                onClick={handleView}
-                                title="Ver archivo"
-                            >
-                                <VisibilityIcon />
-                            </IconButton>
-                            <IconButton
-                                size="small"
-                                color="primary"
                                 onClick={handleDownload}
                                 title="Descargar archivo"
                             >
@@ -275,13 +248,6 @@ const ResourceCard = ({ resource, onUpdate, onOpenPdfModal }) => {
                     {snackbar.message}
                 </Alert>
             </Snackbar>
-
-            {/* PDF Viewer Modal */}
-            <PdfViewerModal
-                open={pdfViewerOpen}
-                onClose={() => setPdfViewerOpen(false)}
-                resource={resource}
-            />
         </>
     );
 };
